@@ -19,7 +19,13 @@ document.addEventListener("DOMContentLoaded", function () {
       previousFocus = document.activeElement;
       drawer.classList.add("is-open");
       document.body.classList.add("drawer-open");
+      if (drawerPanel) {
+        drawerPanel.style.animation = "drawerSlide 0.4s ease forwards";
+      }
     } else {
+      if (drawerPanel) {
+        drawerPanel.style.animation = "drawerSlideOut 0.3s ease forwards";
+      }
       drawer.classList.remove("is-open");
       document.body.classList.remove("drawer-open");
     }
