@@ -173,6 +173,57 @@
     var(--theme-background);
   color: var(--text-primary);
   padding: var(--space-2xl) var(--space-lg);
+  max-width: 1200px;
+  margin-inline: auto;
+  width: 100%;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .dark-hero {
+    border-radius: 28px;
+    padding: calc(var(--safe-area-top) + var(--space-lg))
+        clamp(var(--space-md), 6vw, var(--space-xl))
+        clamp(var(--space-xl), 8vw, var(--space-2xl));
+  }
+
+  .dark-hero__rail {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dark-hero__rail-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .dark-hero__actions {
+    width: 100%;
+  }
+
+  .dark-hero__actions .button {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .money-dashboard {
+    padding: calc(var(--safe-area-top) + var(--space-xl))
+      clamp(var(--space-md), 6vw, var(--space-lg))
+      calc(var(--safe-area-bottom) + var(--space-xl));
+  }
+}
+
+@media (max-width: 480px) {
+  .dark-hero__actions {
+    flex-direction: column;
+  }
+
+  .money-dashboard {
+    padding: calc(var(--safe-area-top) + var(--space-lg))
+      clamp(var(--space-sm), 8vw, var(--space-lg))
+      calc(var(--safe-area-bottom) + var(--space-lg));
+  }
 }
 
 .money-header {
@@ -225,6 +276,26 @@
   padding: var(--space-xl);
   border: 1px solid var(--theme-border);
   margin-bottom: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.balance-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 80% 0%, rgba(0, 122, 255, 0.25), transparent 60%);
+  pointer-events: none;
+}
+
+.balance-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.balance-card--hero {
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
 }
 
 .balance-card__top {
@@ -247,6 +318,40 @@
   font-weight: 700;
 }
 
+.balance-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+.balance-metric {
+  padding: var(--space-md);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.balance-metric__label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.balance-metric__value {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+}
+
+.balance-metric__meta {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
 .balance-card__actions {
   display: flex;
   gap: var(--space-md);
@@ -266,16 +371,35 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-md);
   margin-bottom: var(--space-xl);
+  width: 100%;
 }
 
 .action-card {
   border-radius: 24px;
   padding: var(--space-lg);
   background:
-    radial-gradient(circle at 10% 0%, rgba(0, 213, 75, 0.08), transparent 70%),
-    var(--theme-surface);
+    radial-gradient(circle at 0% 0%, rgba(0, 213, 75, 0.12), transparent 70%),
+    linear-gradient(135deg, rgba(11, 21, 21, 0.95), rgba(3, 6, 8, 0.95));
   border: 1px solid var(--theme-border);
   min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.45);
+}
+
+.action-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.action-card .button {
+  margin-top: auto;
 }
 
 .feature-grid {
@@ -294,7 +418,9 @@
 
 .service-card {
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.03);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(0, 213, 75, 0.18), transparent 65%),
+    rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: var(--space-lg);
   display: flex;
@@ -339,7 +465,10 @@
   border-radius: 24px;
   padding: var(--space-lg);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(0, 122, 255, 0.12), transparent 55%),
+    rgba(255, 255, 255, 0.02);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4);
 }
 
 .feature-card--wide {
@@ -394,7 +523,8 @@
 }
 
 .money-section {
-  background: var(--theme-surface);
+  background:
+    linear-gradient(135deg, rgba(7, 12, 16, 0.95), rgba(3, 6, 8, 0.95));
   border-radius: 24px;
   border: 1px solid var(--theme-border);
   padding: var(--space-xl);
@@ -423,6 +553,29 @@
   border-radius: 18px;
   border: 1px solid var(--theme-border);
   background: var(--theme-surface-raised);
+  gap: var(--space-md);
+}
+
+.directory-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--space-lg);
+  align-items: center;
+}
+
+.directory-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.badge-pill {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 0.35rem 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .card-eyebrow {

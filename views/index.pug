@@ -19,8 +19,9 @@ block hero
   +darkHero({
     title: "Modern Customer Workspace",
     subtitle: "Manage clients, invoices, reminders, and analytics from a single hub designed for finance teams on the go.",
+    back: false,
     actions: [
-      { type: "primary", label: "Add New Customer", href: "/customers/new" },
+      { type: "primary", label: "Customer Hub", href: "/customers" },
       { type: "secondary", label: "View Analytics", href: "/analytics" }
     ],
     status: {
@@ -43,6 +44,7 @@ block content
   - const estimateHref = primaryCustomerId ? `/estimate/new/${locationId}/${primaryCustomerId}` : '/customers/new'
   - const subscriptionHref = primaryCustomerId ? `/subscription/new/${locationId}/${primaryCustomerId}` : '/customers/new'
   - const reminderCountValue = typeof reminderCount === 'number' ? reminderCount : 0
+  - const directoryCustomers = Array.isArray(displayCustomers) ? displayCustomers : (customers || [])
   - const settingsHref = '/admin'
   - const safeTickerStats = tickerStats || { upcomingReminders: 0, overdueReminders: 0 }
   - const invoiceTicker = invoiceStats || { overdueInvoiceCount: 0, scheduledInvoiceCount: 0 }
@@ -52,77 +54,122 @@ block content
   - tickerItems.push({ label: 'Overdue reminders', value: safeTickerStats.overdueReminders })
   - tickerItems.push({ label: 'Overdue invoices', value: invoiceTicker.overdueInvoiceCount })
   - tickerItems.push({ label: 'Scheduled invoices', value: invoiceTicker.scheduledInvoiceCount })
+  - const heroSignals = []
+  - heroSignals.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job waiting to send" : `${reminderCountValue} reminders staged` })
+  - heroSignals.push({ label: "Upcoming reminders", value: safeTickerStats.upcomingReminders, meta: "Next 24h window" })
+  - heroSignals.push({ label: "Overdue reminders", value: safeTickerStats.overdueReminders, meta: safeTickerStats.overdueReminders ? "Escalate with ops" : "All clear" })
+  - heroSignals.push({ label: "Scheduled invoices", value: invoiceTicker.scheduledInvoiceCount, meta: "In-flight billing" })
+  - const cardCoverage = totalCustomers ? Math.round((cardCustomers.length / totalCustomers) * 100) : 0
+  - const payoutHeadline = payoutStats ? `${payoutStats.pending} pending via ${payoutStats.lastRail || 'rail TBD'}` : "No payouts pending"
+  - const customerBadge = lastCustomer ? `${lastCustomer.givenName || 'Customer'} ${lastCustomer.familyName || ''}`.trim() : null
+  - const balanceMetrics = []
+  - balanceMetrics.push({ label: "Cards on file", value: cardCustomers.length, meta: cardCoverage ? `${cardCoverage}% coverage` : "Sync to unlock" })
+  - balanceMetrics.push({ label: "Manual billing", value: manualCustomers, meta: manualCustomers === 1 ? "Needs reminder" : "Need reminders" })
+  - balanceMetrics.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" })
   main.dashboard(data-reminders=reminderCountValue data-overdue=invoiceTicker.overdueInvoiceCount)
-    section.hero
-      .container
-        .hero__ribbon
-          form.hero__search-bar(action="/management" method="get")
-            input(type="text" name="q" aria-label="Search customers, invoices, or services" placeholder="Quick search customers, invoices, or services" autocomplete="off")
-            button(type="submit" aria-label="Submit search")
-              svg(width="18" height="18" viewBox="0 0 24 24" fill="none")
-                path(d="M10 4a6 6 0 106 6 6 6 0 00-6-6zm11 16l-4.5-4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
-          .hero__quick-actions
-            a.button.button-sm(href="/management") Add Service
-            a.button.button-sm(href="/invoice/create") Create Invoice
-            a.button.button-sm(href="/payouts/console") Payout Console
-        .hero__ticker(role="status" aria-live="polite")
-          .ticker-track
-            each item in tickerItems
-              .ticker-item
-                span.ticker-label #{item.label}
-                span.ticker-value #{item.value}
-        .hero__cta-group
-          a.button.button-primary.button-lg(href="/customers/new")
-            svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
-              path(d="M12 5v14m7-7H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
-            | Add New Customer
-          a.button.button-ghost.button-lg(href="/analytics") View Analytics
-        .hero__metrics
-          .metric-card
-            span.metric-label Total Customers
-            span.metric-value #{totalCustomers}
-            span.metric-trend Up-to-the-minute sync
-          .metric-card
-            span.metric-label Cards on File
-            span.metric-value #{cardCustomers.length}
-            span.metric-trend= totalCustomers ? `${Math.round((cardCustomers.length/totalCustomers)*100)}% of portfolio` : '0%'
-          .metric-card
-            span.metric-label Manual Billing
-            span.metric-value #{manualCustomers}
-            span.metric-trend Requires reminders
+    section.balance-card.balance-card--hero
+      .balance-card__top
+        span.balance-label Customer Directory
+        span.balance-meta= cardCoverage ? `${cardCoverage}% cards on file` : "Sync to unlock coverage"
+      h2.balance-value #{totalCustomers} Active Customers
+      ul.balance-card__metrics
+        each metric in balanceMetrics
+          li.balance-metric
+            span.balance-metric__label #{metric.label}
+            span.balance-metric__value #{metric.value}
+            span.balance-metric__meta #{metric.meta}
 
-    section.highlights
-      .container
-        .card-grid
-          .feature-card
-            h3 Feature Spotlight
-            p AI-assisted reminders were sent automatically using your cadence.
-            a.button.button-secondary(href="/admin/reminders") Review queue
-          .feature-card
-            h3 Latest Activity
-            if lastCustomer
-              p Last synced customer:
-              p.feature-highlight #{lastCustomer.givenName || 'Customer'} #{lastCustomer.familyName}
-            else
-              p.feature-highlight Waiting for first customer sync
-            a.button.button-secondary(href="/customers") View directory
-          .feature-card
-            h3 Quick Filters
-            ul.quick-filter-list
+    section.quick-actions
+      .action-card
+        span.action-card__icon
+          svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
+            path(d="M12 5v14m7-7H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+        h3 Add Service
+        p Launch catalog with curated services per location.
+        a.button.button-secondary.button-sm(href=managementHref) Go to catalog
+      .action-card
+        span.action-card__icon
+          svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
+            path(d="M5 4h14v16H5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round")
+        h3 Create Invoice
+        p Build an invoice or estimate with autopay preferences.
+        a.button.button-secondary.button-sm(href=invoiceHref) Launch composer
+      .action-card
+        span.action-card__icon
+          svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
+            path(d="M4 12h16M4 6h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+        h3 Payout Console
+        p Monitor rails, approvals, and cash positions.
+        a.button.button-secondary.button-sm(href="/payouts/console") View console
+
+    section.money-section
+      h2.section-label Command Surface
+      .service-actions
+        .service-card
+          .service-card__icon
+            span 📊
+          h3 Reminder Pipeline
+          p.text-secondary AI pacing keeps finance teams ahead of due dates.
+          ul.metric-stack
+            each signal in heroSignals
               li
-                span.status-chip.status-chip--success With Card (#{cardCustomers.length})
-              li
-                span.status-chip.status-chip--warning Manual pay (#{manualCustomers})
-              li
-                span.status-chip.status-chip--neutral All Customers (#{totalCustomers})
-          .feature-card
-            h3 Payout Pulse
-            if payoutStats
-              p.text-secondary #{payoutStats.total} payout events logged
-              p.feature-highlight #{payoutStats.pending} pending via #{payoutStats.lastRail || 'rail TBD'}
-            else
-              p.text-secondary No payouts initiated yet.
-            a.button.button-secondary(href="/payouts/console") Manage payouts
+                span.metric-label #{signal.label}
+                span.metric-value #{signal.value}
+                span.metric-meta #{signal.meta}
+        .service-card
+          .service-card__icon
+            span 🧾
+          h3 Invoice Pulse
+          p.text-secondary Track overdue pressure and scheduled cash-in.
+          .stat-stack-grid
+            .stat-stack
+              span.stat-label Overdue invoices
+              span.stat-value #{invoiceTicker.overdueInvoiceCount}
+              span.stat-meta= invoiceTicker.overdueInvoiceCount ? "Escalate with ops" : "All clear"
+            .stat-stack
+              span.stat-label Scheduled / unpaid
+              span.stat-value #{invoiceTicker.scheduledInvoiceCount}
+              span.stat-meta Billing in next 7 days
+          .pill-row
+            a.pill-button(href="/analytics") Analytics
+            a.pill-button(href="/admin/reminders") Reminder Queue
+        .service-card
+          .service-card__icon
+            span 🙋
+          h3 Customer Snapshot
+          if customerBadge
+            p.text-secondary Latest sync: #{customerBadge}
+          else
+            p.text-secondary Waiting for first customer sync.
+          ul.metric-stack
+            li
+              span.metric-label Cards on file
+              span.metric-value #{cardCustomers.length}
+              span.metric-meta= `${cardCoverage}% of directory`
+            li
+              span.metric-label Manual billing
+              span.metric-value #{manualCustomers}
+              span.metric-meta Requires reminders
+          span.status-pill.status-pill--neutral Directory pulse
+
+    section.money-section
+      h2.section-label Operations Radar
+      .feature-grid
+        .feature-card.feature-card--wide
+          span.feature-card__eyebrow Env status
+          h3 Modern Customer Workspace
+          p.text-secondary Manage clients, invoices, reminders, and analytics from a single command center.
+          span.hero__panel-chip.hero__panel-chip--status #{statusLabel}
+        .feature-card
+          span.feature-card__eyebrow Automation
+          h3 #{reminderCountValue} reminders staged
+          p.text-secondary Jobs continue running while you focus elsewhere.
+          a.button.button-secondary.button-sm(href="/admin/reminders") Review queue
+        .feature-card
+          span.feature-card__eyebrow Insights
+          h3 View Analytics
+          p.text-secondary Surface KPIs, backlog, and reminder runs in one dashboard.
+          a.button.button-secondary.button-sm(href="/analytics") Open analytics
 
   .reminder-toast(data-toast role="status" aria-live="polite")
     span.toast-dot
