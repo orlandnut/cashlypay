@@ -405,3 +405,11 @@
     rgba(255, 204, 0, 0.3)
   );
 }
+
+/* Rounded analytics surfaces */
+.analytics-hero,
+.panel,
+.analytics-grid > *,
+.analytics-card {
+  border-radius: var(--radius-card);
+}

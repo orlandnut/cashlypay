@@ -263,3 +263,12 @@
   font-size: 0.9rem;
   color: var(--text-secondary, #9da9b7);
 }
+
+/* Rounded catalog surfaces */
+.section.panel,
+.catalog-card,
+.component-row,
+.version-card,
+.toggle-fieldset {
+  border-radius: var(--radius-card);
+}

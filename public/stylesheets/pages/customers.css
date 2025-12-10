@@ -1467,7 +1467,7 @@
 
 .customer-card {
   position: relative;
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-card);
   overflow: hidden;
   transition: transform var(--transition-fast) var(--transition-ease);
 }
@@ -1497,7 +1497,7 @@
   gap: var(--space-lg);
   padding: var(--space-xl);
   background: rgba(0, 0, 0, 0.25);
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-card);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 25px 45px rgba(0, 0, 0, 0.45);
 }
@@ -1648,6 +1648,17 @@
 
 .customer-link:hover .customer-card__halo {
   opacity: 1;
+}
+
+/* Rounded surfaces */
+.section.panel,
+.customer-stats .stat-card,
+.hero__panel,
+.hero__quick-links,
+.card-grid > *,
+.feature-card,
+.metric-card {
+  border-radius: var(--radius-card);
 }
 
 .empty-state {

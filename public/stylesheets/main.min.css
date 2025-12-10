@@ -126,6 +126,7 @@ Licensed under the Apache License, Version 2.0
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-2xl: 24px;
+  --radius-card: clamp(26px, 6vw, 48px);
   --radius-full: 9999px;
 
   /* Transitions */

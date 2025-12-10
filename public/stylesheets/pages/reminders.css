@@ -204,3 +204,12 @@
     text-align: left;
   }
 }
+
+/* Rounded reminder surfaces */
+.section,
+.panel,
+.reminder-card,
+.reminder-card__meta,
+.data-table {
+  border-radius: var(--radius-card);
+}

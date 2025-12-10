@@ -200,6 +200,16 @@ tfoot tr {
   font-weight: 600;
 }
 
+/* Rounded invoice surfaces */
+.invoice-card,
+.stat-card,
+.data-table,
+.fixed-bottom-bar,
+.recipient-info,
+.section {
+  border-radius: var(--radius-card);
+}
+
 .fixed-bottom-bar .button-secondary.compact-action {
   width: 100%;
   max-width: 320px;

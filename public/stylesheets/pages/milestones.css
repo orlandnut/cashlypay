@@ -57,3 +57,11 @@
   font-size: 0.9rem;
   color: var(--text-secondary);
 }
+
+/* Rounded milestone surfaces */
+.section.panel,
+.milestone-card,
+.milestone-row,
+.milestone-summary {
+  border-radius: var(--radius-card);
+}

@@ -18,7 +18,9 @@ block hero
   +darkHero({
     title: `Command Center for ${customer.givenName} ${customer.familyName}`,
     subtitle: "End-to-end view of invoices, subscriptions, reminders, and payment posture.",
+    back: { href: "/customers", label: "Customers" },
     actions: [
+      { type: "ghost", label: "Back to Customer Hub", href: "/customers" },
       { type: "primary", label: "Create Estimate", href: `/estimate/new/${locationId}/${customer.id}` },
       { type: "secondary", label: "Launch Subscription", href: `/subscription/new/${locationId}/${customer.id}` },
       { type: "secondary", label: "View Analytics", href: "/analytics" }

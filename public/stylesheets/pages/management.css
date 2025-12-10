@@ -1221,3 +1221,21 @@
   color: var(--text-secondary);
   font-size: var(--text-sm);
 }
+
+/* Rounded surfaces */
+.customer-hero,
+.panel,
+.customer-card,
+.service-card,
+.toggle-card,
+.toggle-pill,
+.invoice-item,
+.subscription-card,
+.estimate-card,
+.page-header,
+.metric-card,
+.wizard,
+.wizard-step,
+.customer-form-section {
+  border-radius: var(--radius-card);
+}

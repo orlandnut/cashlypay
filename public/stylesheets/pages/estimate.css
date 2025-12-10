@@ -331,3 +331,9 @@ section.section {
   gap: var(--space-md);
   justify-content: flex-end;
 }
+
+/* Rounded estimate surfaces */
+.estimate-form .card,
+.wizard-summary {
+  border-radius: var(--radius-card);
+}
