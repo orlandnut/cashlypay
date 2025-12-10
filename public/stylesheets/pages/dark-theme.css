@@ -626,6 +626,85 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
+/* Help overlay */
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--transition-normal) var(--transition-ease),
+    transform var(--transition-normal) var(--transition-ease);
+  z-index: var(--z-modal);
+  transform: translateY(10px);
+}
+
+.help-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.help-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+}
+
+.help-overlay__card {
+  position: relative;
+  max-width: 480px;
+  width: calc(100% - 2rem);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(0, 213, 75, 0.2), transparent 65%),
+    linear-gradient(145deg, rgba(8, 12, 14, 0.92), rgba(3, 6, 8, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  padding: var(--space-xl);
+  box-shadow:
+    0 35px 70px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.help-overlay__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.help-overlay__title {
+  margin: var(--space-sm) 0 var(--space-md);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.help-overlay__list {
+  list-style: disc;
+  padding-left: var(--space-lg);
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.help-overlay__actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .help-overlay__card {
+    padding: var(--space-lg);
+  }
+}
+
 @keyframes cardFadeIn {
   from {
     opacity: 0;

@@ -9,6 +9,14 @@ document.addEventListener("DOMContentLoaded", function () {
   var profileBtn = document.querySelector(".hero__profile-trigger");
   var profileDropdown = document.querySelector(".profile-dropdown");
   var announcer = document.getElementById("sr-announcer");
+  var helpOverlay = document.querySelector("[data-help-overlay]");
+  var helpDismiss = helpOverlay
+    ? helpOverlay.querySelector("[data-help-dismiss]")
+    : null;
+  var helpHide = helpOverlay
+    ? helpOverlay.querySelector("[data-help-hide]")
+    : null;
+  var HELP_KEY = "cashly-help-dismissed";
   var focusableSelectors =
     'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
   var drawerFocusables = [];
@@ -174,14 +182,23 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   var toast = document.querySelector("[data-toast]");
   var toastMessage = toast ? toast.querySelector(".toast-message") : null;
+  var toastProgress = toast ? toast.querySelector(".toast-progress__bar") : null;
   var toastClose = toast ? toast.querySelector(".toast-close") : null;
   var dashboard = document.querySelector(".dashboard[data-reminders]");
   var showToast = function (message) {
     if (!toast || !toastMessage) return;
     toastMessage.textContent = message;
+    if (toastProgress) {
+      toastProgress.style.animation = "none";
+      // trigger reflow to restart animation
+      void toastProgress.offsetWidth;
+      toastProgress.style.animation = "";
+      toastProgress.classList.add("running");
+    }
     toast.classList.add("is-visible");
     setTimeout(function () {
       toast.classList.remove("is-visible");
+      toastProgress && toastProgress.classList.remove("running");
     }, 4000);
   };
   if (toastClose) {
@@ -210,6 +227,35 @@ document.addEventListener("DOMContentLoaded", function () {
       localStorage.setItem("cashly-reminder-count", reminderCount);
     }
   }
+
+  var showHelp = function () {
+    if (!helpOverlay) return;
+    if (localStorage.getItem(HELP_KEY)) return;
+    helpOverlay.classList.add("is-visible");
+    helpOverlay.setAttribute("aria-hidden", "false");
+  };
+
+  var hideHelp = function (persist) {
+    if (!helpOverlay) return;
+    helpOverlay.classList.remove("is-visible");
+    helpOverlay.setAttribute("aria-hidden", "true");
+    if (persist) {
+      localStorage.setItem(HELP_KEY, "1");
+    }
+  };
+
+  if (helpDismiss) {
+    helpDismiss.addEventListener("click", function () {
+      hideHelp(true);
+    });
+  }
+  if (helpHide) {
+    helpHide.addEventListener("click", function () {
+      hideHelp(false);
+    });
+  }
+
+  setTimeout(showHelp, 1200);
 
   function announce(message) {
     if (!announcer) return;

@@ -105,7 +105,20 @@ html(lang="en" class="dark")
         .money-dashboard
           block hero
           block content
-    
+
+    .help-overlay(data-help-overlay aria-hidden="true")
+      .help-overlay__backdrop
+      .help-overlay__card(role="dialog" aria-modal="true" aria-label="Quick tour")
+        span.help-overlay__eyebrow Quick tour
+        h3.help-overlay__title Master your workspace
+        ul.help-overlay__list
+          li Pin filters and quick actions in the toolbar while you scroll.
+          li Use quick actions to spin up invoices, estimates, or payouts fast.
+          li Watch status chips and toasts for live reminders and sync signals.
+        .help-overlay__actions
+          button.button.button-secondary.button-sm(type="button" data-help-dismiss) Got it
+          button.button.button-ghost.button-sm(type="button" data-help-hide) Remind me later
+
     //- Footer
     footer.footer
       .container
