@@ -1,0 +1,41 @@
+extends layout
+
+block hero
+  +darkHero({
+    title: "Reminder Queue",
+    subtitle: "Monitor scheduled nudges and process overdue reminders from a single place.",
+    actions: [
+      { type: "primary", label: "Process Now", href: "/admin/reminders/run" },
+      { type: "secondary", label: "Dashboard", href: "/" }
+    ]
+  })
+
+
+block content
+  .dashboard
+    section.section.panel
+      .section-header
+        h3.section-title Reminder Queue
+        form(action="/admin/reminders/run" method="post")
+          button.button.button-secondary(type="submit") Process Now
+      if reminders && reminders.length
+        table.data-table
+          thead
+            tr
+              th Type
+              th Invoice
+              th Run At
+              th Attempts
+          tbody
+            each reminder in reminders
+              tr
+                td
+                  span.reminder-status(class=`reminder-status--${reminder.type === 'UPCOMING_DUE' ? 'upcoming' : 'overdue'}`)
+                    | #{reminder.type.replace('_', ' ')}
+                td #{reminder.invoiceId}
+                td #{new Date(reminder.runAt).toLocaleString()}
+                td #{reminder.attempts || 0}
+        .table-footer
+          a.button.button-ghost(href="/admin/reminders") Refresh List
+      else
+        p.text-secondary No reminders scheduled.

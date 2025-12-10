@@ -1,0 +1,38 @@
+mixin darkHero(options)
+  - const opts = options || {};
+  - const title = typeof opts.title === 'string' ? opts.title : "CashlyPay";
+  - const subtitle = typeof opts.subtitle === 'string' ? opts.subtitle : "Modern Finance OS";
+  - const actions = Array.isArray(opts.actions) ? opts.actions : [];
+  - const back = typeof opts.back === 'undefined' ? { href: "/", label: "Dashboard" } : opts.back;
+  - const status = typeof opts.status === 'object' ? opts.status : null;
+  - const showBack = back !== false;
+  - const backHref = showBack && back && back.href ? back.href : "/";
+  - const backLabel = showBack && back && back.label ? back.label : "Dashboard";
+  .dark-hero
+    .dark-hero__rail
+      .dark-hero__rail-left
+        button.dark-hero__menu.hero__nav-trigger(type="button" aria-label="Open navigation panel" aria-controls="commandDrawer")
+          span.bar
+          span.bar
+          span.bar
+        if showBack
+          a.dark-hero__back(href=backHref aria-label=`Back to ${backLabel}`)
+            svg(width="16" height="16" viewBox="0 0 24 24" fill="none")
+              path(d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+            span= backLabel
+      h1.dark-hero__title #{title}
+      .dark-hero__rail-right
+        if status
+          span.dark-hero__status(class=`dark-hero__status--${status.tone || 'neutral'}`)= status.label
+        else
+          button.dark-hero__profile(type="button" aria-label="Quick actions")
+            svg(width="16" height="16" viewBox="0 0 24 24" fill="none")
+              path(d="M12 5a1 1 0 110-2 1 1 0 010 2zm0 8a1 1 0 110-2 1 1 0 010 2zm0 8a1 1 0 110-2 1 1 0 010 2z" fill="currentColor")
+    if subtitle
+      p.dark-hero__subtitle #{subtitle}
+    if actions && actions.length
+      .dark-hero__actions
+        each action in actions
+          - const actionType = action.type || "primary";
+          - const actionClasses = actionType === "secondary" ? "button button-secondary button-lg" : actionType === "ghost" ? "button button-ghost button-lg" : "button button-primary button-lg";
+          a(class=actionClasses href=action.href)= action.label

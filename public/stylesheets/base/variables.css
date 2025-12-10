@@ -1,0 +1,86 @@
+:root {
+  /* Brand Colors - Cash App specific */
+  --cash-green: #00d54b;
+  --cash-black: #000000;
+  --cash-white: #ffffff;
+  --cash-dark: #00100b;
+  --cash-lime: #87ff65;
+  --cash-neon: #00ec69;
+
+  /* Interactive States */
+  --cash-hover-green: #00ec69;
+  --cash-active-green: #00c545;
+  --cash-hover-black: #1a1a1a;
+  --cash-active-black: #333333;
+
+  /* Neutrals - Cash App specific */
+  --cash-gray-900: #1a1a1a;
+  --cash-gray-800: #2d2d2d;
+  --cash-gray-700: #404040;
+  --cash-gray-600: #666666;
+  --cash-gray-500: #808080;
+  --cash-gray-400: #999999;
+  --cash-gray-300: #d1d1d1;
+  --cash-gray-200: #e5e5e5;
+  --cash-gray-100: #f7f7f7;
+
+  /* Status Colors */
+  --cash-success: var(--cash-green);
+  --cash-error: #ff0000;
+  --cash-warning: #ffb800;
+  --cash-info: #0070ba;
+
+  /* Spacing System */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+
+  /* Typography Scale */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px */
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* Z-index Scale */
+  --z-negative: -1;
+  --z-base: 0;
+  --z-above: 1;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-fixed: 30;
+  --z-modal: 40;
+  --z-popover: 50;
+  --z-toast: 60;
+
+  /* Transitions */
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 350ms;
+  --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout */
+  --container-padding: var(--space-md);
+  --max-width: 1280px;
+  --header-height: 64px;
+  --footer-height: 80px;
+}

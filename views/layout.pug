@@ -1,0 +1,114 @@
+//- Copyright 2020 Square Inc.
+ 
+//- Licensed under the Apache License, Version 2.0 (the "License");
+//- you may not use this file except in compliance with the License.
+//- You may obtain a copy of the License at
+ 
+//-     http://www.apache.org/licenses/LICENSE-2.0
+ 
+//- Unless required by applicable law or agreed to in writing, software
+//- distributed under the License is distributed on an "AS IS" BASIS,
+//- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//- See the License for the specific language governing permissions and
+//- limitations under the License. 
+
+doctype html
+html(lang="en" class="dark")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(name="theme-color" content="#00D54B")
+    meta(name="description" content="Modern invoice management with Cash App style")
+    
+    //- Favicon
+    link(rel="icon" type="image/svg+xml" href="/images/logo.svg")
+    link(rel="alternate icon" type="image/png" href="/images/logo.png")
+    
+    //- Main Stylesheet
+    link(rel="stylesheet" href="/stylesheets/main.css")
+    //- Shared dark theme (payout) styles
+    link(rel="stylesheet" href="/stylesheets/pages/dark-theme.css")
+    block styles
+    
+    title Cashly - Modern Invoice Management
+    
+    //- Scripts
+    block scripts
+      script(defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js")
+    script(defer src="/javascripts/dashboard.js")
+  
+  body.dark
+    a.skip-link(href="#dashboardMain") Skip to dashboard
+    #sr-announcer.sr-only(aria-live="assertive" aria-atomic="true")
+    include ../public/images/sprites.svg
+    include components/dark-hero.pug
+    include components/command-drawer.pug
+
+    //- Sidebar
+    aside.sidebar
+      .sidebar__header
+        .sidebar__branding
+          .logo-mark
+            span.logo-initial C
+          .brand__text
+            h1.brand__name Cashly
+            p.brand__tagline Finance OS
+          span.sidebar__title-command Command Center
+      .sidebar__profile
+        .avatar A
+        .profile__meta
+          span.profile__name Ops Team
+          span.profile__role Admin
+        a.button.button-ghost.button-sm(href="/analytics")
+          svg(width="16" height="16" viewBox="0 0 24 24" fill="none")
+            path(d="M4 12h16M4 6h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          span Insights
+
+      nav.nav
+        p.nav-section Heading
+        a.nav-item(href="/" class=currentPath === '/' ? 'active' : '')
+          svg: use(href="#icon-dashboard")
+          span Dashboard
+        -
+          const customersActive =
+            currentPath &&
+            (currentPath.startsWith('/customers') || currentPath.startsWith('/management'));
+        a.nav-item(href="/customers" class=customersActive ? 'active' : '')
+          svg: use(href="#icon-invoice")
+          span Customer Hub
+        a.nav-item(href="/catalog" class=(currentPath && currentPath.startsWith('/catalog') ? 'active' : ''))
+          svg: use(href="#icon-dashboard")
+          span Services
+        a.nav-item(href="/analytics" class=(currentPath && currentPath.startsWith('/analytics') ? 'active' : ''))
+          svg: use(href="#icon-dashboard")
+          span Analytics
+        a.nav-item(href="/admin/reminders" class=(currentPath && currentPath.startsWith('/admin') ? 'active' : ''))
+          svg: use(href="#icon-invoice")
+          span Reminders
+        a.nav-item(href="/payouts/console" class=(currentPath && currentPath.startsWith('/payouts') ? 'active' : ''))
+          svg: use(href="#icon-dashboard")
+          span Payouts
+        p.nav-section Actions
+        a.nav-item(href="/customers/new")
+          svg: use(href="#icon-dashboard")
+          span Add Customer
+    
+    .sidebar-overlay
+    //- Main Content
+    main.content
+      .container#dashboardMain
+        .money-dashboard
+          block hero
+          block content
+    
+    //- Footer
+    footer.footer
+      .container
+        .flex.items-center.justify-between(class="h-[var(--footer-height)]")
+          p.text-sm © 2025 CashlyPay. All rights reserved.
+          .flex.gap-md
+            a.text-sm(href="#") Terms
+            a.text-sm(href="#") Privacy
+            a.text-sm(href="#") Support
+    block commandDrawer
+      +commandDrawer({ currentPath })

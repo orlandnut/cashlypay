@@ -1,0 +1,385 @@
+//- Copyright 2020 Square Inc.
+ 
+//- Licensed under the Apache License, Version 2.0 (the "License");
+//- you may not use this file except in compliance with the License.
+//- You may obtain a copy of the License at
+ 
+//-     http://www.apache.org/licenses/LICENSE-2.0
+ 
+//- Unless required by applicable law or agreed to in writing, software
+//- distributed under the License is distributed on an "AS IS" BASIS,
+//- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//- See the License for the specific language governing permissions and
+//- limitations under the License. 
+
+extends layout
+
+block hero
+  +darkHero({
+    title: `Command Center for ${customer.givenName} ${customer.familyName}`,
+    subtitle: "End-to-end view of invoices, subscriptions, reminders, and payment posture.",
+    actions: [
+      { type: "primary", label: "Create Estimate", href: `/estimate/new/${locationId}/${customer.id}` },
+      { type: "secondary", label: "Launch Subscription", href: `/subscription/new/${locationId}/${customer.id}` },
+      { type: "secondary", label: "View Analytics", href: "/analytics" }
+    ]
+  })
+
+
+block content
+  - const totalInvoices = invoices ? invoices.length : 0
+  - const draftInvoices = invoices ? invoices.filter((inv) => inv.status === 'DRAFT').length : 0
+  - const overdueInvoices = invoices ? invoices.filter((inv) => inv.status === 'OVERDUE').length : 0
+  - const totalEstimates = estimates ? estimates.length : 0
+  - const totalSubscriptions = subscriptions ? subscriptions.length : 0
+  .dashboard
+    section.customer-hero
+      .customer-hero__layout
+        .customer-hero__copy
+          span.customer-hero__eyebrow CashlyPay Customer Hub
+          h1.customer-hero__title Command Center for #{customer.givenName}
+          p.customer-hero__subtitle End-to-end view of invoices, subscriptions, reminders, and payment posture.
+          .customer-hero__actions
+            a.action-pill(href=`/estimate/new/${locationId}/${customer.id}`)
+              span Create Estimate
+            a.action-pill(href=`/subscription/new/${locationId}/${customer.id}`)
+              span Launch Subscription
+            a.action-pill(href="/analytics")
+              span View Analytics
+        .customer-hero__meta
+          span.status-chip(class=customer.cards && customer.cards.length ? 'status-chip--success' : 'status-chip--warning')
+            span.dot
+            span.label #{customer.cards && customer.cards.length ? 'Card on file' : 'Manual payment'}
+          span.status-chip(class=overdueInvoices ? 'status-chip--warning' : 'status-chip--success')
+            span.dot
+            span.label #{overdueInvoices} Overdue invoices
+      .customer-hero__metrics
+        .metric-card
+          span.metric-label Invoices
+          span.metric-value #{totalInvoices}
+          span.metric-trend #{draftInvoices} draft · #{overdueInvoices} overdue
+        .metric-card
+          span.metric-label Estimates
+          span.metric-value #{totalEstimates}
+          span.metric-trend Ready to convert
+        .metric-card
+          span.metric-label Subscriptions
+          span.metric-value #{totalSubscriptions}
+          span.metric-trend Recurring revenue
+        .metric-card
+          span.metric-label Payment Profile
+          if customer.cards && customer.cards.length
+            span.metric-value Card on file
+            span.metric-trend #{customer.cards[0].cardBrand} •••• #{customer.cards[0].last4}
+          else
+            span.metric-value Manual
+            span.metric-trend Add payment method
+
+    //- Customer Info
+    .panel.customer-card.mb-xl
+      .customer-header
+        div
+          h2.customer-name #{customer.givenName} #{customer.familyName}
+          if customer.emailAddress
+            p.customer-meta
+              svg.icon(width="16" height="16" viewBox="0 0 16 16")
+                path(d="M1.5 3.5v9a1 1 0 001 1h11a1 1 0 001-1v-9a1 1 0 00-1-1h-11a1 1 0 00-1 1zm1 .5l5.5 4 5.5-4m-11 8v-7l5.5 4 5.5-4v7h-11z" stroke="currentColor")
+              span #{customer.emailAddress}
+    
+    //- Estimate actions
+    section.section.panel
+      .section-header
+        h3.section-title Estimates
+        a.button.button-primary(href=`/estimate/new/${locationId}/${customer.id}`)
+          svg.icon(viewBox="0 0 20 20")
+            path(d="M10 5v10m5-5H5" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          span New Estimate
+      if estimates && estimates.length
+        .estimate-list
+          each estimate in estimates
+            .estimate-card
+              .estimate-card__header
+                h4 #{estimate.serviceName}
+                span.badge(class=estimate.status === 'converted' ? 'badge-success' : 'badge-warning') #{estimate.status}
+              .estimate-card__body
+                p.text-secondary Total: $#{(estimate.totalAmount / 100).toFixed(2)} #{estimate.currency}
+                if estimate.depositPercentage
+                  p.text-sm Deposit #{estimate.depositPercentage}% ($#{(estimate.depositAmount/100).toFixed(2)})
+                if estimate.discountPercent
+                  p.text-sm Discount #{estimate.discountPercent}%
+                if estimate.taxPercent
+                  p.text-sm Tax #{estimate.taxPercent}%
+                if estimate.notes
+                  p.text-sm #{estimate.notes}
+                if estimate.poNumber
+                  p.text-sm PO #: #{estimate.poNumber}
+                if estimate.customNotes
+                  p.text-sm Customer notes: #{estimate.customNotes}
+                if estimate.attachments && estimate.attachments.length
+                  ul.text-sm
+                    each attachment in estimate.attachments
+                      li
+                        a(href=attachment.url target="_blank" rel="noopener") #{attachment.name}
+              .estimate-card__actions
+                if estimate.status !== 'converted'
+                  form(action='/invoice/convert-estimate' method='post')
+                    input(type='hidden' name='estimateId' value=estimate.id)
+                    input(type='hidden' name='locationId' value=locationId)
+                    input(type='hidden' name='customerId' value=customer.id)
+                    input(type='hidden' name='idempotencyKey' value=idempotencyKey + `_estimate_${estimate.id}`)
+                    button.button.button-primary(type='submit') Convert to Invoice
+                else if estimate.invoiceId
+                  a.button.button-secondary(href=`/invoice/view/${locationId}/${customer.id}/${estimate.invoiceId}`) View Invoice
+      else
+        .empty-state
+          svg.empty-state__icon(viewBox="0 0 24 24" width="48" height="48")
+            path(d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          h3.empty-state__title No Estimates
+          p.empty-state__message Build a scoped estimate before sending an invoice.
+
+    //- Subscriptions Section
+    section.section.panel
+      .section-header
+        h3.section-title Subscriptions
+        a.button.button-primary(href=`/subscription/new/${locationId}/${customer.id}`)
+          svg.icon(viewBox="0 0 20 20")
+            path(d="M10 5v10m5-5H5" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          span New Subscription
+      if subscriptions && subscriptions.length
+        p.text-secondary.text-sm.mb-sm Active plans: #{subscriptions.length}
+        .subscription-grid
+          each sub in subscriptions
+            .subscription-card
+              .subscription-card__header
+                h4 #{sub.serviceName} (#{sub.frequency.toLowerCase()})
+                span.badge.badge-info #{sub.status}
+              .subscription-card__body
+                p.text-secondary Amount: $#{(sub.amount/100).toFixed(2)} #{sub.currency}
+                p.text-sm Starts #{sub.startDate}
+                p.text-sm Payment method: #{sub.paymentMethod.replace('_', ' ')}
+                p.text-sm Accepted:
+                  if sub.allowCard
+                    span.badge.badge-success Card
+                  if sub.allowBank
+                    span.badge.badge-info Bank
+                  if sub.allowGiftCard
+                    span.badge.badge-neutral Gift
+                if sub.usageNotes
+                  p.text-sm #{sub.usageNotes}
+              .subscription-card__actions
+                if sub.invoiceId
+                  a.button.button-secondary(href=`/invoice/view/${locationId}/${customer.id}/${sub.invoiceId}`) View invoice
+      else
+        .empty-state
+          svg.empty-state__icon(viewBox="0 0 24 24" width="48" height="48")
+            path(d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          h3.empty-state__title No Subscriptions
+          p.empty-state__message Set up a recurring plan with flexible payment methods.
+
+    //- Services Section
+    section.section.panel
+      .section-header
+        h3.section-title Available Services
+        a.button.button-ghost(href="/catalog")
+          span Manage Catalog
+        form.service-filters(method="get" action=`/management/${locationId}/${customer.id}`)
+          input(type="hidden" name="invoiceSearch" value=invoiceFilters.search)
+          input(type="hidden" name="invoiceStatus" value=invoiceFilters.status.toLowerCase())
+          label.sr-only(for="service-search") Search services
+          input#service-search.search-input(type="text" name="q" placeholder="Search services..." value=serviceFilters.q)
+          
+          select.select-filter(name="category" onchange="this.form.submit()")
+            each cat in serviceFilters.categories
+              option(value=cat selected=serviceFilters.category === cat)= cat.charAt(0).toUpperCase() + cat.slice(1)
+          
+          button.button.button-secondary.button-sm(type="submit")
+            svg.icon(viewBox="0 0 20 20")
+              path(d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" fill="currentColor")
+            span Search
+
+      if serviceItems && serviceItems.length
+        p.text-secondary.text-sm.mb-sm Showing #{serviceItems.length} of #{serviceFilters.totalConfigured} services
+
+      if serviceItems && serviceItems.length
+        .service-grid
+          each item, index in serviceItems
+            .service-card
+              .service-card__content
+                .service-card__header
+                  .service-card__title-block
+                    span.service-card__eyebrow Service
+                    h4.service-card__title #{item.name}
+                  span.service-card__price $#{(item.priceAmount/100).toFixed(2)} #{(item.currency || defaultCurrency)}
+                if item.description
+                  p.service-card__description #{item.description}
+                if item.breakdown && item.breakdown.length
+                  ul.service-card__breakdown
+                    each line in item.breakdown
+                      li
+                        span.line-label #{line.label}
+                        span.line-meta #{line.type} · $#{(line.amount/100).toFixed(2)}
+                .service-card__chips
+                  if item.paymentMethods && item.paymentMethods.card !== false
+                    span.chip Card
+                  if item.paymentMethods && item.paymentMethods.bankAccount
+                    span.chip ACH
+                  if item.paymentMethods && item.paymentMethods.squareGiftCard
+                    span.chip Gift card
+                  if item.paymentMethods && item.paymentMethods.cashAppPay
+                    span.chip Cash App
+                  if item.category
+                    span.chip #{item.category}
+                  span.chip #{item.currency || defaultCurrency}
+                if item.paymentMethods && item.paymentMethods.card === false
+                  p.service-card__note Card collection disabled for this service.
+              
+              form.service-card__action(id=`create-invoice-${index}` action='/invoice/create' method='post')
+                input(type='hidden' name='locationId' value=locationId)
+                input(type='hidden' name='idempotencyKey' value=idempotencyKey + `_${index}`)
+                input(type='hidden' name='customerId' value=customer.id)
+                input(type='hidden' name='name' value=item.name)
+                input(type='hidden' name='priceAmount' value=item.priceAmount)
+                input(type='hidden' name='currency' value=item.currency || defaultCurrency)
+                .service-card__payment-grid
+                  .toggle-card
+                    span.toggle-card__label Payment methods
+                    .toggle-card__choices
+                      label.toggle-option
+                        input(type='checkbox' name='allowCard' value='true' checked=!(item.paymentMethods && item.paymentMethods.card === false))
+                        span.toggle-option__control
+                          span.icon-card
+                          span.toggle-option__text
+                            strong Card / Digital Wallet
+                            span charges instantly
+                      label.toggle-option
+                        input(type='checkbox' name='allowBank' value='true' checked=item.paymentMethods && item.paymentMethods.bankAccount)
+                        span.toggle-option__control
+                          span.icon-bank
+                          span.toggle-option__text
+                            strong Bank transfer
+                            span ACH or wire
+                      label.toggle-option
+                        input(type='checkbox' name='allowGiftCard' value='true' checked=item.paymentMethods && item.paymentMethods.squareGiftCard)
+                        span.toggle-option__control
+                          span.icon-gift
+                          span.toggle-option__text
+                            strong Gift card
+                            span Square gift cards
+                      label.toggle-option
+                        input(type='checkbox' name='allowCashApp' value='true' checked=item.paymentMethods && item.paymentMethods.cashAppPay)
+                        span.toggle-option__control
+                          span.icon-cash-app
+                          span.toggle-option__text
+                            strong Cash App Pay
+                            span Wallet checkout
+                  .toggle-card
+                    span.toggle-card__label Payment source
+                    label.service-card__select
+                      span.payment-label Choose preference
+                      select(name='paymentSource')
+                        option(value='AUTO') Auto detect
+                        option(value='CARD_ON_FILE') Charge card on file
+                        option(value='BANK_ON_FILE') Charge bank
+                        option(value='NONE') Manual payment
+                button.button.button-primary(type="submit")
+                  svg.icon(viewBox="0 0 20 20")
+                    path(d="M4 10h12m-6-6v12" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+                  span Create Invoice
+                div(style="margin-top: 0.5rem;")
+                  a.button.button-secondary(href=`/invoice/milestones/new/${locationId}/${customer.id}?serviceId=${item.id}`)
+                    span Build milestone plan
+      else
+        .empty-state
+          svg.empty-state__icon(viewBox="0 0 24 24" width="48" height="48")
+            path(d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          h3.empty-state__title No Services Available
+          p.empty-state__message This customer has no services configured yet.
+          button.button.button-primary
+            svg.icon(viewBox="0 0 20 20")
+              path(d="M10 5v10m5-5H5" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+            span Add First Service
+
+    //- Invoices Section
+    section.section.panel
+      - const serviceFilterQuery = `q=${encodeURIComponent(serviceFilters.q)}&category=${encodeURIComponent(serviceFilters.category)}`
+      .section-header
+        h3.section-title Recent Invoices
+        form.invoice-filters(method="get" action=`/management/${locationId}/${customer.id}`)
+          input(type="hidden" name="q" value=serviceFilters.q)
+          input(type="hidden" name="category" value=serviceFilters.category)
+          label.sr-only(for="invoice-search") Search invoices
+          input#invoice-search.search-input(type="text" name="invoiceSearch" placeholder="Search invoices by number, title, or recipient..." value=invoiceFilters.search)
+          
+          select.select-filter(name="invoiceStatus" onchange="this.form.submit()")
+            each status in invoiceFilters.statusOptions
+              option(value=status.toLowerCase() selected=invoiceFilters.status === status)= status.replace('_', ' ').toUpperCase()
+          
+          button.button.button-secondary.button-sm(type="submit")
+            svg.icon(viewBox="0 0 20 20")
+              path(d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" fill="currentColor")
+            span Filter
+      
+      if invoices && invoices.length
+        p.text-secondary.text-sm.mb-sm Showing #{invoices.length} of #{invoiceFilters.total} invoices
+      
+      if invoices && invoices.length
+        .invoice-list
+          each invoice in invoices
+            - const primaryRequest = Array.isArray(invoice.paymentRequests) && invoice.paymentRequests.length ? invoice.paymentRequests.find((req) => req.requestType === 'BALANCE') || invoice.paymentRequests[0] : null;
+            - const requestAmount = primaryRequest && (primaryRequest.computedAmountMoney || primaryRequest.total || primaryRequest.amountMoney);
+            - const amountValue = requestAmount && requestAmount.amount ? parseInt(requestAmount.amount, 10) : null;
+            a.invoice-item(href=`/invoice/view/${locationId}/${customer.id}/${invoice.id}`)
+              .invoice-item__left
+                .invoice-item__header
+                  h4.invoice-item__title ##{invoice.invoiceNumber} #{invoice.title || 'Untitled Invoice'}
+                  case invoice.status
+                    when "DRAFT"
+                      span.badge.badge-warning Draft
+                    when "UNPAID"
+                      span.badge.badge-warning Unpaid
+                    when "PAID"
+                      span.badge.badge-success Paid
+                    when "OVERDUE"
+                      span.badge.badge-error Overdue
+                    default
+                      span.badge #{invoice.status}
+
+                .invoice-item__meta
+                  .meta-item
+                    svg.icon(viewBox="0 0 20 20")
+                      path(d="M6 2h8a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v14h8V4H6zm2 2h4m-4 3h4m-4 3h4" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+                    if primaryRequest && primaryRequest.dueDate
+                      span Due #{formatDate(primaryRequest.dueDate)}
+                    else
+                      span No due date
+
+                  if amountValue !== null
+                    .meta-item
+                      svg.icon(viewBox="0 0 20 20")
+                        path(d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.5 10h9M8 7l-3 3 3 3m4-6l3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                      span.amount $#{(amountValue / 100).toFixed(2)}
+              
+              .invoice-item__right
+                button.button.button-icon
+                  svg.icon(viewBox="0 0 20 20")
+                    path(d="M7 3l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+              if milestonePlans && milestonePlans[invoice.id]
+                ul.milestone-plan
+                  each milestone in milestonePlans[invoice.id]
+                    li
+                      span.milestone-label #{milestone.label}
+                      span.milestone-date #{milestone.dueDate ? formatDate(milestone.dueDate) : 'No due date'}
+                      span.milestone-amount $#{(milestone.amount/100).toFixed(2)}
+      else if invoiceFilters.total
+        .empty-state
+          svg.empty-state__icon(viewBox="0 0 24 24" width="48" height="48")
+            path(d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          h3.empty-state__title No Matching Invoices
+          p.empty-state__message Try adjusting the status filter or clearing your search.
+          a.button.button-secondary(href=`/management/${locationId}/${customer.id}?${serviceFilterQuery}`) Clear filters
+      else
+        .empty-state
+          svg.empty-state__icon(viewBox="0 0 24 24" width="48" height="48")
+            path(d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          h3.empty-state__title No Invoices Yet
+          p.empty-state__message Create your first invoice using one of the services above.

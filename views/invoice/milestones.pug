@@ -1,0 +1,158 @@
+extends ../layout
+
+block hero
+  +darkHero({
+    title: "Milestone Invoice Builder",
+    subtitle: "Plan mobilization, progress draws, and retention windows with granular payment rails.",
+    actions: [
+      { type: "secondary", label: "Back to Customer", href: `/management/${location.id}/${customer.id}` }
+    ]
+  })
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.querySelector('[data-milestone-form]');
+      const addRowButton = document.querySelector('[data-add-milestone]');
+      const templateRow = document.querySelector('.milestone-row');
+      const milestonesInput = document.querySelector('[name="milestonesJson"]');
+
+      const cloneRow = () => {
+        if (!templateRow) return null;
+        const clone = templateRow.cloneNode(true);
+        clone.querySelectorAll('input').forEach((input) => {
+          if (input.type === 'checkbox') {
+            input.checked = input.dataset.defaultChecked === 'true';
+          } else if (input.dataset.field === 'amount') {
+            input.value = '';
+          } else {
+            input.value = '';
+          }
+        });
+        clone.querySelectorAll('select').forEach((select) => {
+          select.selectedIndex = 0;
+        });
+        return clone;
+      };
+
+      addRowButton?.addEventListener('click', (event) => {
+        event.preventDefault();
+        const container = document.querySelector('[data-milestone-rows]');
+        const newRow = cloneRow();
+        if (newRow && container) {
+          container.appendChild(newRow);
+        }
+      });
+
+      form?.addEventListener('submit', (event) => {
+        const rows = Array.from(
+          document.querySelectorAll('.milestone-row'),
+        );
+        const payload = rows
+          .map((row) => {
+            const getInput = (selector) => row.querySelector(selector);
+            const labelField = getInput('[data-field="label"]');
+            const amountField = getInput('[data-field="amount"]');
+            const dueDateField = getInput('[data-field="dueDate"]');
+            const currencyField = getInput('[data-field="currency"]');
+            const sourceField = getInput('[data-field="paymentSource"]');
+            const allowCard = getInput('[data-field="allowCard"]');
+            const allowBank = getInput('[data-field="allowBank"]');
+            const allowGift = getInput('[data-field="allowGiftCard"]');
+            const allowCash = getInput('[data-field="allowCashApp"]');
+
+            const amountValue = parseFloat(amountField?.value || '0');
+            return {
+              label: labelField?.value?.trim(),
+              amount: Number.isNaN(amountValue)
+                ? 0
+                : Math.round(amountValue * 100),
+              currency: currencyField?.value || 'USD',
+              dueDate: dueDateField?.value || null,
+              paymentSource: sourceField?.value || 'AUTO',
+              allowCard: allowCard?.checked ?? true,
+              allowBank: allowBank?.checked ?? false,
+              allowGiftCard: allowGift?.checked ?? true,
+              allowCashApp: allowCash?.checked ?? false,
+            };
+          })
+          .filter((milestone) => milestone.label && milestone.amount > 0);
+        milestonesInput.value = JSON.stringify(payload);
+      });
+    });
+
+block content
+  .dashboard
+    section.section.panel
+      p.text-secondary Plan mobilization, progress draws, and retention windows with granular payment rails.
+    section.section.panel
+      form.catalog-form(data-milestone-form method="post" action="/invoice/create-milestones")
+        input(type="hidden" name="customerId" value=customer.id)
+        input(type="hidden" name="locationId" value=location.id)
+        input(type="hidden" name="idempotencyKey" value=idempotencyKey)
+        input(type="hidden" name="serviceName" value=selectedService ? selectedService.name : 'Custom Service')
+        input(type="hidden" name="currency" value=selectedService ? (selectedService.currency || location.currency || 'USD') : (location.currency || 'USD'))
+        input(type="hidden" name="milestonesJson")
+        .form-grid
+          label
+            span.form-label Choose Service
+            - const milestoneSelectBase = `/invoice/milestones/new/${location.id}/${customer.id}?serviceId=`
+            select(name="serviceId" data-url=milestoneSelectBase onchange="window.location=this.dataset.url + this.value")
+              if services && services.length
+                each service in services
+                  option(value=service.id selected=selectedService && selectedService.id === service.id)= service.name
+          label
+            span.form-label Total Amount
+            - const servicePrice = selectedService ? selectedService.priceAmount : 0
+            input(type="text" readonly value=`$${((servicePrice || 0)/100).toFixed(2)} ${(selectedService && selectedService.currency) || location.currency || 'USD'}`)
+          label
+            span.form-label Notes
+            textarea(name="notes" rows="2" placeholder="Reminders, PO numbers, internal context")
+        if selectedService && selectedService.breakdown && selectedService.breakdown.length
+          h4 Service breakdown
+          ul.selected-service-breakdown
+            each line in selectedService.breakdown
+              li
+                span #{line.label}
+                span $#{(line.amount/100).toFixed(2)} #{line.unit || ''}
+        h3 Milestones
+        p.text-secondary Define each stage amount in dollars, due date, and payment preferences.
+        .milestone-rows(data-milestone-rows)
+          each milestone, index in milestonePlan
+            .milestone-row
+              label
+                span.form-label Label
+                input(type="text" data-field="label" value=milestone.label)
+              label
+                span.form-label Amount (#{milestone.currency})
+                input(type="number" step="0.01" min="0" data-field="amount" value=(milestone.amount/100).toFixed(2))
+              label
+                span.form-label Due date
+                input(type="date" data-field="dueDate" value=milestone.dueDate)
+              label
+                span.form-label Currency
+                select(data-field="currency")
+                  option(value=milestone.currency)= milestone.currency
+              label
+                span.form-label Payment source
+                select(data-field="paymentSource")
+                  option(value="AUTO") Auto detect
+                  option(value="CARD_ON_FILE") Card on file
+                  option(value="BANK_ON_FILE") Bank on file
+                  option(value="NONE") Manual
+              .milestone-toggles
+                label.toggle-option
+                  input(type="checkbox" data-field="allowCard" checked data-default-checked="true")
+                  span Card
+                label.toggle-option
+                  input(type="checkbox" data-field="allowBank")
+                  span Bank
+                label.toggle-option
+                  input(type="checkbox" data-field="allowGiftCard" checked data-default-checked="true")
+                  span Gift
+                label.toggle-option
+                  input(type="checkbox" data-field="allowCashApp")
+                  span Cash App
+        button.button.button-secondary(type="button" data-add-milestone="true") Add milestone
+        .form-actions
+          button.button.button-primary(type="submit") Create milestone invoice

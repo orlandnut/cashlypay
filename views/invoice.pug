@@ -1,0 +1,266 @@
+//- Copyright 2020 Square Inc.
+ 
+//- Licensed under the Apache License, Version 2.0 (the "License");
+//- you may not use this file except in compliance with the License.
+//- You may obtain a copy of the License at
+ 
+//-     http://www.apache.org/licenses/LICENSE-2.0
+ 
+//- Unless required by applicable law or agreed to in writing, software
+//- distributed under the License is distributed on an "AS IS" BASIS,
+//- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//- See the License for the specific language governing permissions and
+//- limitations under the License. 
+
+extends layout
+
+- const heroTitle = invoice.title ? invoice.title : `Invoice #${invoice.invoiceNumber}`
+- const heroSubtitle = invoice.status ? invoice.status : 'Invoice'
+- const heroActions = [
+-   { type: "secondary", label: "Customer Overview", href: `/management/${locationId}/${customerId}` }
+- ]
+- if (invoice.publicUrl)
+-   - heroActions.push({ type: "secondary", label: "View Public Link", href: invoice.publicUrl })
+
+block hero
+  +darkHero({
+    title: heroTitle,
+    subtitle: heroSubtitle,
+    actions: heroActions
+  })
+
+
+block content
+  .dashboard
+    //- Main Content Area
+    .main-wrapper
+      .invoice-hero
+        .hero-row
+          .badge-group
+            if invoice.status === "DRAFT"
+                span.status-badge.status-badge--pending Draft
+              else if invoice.status === "PAID"
+                span.status-badge.status-badge--paid Paid
+              else if invoice.status === "OVERDUE"
+                span.status-badge.status-badge--overdue Overdue
+              else
+                span.status-badge #{invoice.status}
+            .hero-actions.flex.gap-sm
+              if invoice.publicUrl
+                a.button.button-secondary(href=invoice.publicUrl target="_blank" rel="noopener")
+                  span View Public Link
+              a.button.button-ghost(href=`/management/${locationId}/${customerId}`) Customer Overview
+          .hero-metrics
+            .metric-card
+              span.metric-label Amount Due
+              span.metric-value $#{(paymentAmount / 100).toFixed(2)}
+              if paymentDueDate
+                span.metric-trend Due #{formatDate(paymentDueDate)}
+              else
+                span.metric-trend Due date pending
+            .metric-card
+              span.metric-label Created
+              span.metric-value #{formatDate(invoice.createdAt || new Date().toISOString())}
+              if invoice.scheduledAt
+                span.metric-trend Scheduled #{formatDate(invoice.scheduledAt)}
+            .metric-card
+              span.metric-label Payment Method
+              span.metric-value #{paymentMethod}
+              if paymentMethod === 'CARD_ON_FILE'
+                span.metric-trend Auto-charge
+              else if paymentMethod === 'BANK_ON_FILE'
+                span.metric-trend Bank debit
+              else
+                span.metric-trend Manual/Email
+      //- Invoice Content
+      .container.animate-fade-in
+        //- Invoice Summary Card
+        .invoice-card.mb-xl
+          .invoice-card__header
+            .invoice-meta
+              .flex.items-center.gap-sm.mb-sm
+                span.badge.badge-subtle Invoice ##{invoice.invoiceNumber}
+                if invoice.scheduledAt
+                  span.badge.badge-info
+                    svg.icon(width="16" height="16")
+                      path(d="M8 1v2M8 13v2M2 8h2m10 0h2M3.5 3.5l1.4 1.4m6.2 6.2l1.4 1.4M3.5 12.5l1.4-1.4m6.2-6.2l1.4-1.4" stroke="currentColor" stroke-linecap="round")
+                    span Scheduled
+              h2.text-2xl.font-bold.mb-sm #{invoice.title ? invoice.title : `Invoice #${invoice.invoiceNumber}`}
+              p.text-lg.text-secondary Created: #{formatDate(invoice.createdAt || new Date().toISOString())}
+            
+            .invoice-actions.flex.gap-sm
+              if invoice.status !== "DRAFT" && invoice.status !== "SCHEDULED"
+                a.button.button-secondary(href=invoice.publicUrl target="_blank" rel="noopener")
+                  svg.icon(viewBox="0 0 24 24")
+                    path(d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                  span View Public Invoice
+          
+          //- Invoice Details Grid
+          .dashboard-stats.mt-xl.animate-slide-up
+            //- Amount Due
+            .stat-card.highlight
+              span.stat-label Amount Due
+              .stat-value.large $#{(paymentAmount / 100).toFixed(2)}
+              if paymentDueDate
+                p.text-secondary Due #{formatDate(paymentDueDate)}
+              else
+                p.text-secondary Due date pending
+            
+            //- Status
+            .stat-card
+              span.stat-label Status
+              .stat-value
+                case invoice.status
+                  when "DRAFT"
+                    span.badge.badge-pending Draft
+                  when "PENDING"
+                    span.badge.badge-warning Pending
+                  when "PUBLISHED"
+                    span.badge.badge-info Published
+                  when "PAID"
+                    span.badge.badge-success Paid
+                  when "OVERDUE"
+                    span.badge.badge-error Overdue
+                  when "CANCELED"
+                    span.badge.badge-neutral Canceled
+                  when "FAILED"
+                    span.badge.badge-error Failed
+                  default
+                    span.badge #{invoice.status}
+              if invoice.status === "PAID"
+                p.text-secondary Paid on #{formatDate(invoice.paidAt)}
+            
+            //- Payment Method
+            .stat-card
+              span.stat-label Payment Method
+              .stat-value
+                case paymentMethod
+                  when "NONE"
+                    span.badge.badge-subtle Manual Payment
+                  when "CARD_ON_FILE"
+                    span.badge.badge-info Card on File
+                  when "BANK_ON_FILE"
+                    span.badge.badge-info Bank Account
+                  default
+                    span.badge.badge-subtle #{paymentMethod}
+              if paymentMethod !== "NONE"
+                p.text-secondary Auto-pay enabled
+        
+        //- Recipient Information
+        .section.mb-xl
+          h3.section-title Recipient Information
+          .card
+            .card-body
+              .recipient-info
+                .flex.items-center.gap-sm.mb-sm
+                  svg.icon(width="20" height="20")
+                    path(d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" fill="currentColor")
+                  h4.recipient-name #{recipientName}
+
+                if recipientEmail
+                  .flex.items-center.gap-sm.text-secondary
+                    svg.icon(width="18" height="18")
+                      path(d="M2.5 4.5v8a1 1 0 001 1h11a1 1 0 001-1v-8a1 1 0 00-1-1h-11a1 1 0 00-1 1zm1 .5l5.5 4 5.5-4m-11 7v-6l5.5 3.5 5.5-3.5v6h-11z" stroke="currentColor")
+                    span #{recipientEmail}
+        
+        //- Line Items
+        .section.mb-xl
+          h3.section-title Invoice Items
+          .data-table
+            .table-responsive
+              table
+                thead
+                  tr
+                    th.text-left Description
+                    th.text-right Quantity
+                    th.text-right Unit Price
+                    th.text-right Total
+                tbody
+                  if invoice.lineItems && invoice.lineItems.length
+                    each item in invoice.lineItems
+                      tr
+                        td.text-left
+                          .flex.flex-col
+                            span.font-medium #{item.name || 'Line item'}
+                            if item.note || item.description
+                              span.text-sm.text-secondary #{item.note || item.description}
+                        td.text-right #{item.quantity || '1'}
+                        td.text-right
+                          - const basePriceMoney = item.basePriceMoney ? parseInt(item.basePriceMoney.amount, 10) : 0;
+                          span $#{(basePriceMoney / 100).toFixed(2)}
+                        td.text-right.font-medium
+                          - const totalMoney = item.grossSalesMoney || item.totalMoney || item.basePriceMoney;
+                          - const totalAmount = totalMoney ? parseInt(totalMoney.amount, 10) : basePriceMoney;
+                          span $#{(totalAmount / 100).toFixed(2)}
+                  else
+                    tr
+                      td(colspan="4").text-center.py-lg
+                        span.text-secondary No items in this invoice
+                tfoot
+                  if paymentAmount
+                    tr.text-lg
+                      td.text-left(colspan="3") Total Amount Due
+                      td.text-right.font-bold $#{(paymentAmount / 100).toFixed(2)}
+
+        //- Activity Feed
+        .section.mb-xl
+          h3.section-title Activity Feed
+          if activities && activities.length
+            ul.activity-feed
+              each event in activities
+                li.activity-feed__item
+                  .activity-feed__meta
+                    span.activity-feed__type #{event.type}
+                    span.activity-feed__time #{formatDate(event.timestamp)}
+                  if event.payload
+                    pre.activity-feed__payload= JSON.stringify(event.payload, null, 2)
+                  else
+                    p No additional details
+          else
+            p.text-secondary No activity yet for this invoice.
+
+        //- Action Buttons
+        .fixed-bottom-bar
+          .container
+            .button-group
+              if invoice.status === "DRAFT"
+                //- Delete Invoice Form
+                form.mb-0(id="delete" action='/invoice/delete' method='post')
+                  input(type='hidden' name='locationId' value=locationId)
+                  input(type='hidden' name="invoiceId" value=invoice.id)
+                  input(type='hidden' name="invoiceVersion" value=invoice.version)
+                  input(type='hidden' name="customerId" value=customerId)
+                  button.button.button-danger(type="submit")
+                    svg.icon(viewBox="0 0 20 20")
+                      path(d="M8.5 4h3a1.5 1.5 0 00-3 0zM5 4h2.25a2.5 2.5 0 015 0H14a1 1 0 010 2h-.727l-.729 11.35a1 1 0 01-1.037.65H7.493a1 1 0 01-1.037-.65L5.727 6H5a1 1 0 110-2zm2.02 2l.667 10h4.625l.667-10H7.02zM8.5 8a.5.5 0 01.5.5v5a.5.5 0 01-1 0v-5a.5.5 0 01.5-.5zm3 0a.5.5 0 01.5.5v5a.5.5 0 01-1 0v-5a.5.5 0 01.5-.5z" fill="currentColor")
+                    span Delete Invoice
+
+                //- Publish Invoice Form
+                form.mb-0(id="publish" action='/invoice/publish' method='post')
+                  input(type='hidden' name='idempotencyKey' value=idempotencyKey)
+                  input(type='hidden' name='locationId' value=locationId)
+                  input(type='hidden' name="invoiceId" value=invoice.id)
+                  input(type='hidden' name="invoiceVersion" value=invoice.version)
+                  input(type='hidden' name="customerId" value=customerId)
+                  button.button.button-primary(type="submit")
+                    svg.icon(viewBox="0 0 20 20")
+                      path(d="M10.219 1.688c.155 0 .306.045.438.125l6.844 4.156c.154.094.28.229.364.395.085.166.135.354.135.552v7.167c0 .198-.05.386-.135.552a1.073 1.073 0 01-.364.396l-6.844 4.156a.933.933 0 01-.438.125.933.933 0 01-.438-.125l-6.844-4.156a1.073 1.073 0 01-.364-.396 1.081 1.081 0 01-.135-.552V6.916c0-.198.05-.386.135-.552.085-.166.21-.301.364-.395l6.844-4.156a.933.933 0 01.438-.125zM10 10.958c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm0-5c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z" fill="currentColor")
+                    span Publish Invoice
+
+              //- Cancel Invoice Form (for non-draft/paid/etc invoices)
+              if invoice.status !== "DRAFT" && invoice.status !== "PAID" && invoice.status !== "REFUNDED" && invoice.status !== "CANCELED" && invoice.status !== "FAILED"
+                form.mb-0(id="cancel" action='/invoice/cancel' method='post')
+                  input(type='hidden' name='locationId' value=locationId)
+                  input(type='hidden' name="invoiceId" value=invoice.id)
+                  input(type='hidden' name="invoiceVersion" value=invoice.version)
+                  input(type='hidden' name="customerId" value=customerId)
+                  button.button.button-danger(type="submit")
+                    svg.icon(viewBox="0 0 20 20")
+                      path(d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fill="currentColor")
+                    span Cancel Invoice
+                if invoice.publicUrl
+                  a.button.button-secondary.compact-action(href=invoice.publicUrl target="_blank" rel="noopener")
+                    span View Public Invoice
+                else
+                  button.button.button-secondary.compact-action(type="button" disabled)
+                    span View Public Invoice

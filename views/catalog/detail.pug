@@ -1,0 +1,175 @@
+extends ../layout
+
+block hero
+  +darkHero({
+    title: service.name,
+    subtitle: service.description,
+    actions: [
+      { type: "secondary", label: "Back to Catalog", href: "/catalog" }
+    ]
+  })
+
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', () => {
+      const addButtons = document.querySelectorAll('[data-add-component]');
+      addButtons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          const container = button.closest('form').querySelector('[data-components]');
+          if (!container) return;
+          const template = container.querySelector('.component-row');
+          if (!template) return;
+          const clone = template.cloneNode(true);
+          clone.querySelectorAll('input').forEach((input) => {
+            input.value = '';
+          });
+          clone.querySelectorAll('select').forEach((select) => {
+            select.selectedIndex = 0;
+          });
+          container.appendChild(clone);
+        });
+      });
+    });
+
+block content
+  .dashboard
+    section.section.panel
+      p.text-secondary= service.description
+      .service-meta
+        span.badge(class=`badge-${service.status === 'active' ? 'success' : 'warning'}`)= service.status
+        span Category: #{service.category || 'Uncategorized'}
+        span Updated: #{service.updatedAt}
+    section.section.panel
+      h2.section-title Published Breakdown
+      - const publishedVersion = service.versions.find((version) => version.status === 'published')
+      if publishedVersion
+        p.text-secondary Version v#{publishedVersion.version} · #{publishedVersion.currency} ${(publishedVersion.basePrice / 100).toFixed(2)}
+        if publishedVersion.components && publishedVersion.components.length
+          ul.component-list
+            each component in publishedVersion.components
+              li
+                strong= component.label
+                span.text-secondary #{component.type} · $#{(component.amount / 100).toFixed(2)}
+                if component.quantity
+                  span.text-secondary × #{component.quantity} #{component.unit || ''}
+        else
+          p.text-secondary No components configured
+      else
+        p.text-secondary No published version yet.
+
+    section.section.panel
+      h2.section-title Versions & Approvals
+      if service.versions && service.versions.length
+        each version in service.versions
+          .version-card
+            header.version-card__header
+              h3 Version v#{version.version}
+              span.badge(
+                class=`badge-${
+                  version.status === 'published'
+                    ? 'success'
+                    : version.status === 'pending_approval'
+                    ? 'warning'
+                    : 'neutral'
+                }`
+              )= version.status
+            p.text-secondary Created by #{version.createdBy || 'ops'} at #{version.createdAt}
+            p.text-secondary Amount: $#{(version.basePrice / 100).toFixed(2)} #{version.currency}
+            if version.components && version.components.length
+              ul.component-list
+                each component in version.components
+                  li
+                    strong= component.label
+                    span.text-secondary #{component.type} · $#{(component.amount / 100).toFixed(2)}
+            if version.status === 'draft'
+              form.inline-form(method="post" action=`/catalog/${service.id}/versions/${version.id}/submit`)
+                input(type="hidden" name="actor" value="ops@cashly")
+                button.button.button-secondary.button-sm(type="submit") Submit for approval
+            else if version.status === 'pending_approval'
+              form.inline-form(method="post" action=`/catalog/${service.id}/versions/${version.id}/approve`)
+                input(type="hidden" name="actor" value="finance@cashly")
+                button.button.button-primary.button-sm(type="submit") Approve & publish
+      else
+        p.text-secondary No versions created yet.
+
+    section.section.panel
+      h2.section-title Create New Version
+      form.catalog-form(method="post" action=`/catalog/${service.id}/versions`)
+        .form-grid
+          label
+            span.form-label Base Price (cents)
+            input(type="number" name="basePrice" min="0" required)
+          label
+            span.form-label Currency
+            input(type="text" name="currency" value="USD")
+          label
+            span.form-label Notes
+            textarea(name="notes" rows="2")
+          label
+            span.form-label Actor
+            input(type="text" name="actor" value="ops@cashlypay")
+        fieldset.toggle-fieldset
+          legend Accepted payments
+          label.toggle-option
+            input(type="checkbox" name="allowCard" checked)
+            span Card / Wallet
+          label.toggle-option
+            input(type="checkbox" name="allowBank")
+            span Bank transfer
+          label.toggle-option
+            input(type="checkbox" name="allowGiftCard" checked)
+            span Gift card
+          label.toggle-option
+            input(type="checkbox" name="allowCashApp")
+            span Cash App Pay
+        label
+          span.form-label Payment preference
+          select(name="paymentSourcePreference")
+            option(value="AUTO") Auto
+            option(value="CARD_ON_FILE") Card on file
+            option(value="BANK_ON_FILE") Bank on file
+            option(value="NONE") Manual
+        .component-grid(data-components)
+          .component-row
+            label
+              span.form-label Label
+              input(type="text" name="componentLabel[]" placeholder="Progress Draw")
+            label
+              span.form-label Type
+              select(name="componentType[]")
+                option(value="LABOR") Labor
+                option(value="MATERIAL") Material
+                option(value="BUNDLE") Bundle
+            label
+              span.form-label Amount (cents)
+              input(type="number" name="componentAmount[]" min="0")
+            label
+              span.form-label Quantity
+              input(type="number" step="0.1" name="componentQuantity[]")
+            label
+              span.form-label Unit
+              input(type="text" name="componentUnit[]")
+            label
+              span.form-label Bundled service
+              select(name="componentLinkedServiceId[]")
+                option(value="") —
+                if services && services.length
+                  each svc in services
+                    option(value=svc.id)= svc.name
+        button.button.button-secondary(type="button" data-add-component="true") Add component
+        button.button.button-primary(type="submit") Save draft version
+
+    section.section.panel
+      h2.section-title Audit History
+      if service.auditLog && service.auditLog.length
+        ul.audit-list
+          each event in service.auditLog
+            li
+              strong #{event.action}
+              span.text-secondary at #{event.createdAt}
+              if event.payload
+                pre= JSON.stringify(event.payload, null, 2)
+      else
+        p.text-secondary No audit events recorded.

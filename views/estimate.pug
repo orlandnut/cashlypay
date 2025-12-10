@@ -1,0 +1,259 @@
+extends layout
+
+block hero
+  +darkHero({
+    title: "Create Estimate",
+    subtitle: "Bundle services, prices, and payment preferences for a proposal.",
+    actions: [
+      { type: "secondary", label: "Back to Customer", href: `/management/${locationId}/${customer.id}` }
+    ]
+  })
+
+
+block content
+  .dashboard
+    section.section.wizard
+      .wizard__steps
+        .wizard-step.active
+          span.step-index 1
+          span.step-label Service & Pricing
+        .wizard-step
+          span.step-index 2
+          span.step-label Payments
+        .wizard-step
+          span.step-index 3
+          span.step-label Attachments & Notes
+
+      form.estimate-form(action="/estimate/create" method="post")
+        input(type="hidden" name="customerId" value=customer.id)
+        input(type="hidden" name="locationId" value=locationId)
+
+        .card
+          h3.card-title Service & Pricing
+          .form-grid
+            label.form-field
+              span.form-label Service
+              select(name="serviceId" required)
+                each item in serviceItems
+                  option(
+                    value=item.id
+                    data-amount=item.priceAmount
+                    data-currency=item.currency || defaultCurrency
+                    data-card=item.paymentMethods && item.paymentMethods.card === false ? 'false' : 'true'
+                    data-bank=item.paymentMethods && item.paymentMethods.bankAccount ? 'true' : 'false'
+                    data-gift=item.paymentMethods && item.paymentMethods.squareGiftCard ? 'true' : 'false'
+                    data-cashapp=item.paymentMethods && item.paymentMethods.cashAppPay ? 'true' : 'false'
+                  )= item.name
+            label.form-field
+              span.form-label Base Amount
+              input(type="number" name="amount" min="100" step="100" value=serviceItems[0] ? serviceItems[0].priceAmount : 10000 required)
+            label.form-field
+              span.form-label Currency
+              input(type="text" name="currency" value=defaultCurrency maxlength="3" required)
+          .form-grid
+            label.form-field
+              span.form-label Discount (%)
+              input(type="number" name="discountPercent" min="0" max="100" step="1" value="0")
+            label.form-field
+              span.form-label Tax (%)
+              input(type="number" name="taxPercent" min="0" max="100" step="0.1" value="0")
+            label.form-field
+              span.form-label Surcharge (in cents)
+              input(type="number" name="surchargeAmount" min="0" step="100" value="0")
+            label.form-field
+              span.form-label Deposit (%)
+              input(type="number" name="depositPercentage" min="0" max="100" step="1" value="0")
+
+        .card
+          h3.card-title Payment Preferences
+          .payment-grid
+            .toggle-card
+              span.toggle-card__label Accepted payment methods
+              .toggle-card__choices
+                label.toggle-option
+                  input(type="checkbox" name="allowCard" checked)
+                  span.toggle-option__control
+                    span.icon-card
+                    span.toggle-option__text
+                      strong Cards & digital wallets
+                      span Customer-facing checkout
+                label.toggle-option
+                  input(type="checkbox" name="allowBank")
+                  span.toggle-option__control
+                    span.icon-bank
+                    span.toggle-option__text
+                      strong Bank transfer
+                      span ACH or wire payment
+                label.toggle-option
+                  input(type="checkbox" name="allowGiftCard" checked)
+                  span.toggle-option__control
+                    span.icon-gift
+                    span.toggle-option__text
+                      strong Square gift card
+                      span Perfect for loyalty
+                label.toggle-option
+                  input(type="checkbox" name="allowCashApp")
+                  span.toggle-option__control
+                    span.icon-cash-app
+                    span.toggle-option__text
+                      strong Cash App Pay
+                      span Social payments
+            .toggle-card
+              span.toggle-card__label Preferred payment source
+              .toggle-card__choices.toggle-card__choices--compact
+                label.toggle-option
+                  input(type="radio" name="paymentSource" value="AUTO" checked)
+                  span.toggle-option__control
+                    span.icon-auto
+                    span.toggle-option__text
+                      strong Auto detect
+                      span Use card/bank when available
+                label.toggle-option
+                  input(type="radio" name="paymentSource" value="CARD_ON_FILE")
+                  span.toggle-option__control
+                    span.icon-lock
+                    span.toggle-option__text
+                      strong Charge card on file
+                      span Ideal for regular retainers
+                label.toggle-option
+                  input(type="radio" name="paymentSource" value="BANK_ON_FILE")
+                  span.toggle-option__control
+                    span.icon-bank
+                    span.toggle-option__text
+                      strong Charge bank on file
+                      span Lower fees via ACH
+                label.toggle-option
+                  input(type="radio" name="paymentSource" value="NONE")
+                  span.toggle-option__control
+                    span.icon-mail
+                    span.toggle-option__text
+                      strong Manual payment
+                      span Send invoice manually
+
+        .card
+          h3.card-title Attachments & Notes
+          .form-grid
+            label.form-field
+              span.form-label Purchase Order #
+              input(type="text" name="poNumber" placeholder="PO-12345")
+            label.form-field
+              span.form-label Custom Notes (visible to customer)
+              textarea(name="customNotes" rows="3")
+          label.form-field
+            span.form-label Internal Notes
+            textarea(name="notes" rows="3" placeholder="Internal notes or scope details...")
+          label.form-field
+            span.form-label Attachments
+            input(type="file" id="attachmentUploader" multiple)
+            input(type="hidden" name="attachments" id="attachmentsData")
+            ul#attachmentList
+
+        .wizard-footer
+          .wizard-summary
+            span Summary updates as you adjust pricing, discounts, and payment preferences.
+          .button-group
+            button.button.button-secondary(type="button" onclick="window.history.back()") Cancel
+            button.button.button-primary(type="submit") Save Estimate
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      const serviceSelect = document.querySelector('select[name="serviceId"]');
+      const amountInput = document.querySelector('input[name="amount"]');
+      const currencyInput = document.querySelector('input[name="currency"]');
+      const cardCheckbox = document.querySelector('input[name="allowCard"]');
+      const bankCheckbox = document.querySelector('input[name="allowBank"]');
+      const giftCheckbox = document.querySelector('input[name="allowGiftCard"]');
+      const cashAppCheckbox = document.querySelector('input[name="allowCashApp"]');
+      const paymentSourceRadios = document.querySelectorAll('input[name="paymentSource"]');
+      const attachmentInput = document.getElementById('attachmentUploader');
+      const attachmentList = document.getElementById('attachmentList');
+      const attachmentsField = document.getElementById('attachmentsData');
+      const attachments = [];
+      if (!serviceSelect || !amountInput) return;
+
+      const applyServiceDefaults = () => {
+        const selected = serviceSelect.options[serviceSelect.selectedIndex];
+        if (!selected) return;
+        const rawAmount = selected.getAttribute('data-amount');
+        if (rawAmount) {
+          amountInput.value = rawAmount;
+        }
+        const currency = selected.getAttribute('data-currency');
+        if (currency && currencyInput) {
+          currencyInput.value = currency;
+        }
+        if (cardCheckbox) {
+          cardCheckbox.checked = selected.getAttribute('data-card') !== 'false';
+        }
+        if (bankCheckbox) {
+          bankCheckbox.checked = selected.getAttribute('data-bank') === 'true';
+        }
+        if (giftCheckbox) {
+          giftCheckbox.checked = selected.getAttribute('data-gift') === 'true';
+        }
+        if (cashAppCheckbox) {
+          const cash = selected.getAttribute('data-cashapp');
+          cashAppCheckbox.checked = cash === 'true';
+        }
+        if (paymentSourceRadios && paymentSourceRadios.length) {
+          paymentSourceRadios.forEach((radio) => {
+            radio.checked = radio.value === 'AUTO';
+          });
+        }
+      };
+
+      serviceSelect.addEventListener('change', function () {
+        applyServiceDefaults();
+      });
+      applyServiceDefaults();
+
+      async function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/uploads', {
+          method: 'POST',
+          body: formData,
+        });
+        if (!response.ok) {
+          throw new Error('Upload failed');
+        }
+        return response.json();
+      }
+
+      function renderAttachments() {
+        attachmentList.innerHTML = '';
+        attachments.forEach((attachment) => {
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = attachment.url;
+          link.textContent = attachment.name;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          li.appendChild(link);
+          attachmentList.appendChild(li);
+        });
+        if (attachmentsField) {
+          attachmentsField.value = JSON.stringify(attachments);
+        }
+      }
+
+      if (attachmentInput) {
+        attachmentInput.addEventListener('change', async (event) => {
+          const files = Array.from(event.target.files || []);
+          for (const file of files) {
+            try {
+              const uploaded = await uploadFile(file);
+              attachments.push({
+                name: uploaded.originalName,
+                url: uploaded.url,
+              });
+            } catch (error) {
+              alert(`Failed to upload ${file.name}`);
+            }
+          }
+          attachmentInput.value = '';
+          renderAttachments();
+        });
+      }
+    });

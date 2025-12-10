@@ -1,0 +1,266 @@
+extends layout
+
+block hero
+  +darkHero({
+    title: "Payout Console",
+    subtitle: "Orchestrate payouts across benefactors, rails, and approvals",
+    actions: [
+      { type: "secondary", label: "Add Beneficiary", href: "#beneficiary-form" },
+      { type: "primary", label: "Cash Out", href: "#payout-form" }
+    ]
+  })
+
+block content
+    section.balance-card
+      .balance-card__top
+        span.balance-label Cash Balance
+        span.balance-meta Pending $#{(pendingAmount / 100).toFixed(2)}
+      h2.balance-value $#{(balance / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+      .balance-card__actions
+        a.ghost-chip(href="#beneficiary-form") Add Beneficiary
+        a.ghost-chip(href="#payout-form") Cash Out
+
+    section.quick-actions
+      .action-card
+        h3 Get bitcoin
+        p Buy BTC instantly for partners.
+        svg(width="24" height="24" viewBox="0 0 24 24" fill="none")
+          circle(cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2")
+      .action-card
+        h3 Buy stocks
+        p Diversify program reserves.
+        svg(width="24" height="24" viewBox="0 0 24 24" fill="none")
+          path(d="M4 16l4-4 4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+
+    section.money-section
+      h2.section-label CashlyPay Services
+      .service-actions
+        .service-card
+          .service-card__icon
+            span ⚡
+          h3 Instant Pay
+          p.text-secondary Send money by $Cashtag instantly.
+          .pill-row
+            button.pill-button(data-modal="instantPay" data-mode="send") Send
+            button.pill-button(data-modal="instantPay" data-mode="request") Request
+        .service-card
+          .service-card__icon
+            span 💳
+          h3 Cash Card
+          p.text-secondary Deploy branded virtual & physical cards.
+          .mock-card
+            span C
+            span.balance $6,320.00
+          .pill-row
+            button.pill-button(type="button") Customize
+            label.switch
+              input(type="checkbox" checked)
+              span.slider
+              span.switch-label Freeze card
+        .service-card
+          .service-card__icon
+            span 🎯
+          h3 Boosts
+          p.text-secondary Activate merchant perks for Cash Card users.
+          .boost-chips
+            span.chip Whole Foods 5%
+            span.chip RideShare 10%
+            span.chip Coffee $1 off
+          button.button.button-secondary(type="button") + Add boost
+        .service-card
+          .service-card__icon
+            span 🏦
+          h3 Direct Deposit
+          p.text-secondary Share routing details with payroll teams.
+          .copy-grid
+            div
+              span.card-eyebrow Routing
+              strong 0260 0959
+            div
+              span.card-eyebrow Account
+              strong 8800 1234
+          button.button.button-ghost(type="button" data-copy="Routing:02600959\nAccount:88001234") Copy details
+        .service-card
+          .service-card__icon
+            span 🛍️
+          h3 Cash App Pay
+          p.text-secondary Accept Cash App Pay online & in-store.
+          span.status-pill.status-pill--success Active
+          button.button.button-primary(type="button") Generate QR
+        .service-card
+          .service-card__icon
+            span 🔒
+          h3 Security Center
+          p.text-secondary Control access and notifications.
+          ul.security-list
+            li
+              label.switch
+                input(type="checkbox" checked)
+                span.slider
+              span PIN required
+            li
+              label.switch
+                input(type="checkbox")
+                span.slider
+              span Touch/Face ID
+            li
+              label.switch
+                input(type="checkbox")
+                span.slider
+              span Freeze all payouts
+    section.money-section.more-ways
+      h2.section-label More ways to move money
+      ul.money-list
+        li
+          span.money-icon
+            svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
+              path(d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          div
+            h3 Paper Money
+            p.text-secondary Deposit at a nearby location.
+          a.chevron(href="#") ›
+        li
+          span.money-icon
+            svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
+              path(d="M6 9v12h12V9m-6 0V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+          div
+            h3 Recurring Deposits
+            p.text-secondary Auto-add from your debit card.
+          a.chevron(href="#") ›
+        li
+          span.money-icon
+            svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
+              path(d="M4 6h16v12H4z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+          div
+            h3 Direct Deposit
+            p.text-secondary Route payroll straight to Cashly.
+          a.chevron(href="#") ›
+
+    section.money-section#beneficiaries
+      h2.section-label Beneficiaries
+      if beneficiaries && beneficiaries.length
+        ul.beneficiary-list
+          each beneficiary in beneficiaries
+            li.beneficiary-card
+              div
+                span.card-eyebrow #{beneficiary.rail}
+                h3 #{beneficiary.displayName}
+                p.text-secondary #{beneficiary.customerId || 'Unmapped customer'}
+              span.badge #{beneficiary.status}
+      else
+        p.text-secondary No beneficiaries configured yet.
+      form.money-form(id="beneficiary-form" action="/payouts/beneficiaries" method="post")
+        h3.form-title Add Beneficiary
+        label
+          span.form-label Display name
+          input(type="text" name="displayName" required)
+        label
+          span.form-label Customer ID (optional)
+          input(type="text" name="customerId")
+        label
+          span.form-label Rail
+          select(name="rail")
+            option(value="ACH") ACH
+            option(value="WIRE") Wire
+            option(value="CASH_APP") Cash App
+            option(value="WALLET") Wallet
+        label
+          span.form-label Details (JSON)
+          textarea(name="details" rows="3" placeholder='{"account":"1234"}')
+        button.button.button-primary(type="submit") Save beneficiary
+
+    section.money-section#payouts
+      h2.section-label Recent Payouts
+      if payouts && payouts.length
+        ul.payout-list
+          each payout in payouts
+            li.payout-card
+              div
+                span.card-eyebrow #{payout.rail}
+                h3 $#{(payout.amount/100).toFixed(2)} #{payout.currency}
+                p.text-secondary ##{payout.beneficiaryId.slice(0, 6)} · #{payout.providerReference || 'processing'}
+              span.badge(class=`badge--${payout.status}`)= payout.status
+      else
+        p.text-secondary No payouts yet.
+      form.money-form(id="payout-form" action="/payouts" method="post")
+        h3.form-title Initiate payout
+        label
+          span.form-label Beneficiary ID
+          input(type="text" name="beneficiaryId" required)
+        label
+          span.form-label Amount (cents)
+          input(type="number" name="amount" min="100" step="100" required)
+        label
+          span.form-label Currency
+          input(type="text" name="currency" value="USD" maxlength="3" required)
+        label
+          span.form-label Preferred rail (optional)
+          select(name="preferredRail")
+            option(value="") Default
+            option(value="ACH") ACH
+            option(value="WIRE") Wire
+            option(value="CASH_APP") Cash App
+            option(value="WALLET") Wallet
+        label
+          span.form-label Idempotency key (optional)
+          input(type="text" name="idempotencyKey" placeholder="auto-generated if empty")
+        label
+          span.form-label Metadata (JSON)
+          textarea(name="metadata" rows="2" placeholder='{"memo":"Bonus"}')
+        button.button.button-secondary(type="submit") Cash Out
+
+    #instantPayModal.money-modal(hidden)
+      .money-modal__content
+        h3.modal-title Instant Pay
+        form.money-form(action="/payouts" method="post")
+          input(type="hidden" name="mode" value="")
+          label
+            span.form-label Cashtag / Email
+            input(type="text" name="cashtag" required placeholder="$cashly or email")
+          label
+            span.form-label Amount (cents)
+            input(type="number" name="amount" min="100" step="100" required)
+          label
+            span.form-label Beneficiary ID
+            input(type="text" name="beneficiaryId" placeholder="Optional if using $Cashtag")
+          label
+            span.form-label Currency
+            input(type="text" name="currency" value="USD" maxlength="3")
+          button.button.button-primary(type="submit") Continue
+        button.money-modal__close(type="button") Close
+
+block append scripts
+  script.
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('instantPayModal');
+      const modeInput = modal?.querySelector('input[name="mode"]');
+      document.querySelectorAll('[data-modal="instantPay"]').forEach((btn) => {
+        btn.addEventListener('click', (event) => {
+          event.preventDefault();
+          if (modeInput) modeInput.value = btn.dataset.mode || '';
+          modal?.removeAttribute('hidden');
+        });
+      });
+      modal?.querySelector('.money-modal__close')?.addEventListener('click', () => {
+        modal.setAttribute('hidden', '');
+      });
+      modal?.addEventListener('click', (event) => {
+        if (event.target === modal) {
+          modal.setAttribute('hidden', '');
+        }
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          modal?.setAttribute('hidden', '');
+        }
+      });
+      document.querySelectorAll('[data-copy]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          navigator.clipboard.writeText(btn.dataset.copy || '');
+          btn.textContent = 'Copied!';
+          setTimeout(() => {
+            btn.textContent = 'Copy details';
+          }, 1500);
+        });
+      });
+    });

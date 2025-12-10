@@ -1,0 +1,116 @@
+extends ../layout
+
+block hero
+  +darkHero({
+    title: "New Service Bundle",
+    subtitle: "Model components, rails, and approvals for multi-stage offerings.",
+    actions: [
+      { type: "secondary", label: "Catalog", href: "/catalog" }
+    ]
+  })
+
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', () => {
+      const addButton = document.querySelector('[data-add-component]');
+      const container = document.querySelector('[data-components]');
+      if (!addButton || !container) return;
+      addButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        const template = container.querySelector('.component-row');
+        if (!template) return;
+        const clone = template.cloneNode(true);
+        clone.querySelectorAll('input').forEach((input) => {
+          input.value = '';
+        });
+        clone.querySelectorAll('select').forEach((select) => {
+          select.selectedIndex = 0;
+        });
+        container.appendChild(clone);
+      });
+    });
+
+block content
+  .dashboard
+    section.section.panel
+      - const formData = form || {}
+      if errors && errors.length
+        ul.error-list
+          each error in errors
+            li= error
+      form.catalog-form(action="/catalog" method="post")
+        .form-grid
+          label
+            span.form-label Name
+            input(type="text" name="name" required value=formData.name || '')
+          label
+            span.form-label Category
+            input(type="text" name="category" value=formData.category || '')
+          label
+            span.form-label Base Price (in cents)
+            input(type="number" name="basePrice" min="0" required value=formData.basePrice || '')
+          label
+            span.form-label Currency
+            input(type="text" name="currency" value=formData.currency || 'USD')
+          label
+            span.form-label Description
+            textarea(name="description" rows="3")= formData.description || ''
+          label
+            span.form-label Owner / Actor
+            input(type="text" name="actor" value=formData.actor || 'ops@cashlypay')
+        fieldset.toggle-fieldset
+          legend Accepted payment rails
+          label.toggle-option
+            input(type="checkbox" name="allowCard" checked=formData.allowCard !== false)
+            span Card / Wallet
+          label.toggle-option
+            input(type="checkbox" name="allowBank" checked=formData.allowBank)
+            span Bank transfer
+          label.toggle-option
+            input(type="checkbox" name="allowGiftCard" checked=formData.allowGiftCard !== false)
+            span Square gift card
+          label.toggle-option
+            input(type="checkbox" name="allowCashApp" checked=formData.allowCashApp)
+            span Cash App Pay
+        label
+          span.form-label Payment preference
+          select(name="paymentSourcePreference")
+            option(value="AUTO") Auto
+            option(value="CARD_ON_FILE") Card on file
+            option(value="BANK_ON_FILE") Bank on file
+            option(value="NONE") Manual
+        label
+          span.form-label Notes
+          textarea(name="notes" rows="2")= formData.notes || ''
+        h3 Components & bundles
+        p.text-secondary Define labor, material, or bundled services.
+        .component-grid(data-components)
+          .component-row
+            label
+              span.form-label Label
+              input(type="text" name="componentLabel[]" placeholder="Mobilization crew")
+            label
+              span.form-label Type
+              select(name="componentType[]")
+                option(value="LABOR") Labor
+                option(value="MATERIAL") Material
+                option(value="BUNDLE") Bundle
+            label
+              span.form-label Amount (cents)
+              input(type="number" name="componentAmount[]" min="0" placeholder="12500")
+            label
+              span.form-label Quantity
+              input(type="number" step="0.1" name="componentQuantity[]" placeholder="1")
+            label
+              span.form-label Unit
+              input(type="text" name="componentUnit[]" placeholder="crew")
+            label
+              span.form-label Bundled service
+              select(name="componentLinkedServiceId[]")
+                option(value="") —
+                if services && services.length
+                  each svc in services
+                    option(value=svc.id)= svc.name
+        button.button.button-secondary(type="button" data-add-component="true") Add another component
+        button.button.button-primary(type="submit") Save & Publish

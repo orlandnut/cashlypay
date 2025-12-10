@@ -1,0 +1,64 @@
+extends layout
+
+block hero
+  +darkHero({
+    title: "Add New Customer",
+    subtitle: "Collect contact, company, and billing details to start onboarding.",
+    actions: [
+      { type: "secondary", label: "Back to Customers", href: "/" }
+    ]
+  })
+
+
+block content
+  .dashboard
+    section.section
+      form.customer-form(action="/customers" method="post")
+        .form-grid
+          label.form-field
+            span.form-label First Name *
+            input(type="text" name="givenName" required placeholder="Jane")
+          label.form-field
+            span.form-label Last Name
+            input(type="text" name="familyName" placeholder="Doe")
+          label.form-field
+            span.form-label Company
+            input(type="text" name="companyName" placeholder="Acme Roofing")
+
+        .form-grid
+          label.form-field
+            span.form-label Email
+            input(type="email" name="emailAddress" placeholder="jane@example.com")
+          label.form-field
+            span.form-label Phone
+            input(type="tel" name="phoneNumber" placeholder="+1 555 123 4567")
+          label.form-field
+            span.form-label Country
+            input(type="text" name="country" maxlength="2" value="US")
+
+        .form-grid
+          label.form-field
+            span.form-label Address Line 1
+            input(type="text" name="addressLine1" placeholder="123 Main Street")
+          label.form-field
+            span.form-label Address Line 2
+            input(type="text" name="addressLine2" placeholder="Suite 200")
+          label.form-field
+            span.form-label City
+            input(type="text" name="locality" placeholder="San Francisco")
+
+        .form-grid
+          label.form-field
+            span.form-label State/Province
+            input(type="text" name="administrativeDistrictLevel1" placeholder="CA")
+          label.form-field
+            span.form-label Postal Code
+            input(type="text" name="postalCode" placeholder="94103")
+
+        label.form-field
+          span.form-label Notes
+          textarea(name="note" rows="3" placeholder="Internal notes or onboarding context...")
+
+        .button-group.mt-lg
+          button.button.button-secondary(type="button" onclick="window.history.back()") Cancel
+          button.button.button-primary(type="submit") Create Customer

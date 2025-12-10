@@ -1,0 +1,216 @@
+/* Cash App Brand Integration */
+
+:root {
+  /* Primary Colors */
+  --cash-green: #00d54b;
+  --cash-black: #000000;
+  --cash-white: #ffffff;
+
+  /* Secondary Colors */
+  --cash-gray-dark: #2d2d2d;
+  --cash-gray-medium: #666666;
+  --cash-gray-light: #e8e8e8;
+
+  /* Accent Colors */
+  --cash-success: #00d54b;
+  --cash-error: #ff0000;
+  --cash-warning: #ffb800;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Typography */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 32px;
+}
+
+/* Base Styles */
+body {
+  font-family:
+    "Cash Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  color: var(--cash-black);
+  background-color: var(--cash-white);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+  margin: 0 0 var(--space-md);
+}
+
+h1 {
+  font-size: var(--font-size-xxl);
+}
+h2 {
+  font-size: var(--font-size-xl);
+}
+h3 {
+  font-size: var(--font-size-lg);
+}
+h4 {
+  font-size: var(--font-size-md);
+}
+
+/* Buttons */
+.button {
+  display: inline-block;
+  padding: var(--space-md) var(--space-xl);
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.button-primary {
+  background-color: var(--cash-black);
+  color: var(--cash-white);
+}
+
+.button-primary:hover {
+  background-color: var(--cash-gray-dark);
+}
+
+.button-secondary {
+  background-color: var(--cash-green);
+  color: var(--cash-black);
+}
+
+.button-secondary:hover {
+  background-color: #00bf43;
+}
+
+/* Forms */
+.form-input {
+  padding: var(--space-md);
+  border: 2px solid var(--cash-gray-light);
+  border-radius: 8px;
+  font-size: var(--font-size-md);
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: var(--cash-green);
+  outline: none;
+}
+
+/* Cards */
+.card {
+  background: var(--cash-white);
+  border-radius: 12px;
+  padding: var(--space-xl);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Tables */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: var(--space-md);
+  border-bottom: 2px solid var(--cash-gray-light);
+  font-weight: bold;
+}
+
+.table td {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--cash-gray-light);
+}
+
+/* Alerts */
+.alert {
+  padding: var(--space-md);
+  border-radius: 8px;
+  margin-bottom: var(--space-md);
+}
+
+.alert-success {
+  background-color: var(--cash-success);
+  color: var(--cash-white);
+}
+
+.alert-error {
+  background-color: var(--cash-error);
+  color: var(--cash-white);
+}
+
+/* Navigation */
+.nav {
+  background: var(--cash-black);
+  padding: var(--space-md) var(--space-xl);
+}
+
+.nav-link {
+  color: var(--cash-white);
+  text-decoration: none;
+  padding: var(--space-sm) var(--space-md);
+}
+
+.nav-link:hover {
+  color: var(--cash-green);
+}
+
+/* Logo */
+.logo {
+  font-size: var(--font-size-xl);
+  font-weight: bold;
+  color: var(--cash-green);
+}
+
+/* Utilities */
+.text-success {
+  color: var(--cash-success);
+}
+.text-error {
+  color: var(--cash-error);
+}
+.text-warning {
+  color: var(--cash-warning);
+}
+
+.bg-success {
+  background-color: var(--cash-success);
+}
+.bg-error {
+  background-color: var(--cash-error);
+}
+.bg-warning {
+  background-color: var(--cash-warning);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    --space-xl: 24px;
+    --font-size-xxl: 28px;
+    --font-size-xl: 22px;
+  }
+
+  .card {
+    padding: var(--space-lg);
+  }
+}

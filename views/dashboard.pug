@@ -1,0 +1,122 @@
+extends layout
+
+block content
+  .dashboard-layout
+    .sidebar
+      .nav-brand
+        img.brand-logo(src="/images/logo.svg" alt="Cashly")
+        h1.brand-name CashlyPay
+      
+      nav.nav-main
+        a.nav-item.active(href="/dashboard")
+          .nav-icon
+            svg(width="24" height="24" viewBox="0 0 24 24" fill="none")
+              path(d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor")
+          span Dashboard
+        
+        a.nav-item(href="/transactions")
+          .nav-icon
+            svg(width="24" height="24" viewBox="0 0 24 24" fill="none")
+              path(d="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z" fill="currentColor")
+          span Transactions
+        
+        a.nav-item(href="/analytics")
+          .nav-icon
+            svg(width="24" height="24" viewBox="0 0 24 24" fill="none")
+              path(d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor")
+          span Analytics
+        
+        a.nav-item(href="/settings")
+          .nav-icon
+            svg(width="24" height="24" viewBox="0 0 24 24" fill="none")
+              path(d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.63-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="currentColor")
+          span Settings
+
+    .main-content
+      .dashboard-header
+        h2.page-title Welcome back
+        .nav-search
+          input.search-input(type="search" placeholder="Search transactions...")
+          svg.search-icon(width="20" height="20" viewBox="0 0 20 20" fill="none")
+            path(d="M9 17A8 8 0 109 1a8 8 0 000 16zM19 19l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+
+      .grid-auto-fit
+        .card.stats-card
+          .stats-header
+            h3.stats-title Total Balance
+            .stats-change.positive +2.4%
+          .stats-value $24,567.89
+          canvas.stats-chart#balanceChart
+
+        .card.stats-card
+          .stats-header
+            h3.stats-title Monthly Revenue
+            .stats-change.positive +5.7%
+          .stats-value $12,345.67
+          canvas.stats-chart#revenueChart
+
+        .card.stats-card
+          .stats-header
+            h3.stats-title Active Invoices
+            .stats-change.negative -1.2%
+          .stats-value 28
+          canvas.stats-chart#invoicesChart
+
+      .grid-col-2
+        .card.chart-card
+          .chart-header
+            h3 Cash Flow
+            .chart-controls
+              button.button.button-ghost.button-sm Last 7 Days
+              button.button.button-ghost.button-sm Last 30 Days
+              button.button.button-ghost.button-sm.active All Time
+          canvas#cashFlowChart
+          .chart-legend
+            .legend-item
+              .legend-color(style="background: var(--theme-accent)")
+              span Income
+            .legend-item
+              .legend-color(style="background: rgba(255,59,48,0.5)")
+              span Expenses
+
+        .card
+          h3.card-title Recent Transactions
+          .transaction-list
+            .transaction-card
+              .transaction-icon 📥
+              .transaction-details
+                .transaction-title Payment Received
+                .transaction-date Oct 15, 2025
+              .transaction-amount.positive +$1,234.56
+            
+            .transaction-card
+              .transaction-icon 📤
+              .transaction-details
+                .transaction-title Invoice Payment
+                .transaction-date Oct 14, 2025
+              .transaction-amount.negative -$567.89
+            
+            .transaction-card
+              .transaction-icon 💳
+              .transaction-details
+                .transaction-title Subscription
+                .transaction-date Oct 13, 2025
+              .transaction-amount.negative -$29.99
+
+      .section-elevated
+        h3 Quick Actions
+        .grid-auto-fit
+          button.button.button-primary.button-icon
+            svg(width="24" height="24" viewBox="0 0 24 24" fill="none")
+              path(d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor")
+            span New Invoice
+          
+          button.button.button-secondary.button-icon
+            svg(width="24" height="24" viewBox="0 0 24 24" fill="none")
+              path(d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" fill="currentColor")
+            span Send Payment
+          
+          button.button.button-ghost.button-icon
+            svg(width="24" height="24" viewBox="0 0 24 24" fill="none")
+              path(d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2V9h-2V7h4v10z" fill="currentColor")
+            span Generate Report

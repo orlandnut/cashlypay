@@ -1,0 +1,46 @@
+extends ../layout
+
+block hero
+  +darkHero({
+    title: "Service Catalog",
+    subtitle: "Configure bundles, approvals, and pricing audit trails.",
+    actions: [
+      { type: "primary", label: "New Service", href: "/catalog/new" },
+      { type: "secondary", label: "Dashboard", href: "/" }
+    ]
+  })
+
+
+block content
+  .dashboard
+    section.section.panel
+      if catalog && catalog.length
+        table.catalog-table
+          thead
+            tr
+              th Name
+              th Category
+              th Status
+              th Published version
+              th Updated
+              th Actions
+          tbody
+            each item in catalog
+              tr
+                td
+                  strong= item.name
+                  if item.description
+                    p.text-secondary.text-sm= item.description
+                td= item.category || '—'
+                td
+                  span.badge(class=`badge-${item.status === 'active' ? 'success' : 'warning'}`)= item.status
+                td= item.publishedVersion ? `v${item.publishedVersion}` : '—'
+                td= item.updatedAt
+                td
+                  a.button.button-secondary.button-sm(href=`/catalog/${item.id}`) View
+      else
+        .empty-state
+          svg.empty-state__icon(viewBox="0 0 24 24" width="48" height="48")
+            path(d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+          h3.empty-state__title No services yet
+          p.empty-state__message Create your first bundle to get started.

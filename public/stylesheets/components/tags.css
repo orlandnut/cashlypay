@@ -1,0 +1,123 @@
+/* Status Tags */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.tag-success {
+  color: #00d54b;
+  background-color: rgba(0, 213, 75, 0.12);
+}
+
+.tag-warning {
+  color: #ff9f0a;
+  background-color: rgba(255, 159, 10, 0.12);
+}
+
+.tag-error {
+  color: #ff453a;
+  background-color: rgba(255, 69, 58, 0.12);
+}
+
+.tag-info {
+  color: #0a84ff;
+  background-color: rgba(10, 132, 255, 0.12);
+}
+
+/* List Items */
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--theme-surface);
+  border-radius: 12px;
+  transition: all 200ms ease;
+}
+
+.list-item:hover {
+  background-color: var(--theme-surface-raised);
+  transform: translateY(-1px);
+}
+
+.list-item__content {
+  flex: 1;
+}
+
+.list-item__title {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.list-item__subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.list-item__right {
+  margin-left: 16px;
+}
+
+/* Brand Elements */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+}
+
+.brand__logo {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.brand__name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+/* Navigation */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 12px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 200ms ease;
+}
+
+.nav-item:hover {
+  color: var(--text-primary);
+  background-color: var(--theme-surface);
+}
+
+.nav-item.active {
+  color: #00d54b;
+  background-color: rgba(0, 213, 75, 0.12);
+}
+
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}

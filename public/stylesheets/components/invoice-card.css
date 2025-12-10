@@ -1,0 +1,161 @@
+/* Invoice Card Styles */
+.invoice-card {
+  background-color: var(--theme-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: all var(--transition-fast) var(--transition-ease);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.invoice-card:hover {
+  background-color: var(--theme-surface-raised);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.invoice-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.invoice-card__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.invoice-card__number {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+}
+
+.invoice-card__amount {
+  font-family: "SF Mono", "Roboto Mono", monospace;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-brand);
+}
+
+.invoice-card__meta {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--theme-divider);
+}
+
+.invoice-card__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.invoice-card__meta-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.invoice-card__meta-value {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.invoice-card__actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+/* Invoice Grid Layout */
+.invoice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+/* Invoice List Layout */
+.invoice-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.invoice-list .invoice-card {
+  flex-direction: row;
+  align-items: center;
+  padding: var(--space-lg);
+}
+
+.invoice-list .invoice-card__content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-badge--paid {
+  background-color: rgba(0, 213, 75, 0.12);
+  color: var(--color-success);
+}
+
+.status-badge--pending {
+  background-color: rgba(255, 159, 10, 0.12);
+  color: var(--color-warning);
+}
+
+.status-badge--overdue {
+  background-color: rgba(255, 69, 58, 0.12);
+  color: var(--color-error);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: var(--space-2xl);
+  background-color: var(--theme-surface);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-2xl);
+}
+
+.empty-state__icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--space-lg);
+  color: var(--text-secondary);
+}
+
+.empty-state__title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.empty-state__description {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}

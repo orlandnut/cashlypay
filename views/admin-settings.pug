@@ -1,0 +1,102 @@
+extends layout
+
+block hero
+  +darkHero({
+    title: "Workspace Settings",
+    subtitle: "Configure data sources, automation cadences, feature flags, and integration health.",
+    actions: [
+      { type: "primary", label: "Run Reminder Queue", href: "/admin/reminders" },
+      { type: "secondary", label: "View Analytics Pulse", href: "/analytics" }
+    ]
+  })
+
+
+block content
+  - const environmentInfo = settings && settings.environment ? settings.environment : null
+  - const statusLabel = environmentInfo && environmentInfo.label ? environmentInfo.label : 'Testing'
+  - const squareEnv = environmentInfo && environmentInfo.squareEnv ? environmentInfo.squareEnv : 'SANDBOX'
+
+  main.dashboard
+    section.highlights
+      .container
+        .card-grid
+          .feature-card
+            h3 Environment
+            if settings && settings.environment
+              p #{settings.environment.label} · #{settings.environment.squareEnv}
+              p.text-secondary Last deployed #{settings.environment.lastDeployed}
+          .feature-card
+            h3 Integrations
+            p.text-secondary Monitor the health of core systems
+            if settings && settings.integrations
+              ul.quick-filter-list
+                each integration in settings.integrations
+                  li
+                    span.status-chip(class=`status-chip--${integration.status === 'connected' ? 'success' : 'warning'}`)
+                      | #{integration.name}
+          .feature-card
+            h3 Reminder Cadence
+            if settings && settings.reminderConfig
+              p.text-secondary #{settings.reminderConfig.cadenceMinutes} min cadence · TZ #{settings.reminderConfig.timezone}
+              p Upcoming #{settings.reminderConfig.upcomingDays}d · Overdue #{settings.reminderConfig.overdueDays}d
+
+    section.section.panel
+      h3.section-title Integrations
+      if settings && settings.integrations
+        ul.integration-list
+          each integration in settings.integrations
+            li.integration-item(class=`integration-item--${integration.status}`)
+              .integration-status
+                span.status-chip(class=`status-chip--${integration.status === 'connected' ? 'success' : 'warning'}`)
+                  span.dot
+                  span.label #{integration.name}
+              if integration.detail
+                span.integration-detail #{integration.detail}
+              if integration.status !== 'connected'
+                a.button.button-ghost.button-sm(href="/admin") Configure in .env
+
+    section.section.panel
+      h3.section-title Reminder Cadence
+      if settings && settings.reminderConfig
+        .cadence-grid
+          .cadence-metrics
+            span.metric-label Upcoming window
+            span.metric-value #{settings.reminderConfig.upcomingDays} days
+            span.metric-trend Upcoming reminders
+          .cadence-metrics
+            span.metric-label Overdue window
+            span.metric-value #{settings.reminderConfig.overdueDays} days
+            span.metric-trend Escalations
+          .cadence-metrics
+            span.metric-label Cadence
+            span.metric-value #{settings.reminderConfig.cadenceMinutes} min
+            span.metric-trend TZ #{settings.reminderConfig.timezone}
+        form.settings-form(action='/admin/reminders/run' method='post')
+          .form-row.form-row--two
+            label.form-field
+              span.form-label Upcoming reminder window (days)
+              input(type='number' name='upcomingDays' value=settings.reminderConfig.upcomingDays min='1')
+            label.form-field
+              span.form-label Overdue reminder window (days)
+              input(type='number' name='overdueDays' value=settings.reminderConfig.overdueDays min='1')
+          .form-row.form-row--two
+            label.form-field
+              span.form-label Cadence (minutes)
+              input(type='number' name='cadenceMinutes' value=settings.reminderConfig.cadenceMinutes min='5')
+            label.form-field
+              span.form-label Timezone
+              input(type='text' name='timezone' value=settings.reminderConfig.timezone)
+          .form-actions.form-actions--stack
+            button.button.button-primary(type='submit') Run Queue with current settings
+            a.button.button-ghost(href='/admin/reminders') View Scheduled Jobs
+
+    section.section.panel
+      h3.section-title Feature Flags
+      if settings && settings.featureFlags
+        .feature-flag-grid
+          each flag in settings.featureFlags
+            .feature-flag-card(class=flag.enabled ? 'feature-flag-card--on' : 'feature-flag-card--off')
+              header.feature-flag-card__header
+                span.feature-flag-card__name #{flag.label}
+                span.feature-flag-card__state #{flag.enabled ? 'Enabled' : 'Disabled'}
+              p.feature-flag-card__description #{flag.description}

@@ -1,0 +1,202 @@
+/* Dark Theme Styles */
+:root {
+  /* Dark Theme Colors */
+  --dark-bg-primary: #000000;
+  --dark-bg-secondary: #0a0a0a;
+  --dark-bg-elevated: #121212;
+  --dark-surface: #1a1a1a;
+
+  /* Gradient Backgrounds */
+  --gradient-dark-primary: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+  --gradient-dark-accent: linear-gradient(
+    135deg,
+    rgba(0, 213, 75, 0.1) 0%,
+    rgba(0, 213, 75, 0.05) 100%
+  );
+  --gradient-dark-surface: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+
+  /* Overlay Effects */
+  --dark-overlay-hover: rgba(255, 255, 255, 0.05);
+  --dark-overlay-active: rgba(255, 255, 255, 0.1);
+
+  /* Glow Effects */
+  --glow-green: 0 0 30px rgba(0, 213, 75, 0.15);
+  --glow-white: 0 0 20px rgba(255, 255, 255, 0.05);
+
+  /* Shadows */
+  --shadow-soft: 0 8px 16px rgba(0, 0, 0, 0.2);
+  --shadow-strong: 0 12px 24px rgba(0, 0, 0, 0.3);
+
+  /* Text Colors */
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+}
+
+/* Dark Theme Base Styles */
+body {
+  background: var(--dark-bg-primary);
+  color: var(--text-primary);
+  background-image:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(0, 213, 75, 0.05) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 0% 100%,
+      rgba(0, 213, 75, 0.05) 0%,
+      transparent 40%
+    );
+  min-height: 100vh;
+}
+
+/* Card and Container Styles */
+.card,
+.container {
+  background: var(--gradient-dark-surface);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.card:hover,
+.container:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-strong);
+}
+
+/* Section Backgrounds */
+.section-elevated {
+  background: var(--dark-bg-elevated);
+  border-radius: 24px;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Feature Grid */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.feature-item {
+  background: var(--gradient-dark-surface);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+  border-color: rgba(0, 213, 75, 0.2);
+  box-shadow: var(--glow-green);
+}
+
+/* Navigation Elements */
+.nav-item {
+  position: relative;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  background: var(--dark-overlay-hover);
+}
+
+.nav-item.active {
+  background: var(--gradient-dark-accent);
+  box-shadow: var(--glow-green);
+}
+
+/* Input Fields */
+.input-field {
+  background: var(--dark-bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: rgba(0, 213, 75, 0.5);
+  box-shadow: var(--glow-green);
+  background: var(--dark-bg-elevated);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dark-surface);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-overlay-active);
+}
+
+/* Loading States and Animations */
+.loading-indicator {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.loading-indicator::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--cash-green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tables */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1rem 0;
+}
+
+.table th,
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+  background: var(--dark-overlay-hover);
+}

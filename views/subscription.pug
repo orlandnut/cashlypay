@@ -1,0 +1,177 @@
+extends layout
+
+block hero
+  +darkHero({
+    title: "Create Recurring Plan",
+    subtitle: `Automate usage-based billing, deposits, and reminders for ${customer.givenName}.`,
+    actions: [
+      { type: "secondary", label: "Back to Customer", href: `/management/${locationId}/${customer.id}` }
+    ]
+  })
+
+
+block content
+  .dashboard
+    section.section.wizard
+      .wizard__steps
+        .wizard-step.active
+          span.step-index 1
+          span.step-label Service & Cadence
+        .wizard-step
+          span.step-index 2
+          span.step-label Payment
+        .wizard-step
+          span.step-index 3
+          span.step-label Notes
+
+      form.subscription-form(action="/subscription/create" method="post")
+        input(type="hidden" name="customerId" value=customer.id)
+        input(type="hidden" name="locationId" value=locationId)
+
+        .card
+          h3.card-title Service & Cadence
+          .form-grid
+            label.form-field
+              span.form-label Service
+              select(name="serviceId" required)
+                each item in serviceItems
+                  option(
+                    value=item.id
+                    data-amount=item.priceAmount
+                    data-currency=item.currency || defaultCurrency
+                    data-card=item.paymentMethods && item.paymentMethods.card === false ? 'false' : 'true'
+                    data-bank=item.paymentMethods && item.paymentMethods.bankAccount ? 'true' : 'false'
+                    data-gift=item.paymentMethods && item.paymentMethods.squareGiftCard ? 'true' : 'false'
+                    data-cashapp=item.paymentMethods && item.paymentMethods.cashAppPay ? 'true' : 'false'
+                  )= item.name
+            label.form-field
+              span.form-label Amount (cents)
+              input(type="number" name="amount" min="100" step="100" value=serviceItems[0] ? serviceItems[0].priceAmount : 10000 required)
+            label.form-field
+              span.form-label Currency
+              input(type="text" name="currency" value=defaultCurrency maxlength="3" required)
+          .form-grid
+            label.form-field
+              span.form-label Frequency
+              select(name="frequency" required)
+                option(value="MONTHLY") Monthly
+                option(value="WEEKLY") Weekly
+            label.form-field
+              span.form-label Start Date
+              input(type="date" name="startDate" required value=new Date().toISOString().split('T')[0])
+            label.form-field
+              span.form-label Occurrences
+              input(type="number" name="occurrences" min="1" max="24" value="6" required)
+
+        .card
+          h3.card-title Payment
+          .payment-grid
+            .toggle-card
+              span.toggle-card__label Payment Method Preference
+              .toggle-card__choices
+                label.toggle-option
+                  input(type="radio" name="paymentMethod" value="CARD_ON_FILE" checked)
+                  span.toggle-option__control
+                    span.icon-lock
+                    span.toggle-option__text
+                      strong Charge card on file
+                      span Small auto-charge convenience
+                label.toggle-option
+                  input(type="radio" name="paymentMethod" value="BANK_ON_FILE")
+                  span.toggle-option__control
+                    span.icon-bank
+                    span.toggle-option__text
+                      strong Charge bank account
+                      span Secure ACH payments
+                label.toggle-option
+                  input(type="radio" name="paymentMethod" value="MANUAL")
+                  span.toggle-option__control
+                    span.icon-mail
+                    span.toggle-option__text
+                      strong Manual payment
+                      span Send invoices by email
+            .toggle-card
+              span.toggle-card__label Accepted payment methods
+              .toggle-card__choices
+                label.toggle-option
+                  input(type="checkbox" name="allowCard" checked)
+                  span.toggle-option__control
+                    span.icon-card
+                    span.toggle-option__text
+                      strong Cards & digital wallets
+                      span Supported everywhere
+                label.toggle-option
+                  input(type="checkbox" name="allowBank")
+                  span.toggle-option__control
+                    span.icon-bank
+                    span.toggle-option__text
+                      strong Bank transfers
+                      span ACH and wire
+                label.toggle-option
+                  input(type="checkbox" name="allowGiftCard" checked)
+                  span.toggle-option__control
+                    span.icon-gift
+                    span.toggle-option__text
+                      strong Square gift cards
+                      span Great for promos
+                label.toggle-option
+                  input(type="checkbox" name="allowCashApp")
+                  span.toggle-option__control
+                    span.icon-cash-app
+                    span.toggle-option__text
+                      strong Cash App Pay
+                      span One-tap wallet
+
+        .card
+          h3.card-title Notes
+          label.form-field
+            span.form-label Usage notes / add-ons
+            textarea(name="usageNotes" rows="3" placeholder="Usage-based add-ons, installment notes, etc.")
+
+        .wizard-footer
+          .wizard-summary
+            span Define cadence, payments, and notes; the plan will schedule invoices automatically.
+          .button-group
+            button.button.button-secondary(type="button" onclick="window.history.back()") Cancel
+            button.button.button-primary(type="submit") Create Plan
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      const serviceSelect = document.querySelector('select[name="serviceId"]');
+      const amountInput = document.querySelector('input[name="amount"]');
+      const currencyInput = document.querySelector('input[name="currency"]');
+      const cardCheckbox = document.querySelector('input[name="allowCard"]');
+      const bankCheckbox = document.querySelector('input[name="allowBank"]');
+      const giftCheckbox = document.querySelector('input[name="allowGiftCard"]');
+      const cashCheckbox = document.querySelector('input[name="allowCashApp"]');
+      if (!serviceSelect || !amountInput) return;
+      const applyDefaults = () => {
+        const selected = serviceSelect.options[serviceSelect.selectedIndex];
+        if (!selected) return;
+        const rawAmount = selected.getAttribute('data-amount');
+        if (rawAmount) {
+          amountInput.value = rawAmount;
+        }
+        const currency = selected.getAttribute('data-currency');
+        if (currency && currencyInput) {
+          currencyInput.value = currency;
+        }
+        if (cardCheckbox) {
+          cardCheckbox.checked = selected.getAttribute('data-card') !== 'false';
+        }
+        if (bankCheckbox) {
+          bankCheckbox.checked = selected.getAttribute('data-bank') === 'true';
+        }
+        if (giftCheckbox) {
+          giftCheckbox.checked = selected.getAttribute('data-gift') === 'true';
+        }
+        if (cashCheckbox) {
+          cashCheckbox.checked = selected.getAttribute('data-cashapp') === 'true';
+        }
+      };
+      serviceSelect.addEventListener('change', function () {
+        applyDefaults();
+      });
+      applyDefaults();
+    });

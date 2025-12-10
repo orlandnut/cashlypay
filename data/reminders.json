@@ -1,0 +1,134 @@
+[
+  {
+    "id": "1765035560888-w3hn6w49p3",
+    "createdAt": "2025-12-06T15:39:20.888Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChCPuVEPXgo19z8CJ_xVIuKVEIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "UPCOMING_DUE",
+    "runAt": "2025-12-12T00:00:00.000Z",
+    "message": "Invoice 000001 is due soon."
+  },
+  {
+    "id": "1765035560889-j0w36c2s16",
+    "createdAt": "2025-12-06T15:39:20.889Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChCPuVEPXgo19z8CJ_xVIuKVEIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "OVERDUE_CHECK",
+    "runAt": "2025-12-14T00:00:00.000Z",
+    "message": "Invoice 000001 is overdue."
+  },
+  {
+    "id": "1765035572395-3ztsxpujgbt",
+    "createdAt": "2025-12-06T15:39:32.395Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChCYnpx_AJpSk1g7W9xkKNNfEIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "UPCOMING_DUE",
+    "runAt": "2025-12-12T00:00:00.000Z",
+    "message": "Invoice 000002 is due soon."
+  },
+  {
+    "id": "1765035572395-67a94hvu86",
+    "createdAt": "2025-12-06T15:39:32.395Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChCYnpx_AJpSk1g7W9xkKNNfEIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "OVERDUE_CHECK",
+    "runAt": "2025-12-14T00:00:00.000Z",
+    "message": "Invoice 000002 is overdue."
+  },
+  {
+    "id": "1765035782276-lkqd2l36rfb",
+    "createdAt": "2025-12-06T15:43:02.276Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChCvCUHZIVG3VQJJmuiH2ZV6EIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "UPCOMING_DUE",
+    "runAt": "2025-12-12T00:00:00.000Z",
+    "message": "Invoice 000003 is due soon."
+  },
+  {
+    "id": "1765035782277-q5n04xbbi8i",
+    "createdAt": "2025-12-06T15:43:02.277Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChCvCUHZIVG3VQJJmuiH2ZV6EIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "OVERDUE_CHECK",
+    "runAt": "2025-12-14T00:00:00.000Z",
+    "message": "Invoice 000003 is overdue."
+  },
+  {
+    "id": "1765036179650-gatm2ooqsuq",
+    "createdAt": "2025-12-06T15:49:39.650Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChCLVUlTUxrEkILoFL_CAlzFEIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "UPCOMING_DUE",
+    "runAt": "2025-12-12T00:00:00.000Z",
+    "message": "Invoice 000004 is due soon."
+  },
+  {
+    "id": "1765036179651-frnpbyl9sfe",
+    "createdAt": "2025-12-06T15:49:39.651Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChCLVUlTUxrEkILoFL_CAlzFEIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "OVERDUE_CHECK",
+    "runAt": "2025-12-14T00:00:00.000Z",
+    "message": "Invoice 000004 is overdue."
+  },
+  {
+    "id": "1765037197617-84wh82zpx56",
+    "createdAt": "2025-12-06T16:06:37.617Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChCxYqzSmC4ohD5U6MgIjMlkEIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "UPCOMING_DUE",
+    "runAt": "2025-12-12T00:00:00.000Z",
+    "message": "Invoice 000005 is due soon."
+  },
+  {
+    "id": "1765037197617-0mfixva7lp6",
+    "createdAt": "2025-12-06T16:06:37.617Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChCxYqzSmC4ohD5U6MgIjMlkEIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "OVERDUE_CHECK",
+    "runAt": "2025-12-14T00:00:00.000Z",
+    "message": "Invoice 000005 is overdue."
+  },
+  {
+    "id": "1765084021971-h7md8k1yg1d",
+    "createdAt": "2025-12-07T05:07:01.971Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChDe1bNnZGYO34w68Qk4xsfpEIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "UPCOMING_DUE",
+    "runAt": "2025-12-13T00:00:00.000Z",
+    "message": "Invoice 000006 is due soon."
+  },
+  {
+    "id": "1765084021972-extjq7iyq9",
+    "createdAt": "2025-12-07T05:07:01.972Z",
+    "attempts": 0,
+    "invoiceId": "inv:0-ChDe1bNnZGYO34w68Qk4xsfpEIgL",
+    "customerId": "68S91TXZC100BT30AVTQG42374",
+    "locationId": "LZCVD5WWKQF0Y",
+    "type": "OVERDUE_CHECK",
+    "runAt": "2025-12-15T00:00:00.000Z",
+    "message": "Invoice 000006 is overdue."
+  }
+]

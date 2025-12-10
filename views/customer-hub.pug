@@ -1,0 +1,60 @@
+extends layout
+
+block hero
+  +darkHero({
+    title: "Customer Hub",
+    subtitle: "Browse and manage every customer profile from a unified workspace.",
+    actions: [
+      { type: "primary", label: "Add Customer", href: "/customers/new" }
+    ],
+    status: envStatus
+  })
+
+block content
+  - const managementLocationId = locationId || 'main'
+  - const cardCount = cardCustomers || 0
+  - const manualCount = manualCustomers || Math.max((totalCustomers || 0) - cardCount, 0)
+  main.dashboard
+    section.section.panel
+      .section-header
+        h2.section-title Customer Directory
+        .section-actions
+          a.button.button-secondary.button-sm(href="/customers/new") Add Customer
+      if totalCustomers
+        .customer-stats
+          .stat-card
+            span.stat-label Total customers
+            span.stat-value #{totalCustomers}
+          .stat-card
+            span.stat-label Cards on file
+            span.stat-value #{cardCount}
+          .stat-card
+            span.stat-label Manual billing
+            span.stat-value #{manualCount}
+      if customers && customers.length
+        .customers-list
+          each customer in customers
+            .customer-card
+              a.customer-link(href=customer.id ? `/management/${managementLocationId}/${customer.id}` : '#')
+                .customer-content
+                  .customer-info-group
+                    h3.customer-name #{customer.givenName || 'Customer'} #{customer.familyName || ''}
+                    if customer.emailAddress
+                      p.customer-email #{customer.emailAddress}
+                    if customer.companyName
+                      span.company-name #{customer.companyName}
+                  .customer-meta
+                    span.customer-id ID ##{customer.id ? customer.id.substring(0,6) : '—'}
+                .customer-badges
+                  if customer.cards && customer.cards.length
+                    span.badge.badge-success Card on file
+                    span.card-brand #{customer.cards[0].cardBrand} •••• #{customer.cards[0].last4}
+                  else
+                    span.badge.badge-neutral Manual billing
+      else
+        .empty-state
+          svg(width="64" height="64" viewBox="0 0 24 24" fill="none")
+            path(d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16zm-1-11h2v5h-2v-5zm0 6h2v2h-2v-2z" fill="currentColor")
+          h3 No customers yet
+          p Create your first customer profile to start managing invoices and subscriptions.
+          a.button.button-primary(href="/customers/new") Add Customer
