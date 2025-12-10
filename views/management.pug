@@ -33,6 +33,17 @@ block content
   - const totalEstimates = estimates ? estimates.length : 0
   - const totalSubscriptions = subscriptions ? subscriptions.length : 0
   .dashboard
+    .sticky-toolbar
+      .toolbar-left
+        span.toolbar-label Workspace
+        .chip-row
+          span.filter-chip Status: #{overdueInvoices ? 'Overdue' : 'Healthy'}
+          span.filter-chip Drafts #{draftInvoices}
+          span.filter-chip Estimates #{totalEstimates}
+      .toolbar-actions
+        a.button.button-ghost.button-sm(href=`/invoice/create?locationId=${locationId}&customerId=${customer.id}`) New Invoice
+        a.button.button-secondary.button-sm(href=`/estimate/new/${locationId}/${customer.id}`) New Estimate
+        a.button.button-secondary.button-sm(href=`/subscription/new/${locationId}/${customer.id}`) New Subscription
     section.customer-hero
       .customer-hero__layout
         .customer-hero__copy

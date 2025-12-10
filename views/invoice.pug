@@ -14,15 +14,13 @@
 
 extends layout
 
-- const heroTitle = invoice.title ? invoice.title : `Invoice #${invoice.invoiceNumber}`
-- const heroSubtitle = invoice.status ? invoice.status : 'Invoice'
-- const heroActions = [
--   { type: "secondary", label: "Customer Overview", href: `/management/${locationId}/${customerId}` }
-- ]
-- if (invoice.publicUrl)
--   - heroActions.push({ type: "secondary", label: "View Public Link", href: invoice.publicUrl })
-
 block hero
+  - const heroTitle = invoice.title ? invoice.title : `Invoice #${invoice.invoiceNumber}`
+  - const heroSubtitle = invoice.status ? invoice.status : 'Invoice'
+  - const heroActions = []
+  - heroActions.push({ type: "secondary", label: "Customer Overview", href: `/management/${locationId}/${customerId}` })
+  - if (invoice.publicUrl)
+  -   heroActions.push({ type: "secondary", label: "View Public Link", href: invoice.publicUrl })
   +darkHero({
     title: heroTitle,
     subtitle: heroSubtitle,
@@ -32,19 +30,30 @@ block hero
 
 block content
   .dashboard
+    .sticky-toolbar
+      .toolbar-left
+        span.toolbar-label Invoice tools
+        .chip-row
+          span.filter-chip Status: #{invoice.status || 'Unknown'}
+          if paymentDueDate
+            span.filter-chip Due #{formatDate(paymentDueDate)}
+      .toolbar-actions
+        if invoice.publicUrl
+          a.button.button-secondary.button-sm(href=invoice.publicUrl target="_blank" rel="noopener") Public Link
+        a.button.button-ghost.button-sm(href=`/management/${locationId}/${customerId}`) Customer Overview
     //- Main Content Area
     .main-wrapper
       .invoice-hero
         .hero-row
           .badge-group
             if invoice.status === "DRAFT"
-                span.status-badge.status-badge--pending Draft
-              else if invoice.status === "PAID"
-                span.status-badge.status-badge--paid Paid
-              else if invoice.status === "OVERDUE"
-                span.status-badge.status-badge--overdue Overdue
-              else
-                span.status-badge #{invoice.status}
+              span.status-badge.status-badge--pending Draft
+            else if invoice.status === "PAID"
+              span.status-badge.status-badge--paid Paid
+            else if invoice.status === "OVERDUE"
+              span.status-badge.status-badge--overdue Overdue
+            else
+              span.status-badge #{invoice.status}
             .hero-actions.flex.gap-sm
               if invoice.publicUrl
                 a.button.button-secondary(href=invoice.publicUrl target="_blank" rel="noopener")

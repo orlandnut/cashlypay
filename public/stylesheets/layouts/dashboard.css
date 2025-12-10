@@ -354,12 +354,57 @@ body.sidebar-collapsed .main-wrapper {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--theme-accent);
+  background: linear-gradient(135deg, rgba(0, 213, 75, 0.85), rgba(0, 122, 255, 0.65));
   color: #000;
   display: grid;
   place-items: center;
   font-weight: 700;
   flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.avatar::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.35), transparent 55%),
+    rgba(255, 255, 255, 0.08);
+  z-index: 1;
+}
+
+.avatar > * {
+  position: relative;
+  z-index: 2;
+}
+
+.avatar--live::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 213, 75, 0.55);
+  animation: pulseHalo 2s ease-out infinite;
+  opacity: 0.7;
+}
+
+@keyframes pulseHalo {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
 }
 
 .profile__meta {
@@ -398,4 +443,17 @@ body.sidebar-collapsed .main-wrapper {
   letter-spacing: 0.08em;
   font-size: var(--text-xs);
   margin: var(--space-sm) var(--space-lg) var(--space-xs);
+}
+
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+  padding: 6px;
+  border-radius: 12px;
+  background: radial-gradient(circle at 0% 0%, rgba(0, 213, 75, 0.12), transparent 60%),
+    radial-gradient(circle at 100% 0%, rgba(0, 122, 255, 0.12), transparent 60%),
+    rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 8px 18px rgba(0, 0, 0, 0.25);
 }

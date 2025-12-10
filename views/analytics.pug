@@ -27,7 +27,7 @@ block content
             option(value="7d" selected=filters.range === '7d') Last 7d
             option(value="30d" selected=filters.range === '30d') Last 30d
             option(value="all" selected=filters.range === 'all') All time
-      .analytics-grid
+      .analytics-grid.analytics-grid--masonry
         .analytics-card
           span.label Total Events
           span.value #{metrics.totalEvents}
@@ -53,38 +53,44 @@ block content
           else
             span.text-secondary Scheduled stages
 
-    section.section.panel
-      h3.section-title Recent Activity
-      if recentActivities && recentActivities.length
-        .activity-list
-          each item in recentActivities
-            .activity-item
-              .activity-meta
-                span #{item.type}
-                span #{item.timestamp}
-              if item.payload
-                pre= JSON.stringify(item.payload, null, 2)
-              else
-                p.text-secondary No payload
-      else
-        p.text-secondary No activity logged yet.
+    details.section.panel.collapsible(open)
+      summary.collapsible__summary
+        h3.section-title Recent Activity
+        span.collapsible__hint Tap to toggle
+      .collapsible__content
+        if recentActivities && recentActivities.length
+          .activity-list
+            each item in recentActivities
+              .activity-item
+                .activity-meta
+                  span #{item.type}
+                  span #{item.timestamp}
+                if item.payload
+                  pre= JSON.stringify(item.payload, null, 2)
+                else
+                  p.text-secondary No payload
+        else
+          p.text-secondary No activity logged yet.
 
-    section.section.panel
-      h3.section-title Upcoming Milestones
-      if upcomingMilestones && upcomingMilestones.length
-        table.milestone-table
-          thead
-            tr
-              th Label
-              th Invoice
-              th Due date
-              th Amount
-          tbody
-            each milestone in upcomingMilestones
+    details.section.panel.collapsible(open)
+      summary.collapsible__summary
+        h3.section-title Upcoming Milestones
+        span.collapsible__hint Tap to toggle
+      .collapsible__content
+        if upcomingMilestones && upcomingMilestones.length
+          table.milestone-table
+            thead
               tr
-                td #{milestone.label}
-                td ##{milestone.invoiceId ? milestone.invoiceId.slice(-6) : '—'}
-                td= milestone.dueDate || 'No date'
-                td $#{(milestone.amount/100).toFixed(2)}
-      else
-        p.text-secondary No upcoming milestones scheduled.
+                th Label
+                th Invoice
+                th Due date
+                th Amount
+            tbody
+              each milestone in upcomingMilestones
+                tr
+                  td #{milestone.label}
+                  td ##{milestone.invoiceId ? milestone.invoiceId.slice(-6) : '—'}
+                  td= milestone.dueDate || 'No date'
+                  td $#{(milestone.amount/100).toFixed(2)}
+        else
+          p.text-secondary No upcoming milestones scheduled.
