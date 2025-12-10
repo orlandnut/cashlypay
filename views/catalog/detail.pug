@@ -35,22 +35,27 @@ block scripts
 
 block content
   .dashboard
+    - const categoryLabel = service.category || 'Uncategorized'
+    - const updatedLabel = service.updatedAt ? new Date(service.updatedAt).toLocaleString() : 'Not updated'
+    section.section.panel.service-detail-card
+      .service-detail-card__body
+        .service-detail-card__meta
+          span.badge.badge-pill(class=`badge-${service.status === 'active' ? 'success' : 'warning'}`)= service.status
+          span.service-detail-card__chip Category · #{categoryLabel}
+          span.service-detail-card__chip Updated · #{updatedLabel}
+        p.service-detail-card__description= service.description
     section.section.panel
-      p.text-secondary= service.description
-      .service-meta
-        span.badge(class=`badge-${service.status === 'active' ? 'success' : 'warning'}`)= service.status
-        span Category: #{service.category || 'Uncategorized'}
-        span Updated: #{service.updatedAt}
-    section.section.panel
-      h2.section-title Published Breakdown
+      .service-detail-card__header
+        span.section-eyebrow Published Breakdown
+        h2.section-title Pricing Snapshot
       - const publishedVersion = service.versions.find((version) => version.status === 'published')
       if publishedVersion
-        p.text-secondary Version v#{publishedVersion.version} · #{publishedVersion.currency} ${(publishedVersion.basePrice / 100).toFixed(2)}
+        p.service-detail-card__meta Version v#{publishedVersion.version} · #{publishedVersion.currency} $#{(publishedVersion.basePrice / 100).toFixed(2)}
         if publishedVersion.components && publishedVersion.components.length
-          ul.component-list
+          ul.component-list.component-list--tight
             each component in publishedVersion.components
               li
-                strong= component.label
+                strong.component-label= component.label
                 span.text-secondary #{component.type} · $#{(component.amount / 100).toFixed(2)}
                 if component.quantity
                   span.text-secondary × #{component.quantity} #{component.unit || ''}
@@ -60,7 +65,9 @@ block content
         p.text-secondary No published version yet.
 
     section.section.panel
-      h2.section-title Versions & Approvals
+      .service-detail-card__header
+        span.section-eyebrow Versions & Approvals
+        h2.section-title Version history
       if service.versions && service.versions.length
         each version in service.versions
           .version-card
@@ -160,16 +167,3 @@ block content
                     option(value=svc.id)= svc.name
         button.button.button-secondary(type="button" data-add-component="true") Add component
         button.button.button-primary(type="submit") Save draft version
-
-    section.section.panel
-      h2.section-title Audit History
-      if service.auditLog && service.auditLog.length
-        ul.audit-list
-          each event in service.auditLog
-            li
-              strong #{event.action}
-              span.text-secondary at #{event.createdAt}
-              if event.payload
-                pre= JSON.stringify(event.payload, null, 2)
-      else
-        p.text-secondary No audit events recorded.
