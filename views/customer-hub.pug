@@ -34,23 +34,39 @@ block content
       if customers && customers.length
         .customers-list
           each customer in customers
+            - const displayName = `${customer.givenName || 'Customer'} ${customer.familyName || ''}`.trim()
+            - const avatarLetter = displayName ? displayName.charAt(0).toUpperCase() : 'C'
+            - const email = customer.emailAddress || 'Email unavailable'
+            - const organization = customer.companyName
+            - const customerCode = customer.id ? customer.id.substring(0, 6).toUpperCase() : '—'
+            - const hasCard = customer.cards && customer.cards.length
+            - const paymentLabel = hasCard ? 'Card on file' : 'Manual billing'
+            - const paymentMeta = hasCard ? `${customer.cards[0].cardBrand || 'Card'} •••• ${customer.cards[0].last4 || '0000'}` : 'Sync payment source'
+            - const phoneMeta = customer.phoneNumber ? customer.phoneNumber : null
             .customer-card
               a.customer-link(href=customer.id ? `/management/${managementLocationId}/${customer.id}` : '#')
-                .customer-content
-                  .customer-info-group
-                    h3.customer-name #{customer.givenName || 'Customer'} #{customer.familyName || ''}
-                    if customer.emailAddress
-                      p.customer-email #{customer.emailAddress}
-                    if customer.companyName
-                      span.company-name #{customer.companyName}
-                  .customer-meta
-                    span.customer-id ID ##{customer.id ? customer.id.substring(0,6) : '—'}
-                .customer-badges
-                  if customer.cards && customer.cards.length
-                    span.badge.badge-success Card on file
-                    span.card-brand #{customer.cards[0].cardBrand} •••• #{customer.cards[0].last4}
-                  else
-                    span.badge.badge-neutral Manual billing
+                .customer-card__halo
+                .customer-card__body
+                  .customer-card__identity
+                    .customer-avatar
+                      span.avatar-letter #{avatarLetter}
+                      span.avatar-ring
+                    .identity-copy
+                      span.identity-label Customer profile
+                      h3.customer-name #{displayName}
+                      p.customer-email #{email}
+                      span.customer-id ID ##{customerCode}
+                      if organization
+                        span.company-name #{organization}
+                  .customer-card__stats
+                    span.status-pill(class=`status-pill--${hasCard ? 'primary' : 'neutral'}`) #{paymentLabel}
+                    span.card-brand #{paymentMeta}
+                    if phoneMeta
+                      span.card-meta #{phoneMeta}
+                  .customer-card__cta
+                    span.cta-label Command Center
+                    svg.icon-arrow(width="20" height="20" viewBox="0 0 24 24" fill="none")
+                      path(d="M5 12h14m0 0l-5-5m5 5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
       else
         .empty-state
           svg(width="64" height="64" viewBox="0 0 24 24" fill="none")

@@ -231,13 +231,21 @@ block content
                         span.line-meta #{line.type} · $#{(line.amount/100).toFixed(2)}
                 .service-card__chips
                   if item.paymentMethods && item.paymentMethods.card !== false
-                    span.chip Card
+                    span.payment-badge
+                      span.badge-icon(role="img" aria-label="card") 💳
+                      span Card / Wallet
                   if item.paymentMethods && item.paymentMethods.bankAccount
-                    span.chip ACH
+                    span.payment-badge
+                      span.badge-icon(role="img" aria-label="bank") 🏦
+                      span ACH
                   if item.paymentMethods && item.paymentMethods.squareGiftCard
-                    span.chip Gift card
+                    span.payment-badge
+                      span.badge-icon(role="img" aria-label="gift") 🎁
+                      span Gift card
                   if item.paymentMethods && item.paymentMethods.cashAppPay
-                    span.chip Cash App
+                    span.payment-badge
+                      span.badge-icon(role="img" aria-label="cash app") 🅲
+                      span Cash App
                   if item.category
                     span.chip #{item.category}
                   span.chip #{item.currency || defaultCurrency}
@@ -254,44 +262,66 @@ block content
                 .service-card__payment-grid
                   .toggle-card
                     span.toggle-card__label Payment methods
-                    .toggle-card__choices
-                      label.toggle-option
+                    .toggle-card__choices.toggle-card__choices--pill
+                      label.toggle-pill
                         input(type='checkbox' name='allowCard' value='true' checked=!(item.paymentMethods && item.paymentMethods.card === false))
-                        span.toggle-option__control
-                          span.icon-card
-                          span.toggle-option__text
+                        span.toggle-pill__control
+                          span.icon-card(role="img" aria-label="card") 💳
+                          span.toggle-pill__text
                             strong Card / Digital Wallet
                             span charges instantly
-                      label.toggle-option
+                      label.toggle-pill
                         input(type='checkbox' name='allowBank' value='true' checked=item.paymentMethods && item.paymentMethods.bankAccount)
-                        span.toggle-option__control
-                          span.icon-bank
-                          span.toggle-option__text
+                        span.toggle-pill__control
+                          span.icon-bank(role="img" aria-label="bank") 🏦
+                          span.toggle-pill__text
                             strong Bank transfer
                             span ACH or wire
-                      label.toggle-option
+                      label.toggle-pill
                         input(type='checkbox' name='allowGiftCard' value='true' checked=item.paymentMethods && item.paymentMethods.squareGiftCard)
-                        span.toggle-option__control
-                          span.icon-gift
-                          span.toggle-option__text
+                        span.toggle-pill__control
+                          span.icon-gift(role="img" aria-label="gift") 🎁
+                          span.toggle-pill__text
                             strong Gift card
                             span Square gift cards
-                      label.toggle-option
+                      label.toggle-pill
                         input(type='checkbox' name='allowCashApp' value='true' checked=item.paymentMethods && item.paymentMethods.cashAppPay)
-                        span.toggle-option__control
-                          span.icon-cash-app
-                          span.toggle-option__text
+                        span.toggle-pill__control
+                          span.icon-cash-app(role="img" aria-label="cash app") 🅲
+                          span.toggle-pill__text
                             strong Cash App Pay
                             span Wallet checkout
                   .toggle-card
                     span.toggle-card__label Payment source
-                    label.service-card__select
-                      span.payment-label Choose preference
-                      select(name='paymentSource')
-                        option(value='AUTO') Auto detect
-                        option(value='CARD_ON_FILE') Charge card on file
-                        option(value='BANK_ON_FILE') Charge bank
-                        option(value='NONE') Manual payment
+                    .toggle-card__choices.toggle-card__choices--pill
+                      label.toggle-pill
+                        input(type='radio' name='paymentSource' value='AUTO' checked)
+                        span.toggle-pill__control
+                          span.icon-lightning(role="img" aria-label="auto detect") ⚡
+                          span.toggle-pill__text
+                            strong Auto detect
+                            span Smart choice
+                      label.toggle-pill
+                        input(type='radio' name='paymentSource' value='CARD_ON_FILE')
+                        span.toggle-pill__control
+                          span.icon-card(role="img" aria-label="card on file") 💳
+                          span.toggle-pill__text
+                            strong Charge card on file
+                            span Convenience fee applies
+                      label.toggle-pill
+                        input(type='radio' name='paymentSource' value='BANK_ON_FILE')
+                        span.toggle-pill__control
+                          span.icon-bank(role="img" aria-label="bank on file") 🏦
+                          span.toggle-pill__text
+                            strong Charge bank account
+                            span ACH debit
+                      label.toggle-pill
+                        input(type='radio' name='paymentSource' value='NONE')
+                        span.toggle-pill__control
+                          span.icon-mail(role="img" aria-label="manual pay") ✉️
+                          span.toggle-pill__text
+                            strong Manual payment
+                            span Send invoice and wait
                 button.button.button-primary(type="submit")
                   svg.icon(viewBox="0 0 20 20")
                     path(d="M4 10h12m-6-6v12" stroke="currentColor" stroke-width="2" stroke-linecap="round")

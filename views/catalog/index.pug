@@ -15,29 +15,45 @@ block content
   .dashboard
     section.section.panel
       if catalog && catalog.length
-        table.catalog-table
-          thead
-            tr
-              th Name
-              th Category
-              th Status
-              th Published version
-              th Updated
-              th Actions
-          tbody
-            each item in catalog
-              tr
-                td
-                  strong= item.name
-                  if item.description
-                    p.text-secondary.text-sm= item.description
-                td= item.category || '—'
-                td
-                  span.badge(class=`badge-${item.status === 'active' ? 'success' : 'warning'}`)= item.status
-                td= item.publishedVersion ? `v${item.publishedVersion}` : '—'
-                td= item.updatedAt
-                td
-                  a.button.button-secondary.button-sm(href=`/catalog/${item.id}`) View
+        .catalog-card-grid
+          each item in catalog
+            - const serviceInitial = item.name ? item.name.charAt(0).toUpperCase() : 'S';
+            - const categoryLabel = item.category || 'Uncategorized';
+            - const statusLabel = item.status ? item.status.toUpperCase() : 'DRAFT';
+            - const versionLabel = item.publishedVersion ? `v${item.publishedVersion}` : 'Unpublished';
+            - const updatedLabel = item.updatedAt ? new Date(item.updatedAt).toLocaleString() : 'Not synced';
+            - const componentCount = Array.isArray(item.components) ? item.components.length : 0;
+            .catalog-card
+              .catalog-card__header
+                .catalog-card__identity
+                  span.catalog-card__icon= serviceInitial
+                  .catalog-card__titles
+                    span.catalog-card__eyebrow #{categoryLabel}
+                    h4.catalog-card__title #{item.name}
+                    if item.description
+                      p.catalog-card__description= item.description
+                span.catalog-card__status(class=`catalog-card__status--${item.status === 'active' ? 'live' : 'draft'}`)= statusLabel
+              .catalog-card__meta-grid
+                .catalog-card__meta
+                  span.catalog-card__label Category
+                  span.catalog-card__value= categoryLabel
+                .catalog-card__meta
+                  span.catalog-card__label Published
+                  span.catalog-card__value= versionLabel
+                .catalog-card__meta
+                  span.catalog-card__label Updated
+                  span.catalog-card__value= updatedLabel
+                .catalog-card__meta
+                  span.catalog-card__label Components
+                  span.catalog-card__value= componentCount ? `${componentCount} configured` : 'No components'
+              .catalog-card__footer
+                .catalog-card__chips
+                  if item.availableOnline
+                    span.catalog-card__chip Online checkout
+                  if item.availableInStore
+                    span.catalog-card__chip In-person
+                  span.catalog-card__chip #{categoryLabel}
+                a.button.button-secondary.button-sm(href=`/catalog/${item.id}`) View
       else
         .empty-state
           svg.empty-state__icon(viewBox="0 0 24 24" width="48" height="48")

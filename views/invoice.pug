@@ -97,13 +97,6 @@ block content
               h2.text-2xl.font-bold.mb-sm #{invoice.title ? invoice.title : `Invoice #${invoice.invoiceNumber}`}
               p.text-lg.text-secondary Created: #{formatDate(invoice.createdAt || new Date().toISOString())}
             
-            .invoice-actions.flex.gap-sm
-              if invoice.status !== "DRAFT" && invoice.status !== "SCHEDULED"
-                a.button.button-secondary(href=invoice.publicUrl target="_blank" rel="noopener")
-                  svg.icon(viewBox="0 0 24 24")
-                    path(d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
-                  span View Public Invoice
-          
           //- Invoice Details Grid
           .dashboard-stats.mt-xl.animate-slide-up
             //- Amount Due
@@ -267,9 +260,3 @@ block content
                     svg.icon(viewBox="0 0 20 20")
                       path(d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fill="currentColor")
                     span Cancel Invoice
-                if invoice.publicUrl
-                  a.button.button-secondary.compact-action(href=invoice.publicUrl target="_blank" rel="noopener")
-                    span View Public Invoice
-                else
-                  button.button.button-secondary.compact-action(type="button" disabled)
-                    span View Public Invoice

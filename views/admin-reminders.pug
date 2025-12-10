@@ -19,23 +19,37 @@ block content
         form(action="/admin/reminders/run" method="post")
           button.button.button-secondary(type="submit") Process Now
       if reminders && reminders.length
-        table.data-table
-          thead
-            tr
-              th Type
-              th Invoice
-              th Run At
-              th Attempts
-          tbody
-            each reminder in reminders
-              tr
-                td
-                  span.reminder-status(class=`reminder-status--${reminder.type === 'UPCOMING_DUE' ? 'upcoming' : 'overdue'}`)
-                    | #{reminder.type.replace('_', ' ')}
-                td #{reminder.invoiceId}
-                td #{new Date(reminder.runAt).toLocaleString()}
-                td #{reminder.attempts || 0}
-        .table-footer
-          a.button.button-ghost(href="/admin/reminders") Refresh List
+        .reminder-card-list
+          each reminder in reminders
+            - const statusVariant = reminder.type === 'UPCOMING_DUE' ? 'live' : 'alert';
+            - const scheduleLabel = new Date(reminder.runAt).toLocaleString();
+            - const reminderLink = `/invoice/view/${reminder.locationId || locationId}/${reminder.customerId || ''}/${reminder.invoiceId}`;
+            .reminder-card
+              .reminder-card__header
+                .reminder-card__status(class=`reminder-card__status--${statusVariant}`)
+                  span.status-dot
+                  span #{reminder.type.replace('_', ' ')}
+                .reminder-card__timestamp
+                  span.label Scheduled
+                  span.value #{scheduleLabel}
+              .reminder-card__meta-grid
+                .reminder-card__meta
+                  span.label Invoice
+                  span.value #{reminder.invoiceId}
+                .reminder-card__meta
+                  span.label Attempts
+                  span.value #{reminder.attempts || 0}
+                if reminder.customerId
+                  .reminder-card__meta
+                    span.label Customer
+                    span.value #{reminder.customerId}
+                if reminder.locationId
+                  .reminder-card__meta
+                    span.label Location
+                    span.value #{reminder.locationId}
+              .reminder-card__actions
+                a.button.button-secondary.button-sm(href=reminderLink) Review invoice
       else
         p.text-secondary No reminders scheduled.
+      .table-footer
+        a.button.button-ghost(href="/admin/reminders") Refresh List
