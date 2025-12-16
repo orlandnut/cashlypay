@@ -20,12 +20,7 @@ const { requireRole } = require("../middleware/user");
 const router = express.Router();
 
 const GIFT_CARD_TYPES = ["DIGITAL", "PHYSICAL"];
-const GIFT_CARD_STATES = [
-  "ACTIVE",
-  "BLOCKED",
-  "DEACTIVATED",
-  "PENDING",
-];
+const GIFT_CARD_STATES = ["ACTIVE", "BLOCKED", "DEACTIVATED", "PENDING"];
 const LIMIT_OPTIONS = [10, 25, 50];
 const BUILT_IN_PRESETS = [
   { label: "Active cards", params: { state: "ACTIVE" } },
@@ -353,9 +348,9 @@ router.post(
       const { amount, currency = "USD", reason } = req.body;
       const amountCents = centsFromAmount(amount);
       const locationId = await fetchPrimaryLocationId();
-    await adjustGiftCardBalance({
-      giftCardId,
-      amountCents,
+      await adjustGiftCardBalance({
+        giftCardId,
+        amountCents,
         currency,
         locationId,
         reason,

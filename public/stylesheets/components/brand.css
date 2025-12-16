@@ -40,7 +40,12 @@
 .wordmark__accent {
   display: inline-block;
   position: relative;
-  background: linear-gradient(120deg, #f4fff8 0%, rgba(255, 255, 255, 0.85) 50%, rgba(170, 197, 255, 0.92) 100%);
+  background: linear-gradient(
+    120deg,
+    #f4fff8 0%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(170, 197, 255, 0.92) 100%
+  );
   color: #f4fff8;
   -webkit-background-clip: text;
   background-clip: text;
@@ -63,7 +68,11 @@
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: radial-gradient(circle at 50% 50%, #00ff74 40%, rgba(0, 213, 75, 0.6) 100%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    #00ff74 40%,
+    rgba(0, 213, 75, 0.6) 100%
+  );
   box-shadow:
     0 0 12px rgba(0, 213, 75, 0.8),
     0 0 24px rgba(21, 180, 255, 0.35);
@@ -96,7 +105,11 @@
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background:
-    radial-gradient(circle at 5% 10%, rgba(255, 255, 255, 0.16), transparent 55%),
+    radial-gradient(
+      circle at 5% 10%,
+      rgba(255, 255, 255, 0.16),
+      transparent 55%
+    ),
     linear-gradient(135deg, rgba(0, 213, 75, 0.18), rgba(21, 180, 255, 0.12)),
     rgba(4, 10, 10, 0.65);
   box-shadow:
@@ -122,7 +135,11 @@
   border-radius: 20px;
   padding: 6px;
   background:
-    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.3), transparent 55%),
+    radial-gradient(
+      circle at 25% 25%,
+      rgba(255, 255, 255, 0.3),
+      transparent 55%
+    ),
     rgba(0, 0, 0, 0.42);
   border: 1px solid rgba(255, 255, 255, 0.18);
   display: grid;
@@ -192,7 +209,11 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, #00ff74 35%, rgba(0, 213, 75, 0.65) 100%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    #00ff74 35%,
+    rgba(0, 213, 75, 0.65) 100%
+  );
   animation: wordmarkPulse 2.2s ease-in-out infinite;
   box-shadow:
     0 0 12px rgba(0, 213, 75, 0.85),

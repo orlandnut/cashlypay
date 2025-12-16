@@ -182,7 +182,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   var toast = document.querySelector("[data-toast]");
   var toastMessage = toast ? toast.querySelector(".toast-message") : null;
-  var toastProgress = toast ? toast.querySelector(".toast-progress__bar") : null;
+  var toastProgress = toast
+    ? toast.querySelector(".toast-progress__bar")
+    : null;
   var toastClose = toast ? toast.querySelector(".toast-close") : null;
   var dashboard = document.querySelector(".dashboard[data-reminders]");
   var showReminderToast = function (message) {

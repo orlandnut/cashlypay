@@ -1,8 +1,5 @@
 const crypto = require("crypto");
-const {
-  giftCardsApi,
-  giftCardActivitiesApi,
-} = require("./square-client");
+const { giftCardsApi, giftCardActivitiesApi } = require("./square-client");
 
 const DEFAULT_LIMIT = 30;
 
@@ -66,13 +63,7 @@ const centsFromAmount = (amount) => {
 };
 
 async function listGiftCards(options = {}) {
-  const {
-    type,
-    state,
-    limit = DEFAULT_LIMIT,
-    cursor,
-    customerId,
-  } = options;
+  const { type, state, limit = DEFAULT_LIMIT, cursor, customerId } = options;
   const { result } = await safeCall(() =>
     giftCardsApi.listGiftCards(type, state, limit, cursor, customerId),
   );

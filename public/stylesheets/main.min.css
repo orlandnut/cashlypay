@@ -186,11 +186,46 @@ a:hover {
   text-decoration: none;
 }
 /* Global card polish */
-:is(.panel, .section.panel, .card, .stat-card, .catalog-card, .reminder-card, .invoice-card, .analytics-card, .customer-card, .subscription-card, .estimate-card, .milestone-card, .invoice-item, .metric-card, .empty-state, .data-table, .toggle-card) {
+:is(
+  .panel,
+  .section.panel,
+  .card,
+  .stat-card,
+  .catalog-card,
+  .reminder-card,
+  .invoice-card,
+  .analytics-card,
+  .customer-card,
+  .subscription-card,
+  .estimate-card,
+  .milestone-card,
+  .invoice-item,
+  .metric-card,
+  .empty-state,
+  .data-table,
+  .toggle-card
+) {
   border-radius: var(--radius-card);
   background-clip: padding-box;
 }
-:is(.panel, .section.panel, .card, .stat-card, .catalog-card, .reminder-card, .invoice-card, .analytics-card, .customer-card, .subscription-card, .estimate-card, .milestone-card, .invoice-item, .metric-card, .empty-state, .toggle-card) {
+:is(
+  .panel,
+  .section.panel,
+  .card,
+  .stat-card,
+  .catalog-card,
+  .reminder-card,
+  .invoice-card,
+  .analytics-card,
+  .customer-card,
+  .subscription-card,
+  .estimate-card,
+  .milestone-card,
+  .invoice-item,
+  .metric-card,
+  .empty-state,
+  .toggle-card
+) {
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
 }
 /* Focus Styles */

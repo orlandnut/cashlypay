@@ -13,7 +13,9 @@ const ensureColumn = (table, column, definition) => {
     const columns = db.prepare(`PRAGMA table_info(${table})`).all();
     const exists = columns.some((entry) => entry.name === column);
     if (!exists) {
-      db.prepare(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`).run();
+      db.prepare(
+        `ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`,
+      ).run();
     }
   } catch (error) {
     // eslint-disable-next-line no-console

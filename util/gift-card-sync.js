@@ -1,12 +1,8 @@
 const giftCardCache = require("./gift-card-cache");
-const {
-  retrieveGiftCard,
-  listGiftCards,
-} = require("./gift-card-service");
+const { retrieveGiftCard, listGiftCards } = require("./gift-card-service");
 
 const DEFAULT_INTERVAL_MS =
-  Number(process.env.GIFT_CARD_RECONCILE_INTERVAL_MS) ||
-  1000 * 60 * 60 * 24;
+  Number(process.env.GIFT_CARD_RECONCILE_INTERVAL_MS) || 1000 * 60 * 60 * 24;
 
 let reconcileTimer = null;
 
@@ -32,11 +28,7 @@ const handleGiftCardWebhookEvent = async (eventType, data) => {
     await safeSync(giftCardId, { source: "webhook", eventType });
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.warn(
-      "[GiftCards] webhook sync failed",
-      giftCardId,
-      error.message,
-    );
+    console.warn("[GiftCards] webhook sync failed", giftCardId, error.message);
   }
 };
 
@@ -48,9 +40,8 @@ const fetchAllGiftCards = async () => {
     if (cursor) {
       listOptions.cursor = cursor;
     }
-    const { cards: batch, cursor: nextCursor } = await listGiftCards(
-      listOptions,
-    );
+    const { cards: batch, cursor: nextCursor } =
+      await listGiftCards(listOptions);
     cards.push(...batch);
     cursor = nextCursor;
   } while (cursor);

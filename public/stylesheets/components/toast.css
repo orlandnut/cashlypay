@@ -24,7 +24,9 @@
   border: 1px solid rgba(255, 255, 255, 0.14);
   opacity: 0;
   transform: translateY(-8px);
-  transition: opacity 180ms ease, transform 180ms ease;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
 }
 
 .toast.is-visible {

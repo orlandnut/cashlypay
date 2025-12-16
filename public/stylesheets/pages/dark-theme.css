@@ -45,7 +45,7 @@
 .dark-hero__brand-lockup {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   margin-top: var(--space-md);
   flex-wrap: wrap;
   width: 100%;
@@ -192,7 +192,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
-  margin-top: var(--space-lg);
+  margin-top: var(--space-md);
 }
 
 @media (max-width: 720px) {
@@ -218,6 +218,14 @@
     width: 100%;
     justify-content: center;
   }
+  .dark-hero__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .dark-hero__actions .button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .money-dashboard {
@@ -238,8 +246,8 @@
   .dark-hero {
     border-radius: 28px;
     padding: calc(var(--safe-area-top) + var(--space-lg))
-        clamp(var(--space-md), 6vw, var(--space-xl))
-        clamp(var(--space-xl), 8vw, var(--space-2xl));
+      clamp(var(--space-md), 6vw, var(--space-xl))
+      clamp(var(--space-xl), 8vw, var(--space-2xl));
   }
 
   .dark-hero__rail {
@@ -340,7 +348,11 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(circle at 80% 0%, rgba(0, 122, 255, 0.25), transparent 60%);
+  background: radial-gradient(
+    circle at 80% 0%,
+    rgba(0, 122, 255, 0.25),
+    transparent 60%
+  );
   pointer-events: none;
 }
 
@@ -526,7 +538,11 @@
   padding: var(--space-lg);
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
-    radial-gradient(circle at 100% 0%, rgba(0, 122, 255, 0.12), transparent 55%),
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(0, 122, 255, 0.12),
+      transparent 55%
+    ),
     rgba(255, 255, 255, 0.02);
   box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4);
 }
@@ -583,8 +599,11 @@
 }
 
 .money-section {
-  background:
-    linear-gradient(135deg, rgba(7, 12, 16, 0.95), rgba(3, 6, 8, 0.95));
+  background: linear-gradient(
+    135deg,
+    rgba(7, 12, 16, 0.95),
+    rgba(3, 6, 8, 0.95)
+  );
   border-radius: 24px;
   border: 1px solid var(--theme-border);
   padding: var(--space-xl);
@@ -653,7 +672,11 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
     radial-gradient(circle at 0% 0%, rgba(0, 213, 75, 0.08), transparent 55%),
-    radial-gradient(circle at 100% 0%, rgba(0, 122, 255, 0.08), transparent 55%),
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(0, 122, 255, 0.08),
+      transparent 55%
+    ),
     linear-gradient(145deg, rgba(8, 12, 14, 0.92), rgba(6, 8, 10, 0.88));
   box-shadow:
     0 25px 50px rgba(0, 0, 0, 0.45),

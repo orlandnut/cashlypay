@@ -96,16 +96,14 @@ const listByTypePrefix = (prefix, limit = 20) => {
   const stmt = db.prepare(
     "SELECT * FROM activity_log WHERE type LIKE ? ORDER BY timestamp DESC LIMIT ?",
   );
-  return stmt
-    .all(`${prefix}%`, limit)
-    .map((row) => ({
-      id: row.id,
-      invoiceId: row.invoice_id,
-      type: row.type,
-      payload: row.payload ? JSON.parse(row.payload) : null,
-      actor: row.actor,
-      timestamp: row.timestamp,
-    }));
+  return stmt.all(`${prefix}%`, limit).map((row) => ({
+    id: row.id,
+    invoiceId: row.invoice_id,
+    type: row.type,
+    payload: row.payload ? JSON.parse(row.payload) : null,
+    actor: row.actor,
+    timestamp: row.timestamp,
+  }));
 };
 
 module.exports = {

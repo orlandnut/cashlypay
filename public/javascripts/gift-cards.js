@@ -277,7 +277,9 @@
     customPresetContainer.addEventListener("click", (event) => {
       const remove = event.target.closest("[data-remove-preset]");
       if (remove) {
-        presets = presets.filter((preset) => preset.id !== remove.dataset.removePreset);
+        presets = presets.filter(
+          (preset) => preset.id !== remove.dataset.removePreset,
+        );
         persistPresets();
         renderPresets();
         return;

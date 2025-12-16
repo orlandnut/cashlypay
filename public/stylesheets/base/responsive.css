@@ -31,7 +31,8 @@ main.content {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  padding: clamp(var(--space-md), 3vw, var(--space-2xl)) var(--responsive-gutter);
+  padding: clamp(var(--space-md), 3vw, var(--space-2xl))
+    var(--responsive-gutter);
 }
 
 main.content > .container {

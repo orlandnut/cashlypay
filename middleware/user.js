@@ -27,9 +27,8 @@ const attachUserContext = (req, res, next) => {
     name: headerUser || process.env.DEFAULT_USER_NAME || "Ops Analyst",
     email: headerEmail || process.env.DEFAULT_USER_EMAIL || "ops@example.com",
     role:
-      normalizeRole(
-        headerRole || process.env.DEFAULT_USER_ROLE || "viewer",
-      ) || "viewer",
+      normalizeRole(headerRole || process.env.DEFAULT_USER_ROLE || "viewer") ||
+      "viewer",
   };
 
   req.user = user;
@@ -42,23 +41,25 @@ const attachUserContext = (req, res, next) => {
   next();
 };
 
-const requireRole = (...roles) => (req, res, next) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "Authentication required" });
-  }
-  const allowed = roles.some((role) => hasRole(req.user, role));
-  if (!allowed) {
-    if (req.accepts("html")) {
-      return res.status(403).render("error", {
-        status: 403,
-        message: "Restricted area",
-        error: "You do not have permission to perform this action.",
-      });
+const requireRole =
+  (...roles) =>
+  (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Authentication required" });
     }
-    return res.status(403).json({ message: "Forbidden" });
-  }
-  return next();
-};
+    const allowed = roles.some((role) => hasRole(req.user, role));
+    if (!allowed) {
+      if (req.accepts("html")) {
+        return res.status(403).render("error", {
+          status: 403,
+          message: "Restricted area",
+          error: "You do not have permission to perform this action.",
+        });
+      }
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    return next();
+  };
 
 module.exports = {
   attachUserContext,
