@@ -228,6 +228,17 @@
   }
 }
 
+@media (min-width: 1024px) {
+  .dark-hero__actions {
+    justify-content: flex-start;
+    gap: var(--space-sm);
+  }
+  .dark-hero__brand-lockup {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+}
+
 .money-dashboard {
   min-height: 100vh;
   background:
@@ -235,8 +246,8 @@
     radial-gradient(circle at 80% 0%, rgba(0, 122, 255, 0.12), transparent 60%),
     linear-gradient(135deg, rgba(6, 10, 12, 0.98), rgba(4, 8, 8, 0.94));
   color: var(--text-primary);
-  padding: var(--space-2xl) var(--space-lg);
-  max-width: 1200px;
+  padding: clamp(1.25rem, 2vw, 2rem) clamp(1rem, 4vw, 2.5rem);
+  max-width: 1440px;
   margin-inline: auto;
   width: 100%;
   position: relative;
@@ -486,6 +497,15 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-md);
   margin-bottom: var(--space-lg);
+}
+
+@media (min-width: 1024px) {
+  .feature-grid {
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+  }
+  .service-actions {
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+  }
 }
 
 .service-card {

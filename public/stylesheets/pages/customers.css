@@ -386,6 +386,7 @@
   align-items: center;
   gap: var(--space-sm);
   width: 100%;
+  min-height: 48px;
 }
 
 .command-drawer__nav-row > a:first-child {
@@ -428,6 +429,37 @@
 
 .command-drawer__close span::before {
   transform: translate(-50%, -50%) rotate(90deg);
+}
+
+@media (min-width: 1024px) {
+  .command-drawer {
+    position: static;
+    inset: auto;
+    background: none;
+    backdrop-filter: none;
+    opacity: 1;
+    pointer-events: auto;
+    height: auto;
+    width: 320px;
+    max-width: 340px;
+  }
+  .command-drawer__panel {
+    position: sticky;
+    top: calc(var(--space-xl) + env(safe-area-inset-top));
+    left: auto;
+    transform: none;
+    box-shadow: none;
+    width: 100%;
+    height: calc(100vh - 2 * var(--space-xl));
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(10, 12, 14, 0.82);
+  }
+  .command-drawer__header {
+    padding-right: var(--space-sm);
+  }
+  .command-drawer__close {
+    display: none;
+  }
 }
 
 .command-drawer__nav ul {
