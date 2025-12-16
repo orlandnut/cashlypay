@@ -23,9 +23,9 @@
 }
 
 .wordmark {
-  --wordmark-size: 1.65rem;
-  --wordmark-gap: 0.4rem;
-  --wordmark-spacing: 0.16em;
+  --wordmark-size: 1.4rem;
+  --wordmark-gap: 0.32rem;
+  --wordmark-spacing: 0.14em;
   display: inline-flex;
   align-items: flex-end;
   gap: var(--wordmark-gap);
@@ -82,9 +82,9 @@
 }
 
 .wordmark--hero {
-  --wordmark-size: 1.9rem;
-  --wordmark-gap: 0.45rem;
-  --wordmark-spacing: 0.22em;
+  --wordmark-size: 1.6rem;
+  --wordmark-gap: 0.35rem;
+  --wordmark-spacing: 0.18em;
 }
 
 .brand-chip {
@@ -92,7 +92,7 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.85rem 1.1rem;
+  padding: 0.9rem 1.15rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background:
@@ -123,13 +123,14 @@
   padding: 6px;
   background:
     radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.3), transparent 55%),
-    rgba(0, 0, 0, 0.35);
+    rgba(0, 0, 0, 0.42);
   border: 1px solid rgba(255, 255, 255, 0.18);
   display: grid;
   place-items: center;
   box-shadow:
     0 18px 30px rgba(0, 0, 0, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  overflow: hidden;
 }
 
 .brand-chip__icon img {
@@ -137,6 +138,7 @@
   height: 100%;
   object-fit: contain;
   display: block;
+  image-rendering: auto;
 }
 
 .brand-chip__body {
@@ -205,6 +207,12 @@
 .brand-chip--hero {
   padding: 1rem 1.25rem;
   gap: 1rem;
+}
+
+.brand-chip--mini {
+  padding: 0.55rem 0.7rem;
+  gap: 0.6rem;
+  grid-template-columns: auto minmax(0, 1fr);
 }
 
 @media (max-width: 540px) {

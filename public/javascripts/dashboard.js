@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var toastProgress = toast ? toast.querySelector(".toast-progress__bar") : null;
   var toastClose = toast ? toast.querySelector(".toast-close") : null;
   var dashboard = document.querySelector(".dashboard[data-reminders]");
-  var showToast = function (message) {
+  var showReminderToast = function (message) {
     if (!toast || !toastMessage) return;
     toastMessage.textContent = message;
     if (toastProgress) {
@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
       hasPrevious &&
       previousReminderCount !== reminderCount
     ) {
-      showToast(
+      showReminderToast(
         "Reminder queue updated — " + reminderCount + " items pending.",
       );
       announce("Reminder queue updated");
@@ -271,6 +271,49 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!window.confirm(message)) {
         event.preventDefault();
       }
+    });
+  });
+
+  function showToast(message, tone) {
+    var stack = document.getElementById("toast-stack");
+    if (!stack) return;
+    var toast = document.createElement("div");
+    toast.className = "toast" + (tone ? " toast--" + tone : "");
+    toast.textContent = message;
+    stack.appendChild(toast);
+    setTimeout(function () {
+      toast.classList.add("is-visible");
+    }, 20);
+    setTimeout(function () {
+      toast.classList.remove("is-visible");
+      setTimeout(function () {
+        stack.removeChild(toast);
+      }, 250);
+    }, 3200);
+  }
+
+  document.querySelectorAll("[data-run-reminders]").forEach(function (button) {
+    button.addEventListener("click", function (event) {
+      event.preventDefault();
+      var message =
+        button.getAttribute("data-confirm") ||
+        "Run the reminder queue now? This sends due notices.";
+      if (!window.confirm(message)) return;
+      fetch("/admin/reminders/run", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then(function (res) {
+          if (!res.ok) {
+            throw new Error("Failed to run queue");
+          }
+          showToast("Reminder queue triggered", "success");
+        })
+        .catch(function () {
+          showToast("Reminder queue failed", "danger");
+        });
     });
   });
 });

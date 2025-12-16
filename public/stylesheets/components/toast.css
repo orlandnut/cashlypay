@@ -1,0 +1,56 @@
+.toast-stack {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 200px;
+  max-width: 320px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(12, 16, 16, 0.92);
+  color: #f5fff8;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow:
+    0 16px 30px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast--success {
+  border-color: rgba(0, 213, 75, 0.45);
+  box-shadow:
+    0 16px 30px rgba(0, 0, 0, 0.45),
+    0 0 16px rgba(0, 213, 75, 0.35);
+}
+
+.toast--danger {
+  border-color: rgba(255, 77, 109, 0.55);
+  box-shadow:
+    0 16px 30px rgba(0, 0, 0, 0.45),
+    0 0 16px rgba(255, 77, 109, 0.35);
+}
+
+@media (max-width: 720px) {
+  .toast-stack {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    top: 12px;
+  }
+}

@@ -30,22 +30,15 @@ mixin darkHero(options)
             svg(width="16" height="16" viewBox="0 0 24 24" fill="none")
               path(d="M12 5a1 1 0 110-2 1 1 0 010 2zm0 8a1 1 0 110-2 1 1 0 010 2zm0 8a1 1 0 110-2 1 1 0 010 2z" fill="currentColor")
     .dark-hero__brand-lockup
-      .brand-chip.brand-chip--hero.dark-hero__brand-chip
+      .brand-chip.brand-chip--mini.dark-hero__brand-chip
         .brand-chip__icon
-          img(src="/images/cashly-logo.png" alt="CashlyPay mark" width="56" height="56" loading="lazy" decoding="async")
+          img(src="/images/cashly-logo.png" alt="CashlyPay mark" width="44" height="44" loading="lazy" decoding="async")
         .brand-chip__body
-          span.brand-chip__eyebrow CashlyPay OS
-          .wordmark.wordmark--hero
+          .wordmark.wordmark--compact
             span.wordmark__main Cashly
             span.wordmark__accent Pay
-            span.wordmark__signal
-          span.brand-chip__meta Navigate & automate finance work
-        .brand-chip__badge
-          span.brand-chip__badge-text Ops signal
-          span.brand-chip__status-bar
-          span.brand-chip__pulse
-      if envBadge
-        span.dark-hero__brand-pill= envBadge
+        if envBadge
+          span.dark-hero__brand-pill= envBadge
     if subtitle
       p.dark-hero__subtitle #{subtitle}
     if actions && actions.length

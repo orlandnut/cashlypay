@@ -437,17 +437,22 @@
 
 .command-drawer__nav a {
   display: block;
-  padding: var(--space-sm) calc(var(--space-lg) + var(--space-sm));
+  padding: 0.85rem 1.1rem;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   color: var(--text-primary);
   text-decoration: none;
+  transition:
+    background var(--transition-fast) var(--transition-ease),
+    border var(--transition-fast) var(--transition-ease),
+    color var(--transition-fast) var(--transition-ease);
 }
 
 .command-drawer__nav a.active {
   border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.08);
   font-weight: 600;
+  color: #f5fff8;
 }
 
 .command-drawer__nav a:hover {

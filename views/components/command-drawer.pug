@@ -35,20 +35,14 @@ mixin commandDrawer(opts)
         .command-drawer__brand
           a.command-drawer__brand-lockup(href="/")
             span.sr-only CashlyPay home
-            .brand-chip.brand-chip--drawer.command-drawer__brand-chip
+            .brand-chip.brand-chip--mini.command-drawer__brand-chip
               .brand-chip__icon
-                img(src="/images/cashly-logo.png" alt="CashlyPay mark" width="48" height="48" loading="lazy" decoding="async")
+                img(src="/images/cashly-logo.png" alt="CashlyPay mark" width="42" height="42" loading="lazy" decoding="async")
               .brand-chip__body
-                span.brand-chip__eyebrow CashlyPay OS
-                .wordmark.wordmark--drawer
+                span.brand-chip__eyebrow Navigate & automate
+                .wordmark.wordmark--compact
                   span.wordmark__main Cashly
                   span.wordmark__accent Pay
-                  span.wordmark__signal
-                span.brand-chip__meta Navigate & automate
-              .brand-chip__badge
-                span.brand-chip__badge-text Finance OS
-                span.brand-chip__status-bar
-                span.brand-chip__pulse
         button.command-drawer__close(type="button" aria-label="Close navigation panel")
           span
       nav.command-drawer__nav
@@ -73,4 +67,9 @@ mixin commandDrawer(opts)
             - if (tone === "secondary") btnClass = "button button-secondary";
             - else if (tone === "ghost") btnClass = "button button-ghost";
             - else if (tone === "danger") btnClass = "button button-danger";
-            a(class=btnClass href=action.href data-confirm=action.confirm || null)= action.label
+            a(
+              class=btnClass
+              href=action.href
+              data-confirm=action.confirm || null
+              data-run-reminders=action.tone === "danger" ? "true" : null
+            )= action.label
