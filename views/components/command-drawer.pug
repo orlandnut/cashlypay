@@ -20,8 +20,14 @@ mixin commandDrawer(opts)
       ? actions
       : [
           { label: "Create Invoice", href: "/invoice/create", tone: "primary" },
-          { label: "Run Reminder Queue", href: "/admin/reminders", tone: "ghost" }
+          { label: "Run Reminder Queue", href: "/admin/reminders", tone: "danger", confirm: "Run the reminder queue now?" }
         ];
+  -
+    const inlineInvoiceAction = defaultActions.find((action) =>
+      action.label && action.label.toLowerCase().includes("create invoice")
+    );
+  -
+    const drawerActions = defaultActions.filter((action) => action !== inlineInvoiceAction);
 
   .command-drawer(id="commandDrawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Navigation drawer")
     .command-drawer__panel
@@ -55,12 +61,16 @@ mixin commandDrawer(opts)
                 target ? currentPath === target || currentPath.startsWith(target) : false
               );
             li
-              a(class=isActive ? 'active' : '' href=link.href)= link.label
-      if defaultActions.length
+              .command-drawer__nav-row
+                a(class=isActive ? 'active' : '' href=link.href)= link.label
+                if inlineInvoiceAction && link.label === "Invoices"
+                  a.command-drawer__inline-action.button.button-secondary.button-sm(href=inlineInvoiceAction.href)= inlineInvoiceAction.label
+      if drawerActions.length
         .command-drawer__actions
-          each action in defaultActions
+          each action in drawerActions
             - const tone = action.tone || "primary";
             - let btnClass = "button button-primary";
             - if (tone === "secondary") btnClass = "button button-secondary";
             - else if (tone === "ghost") btnClass = "button button-ghost";
-            a(class=btnClass href=action.href)= action.label
+            - else if (tone === "danger") btnClass = "button button-danger";
+            a(class=btnClass href=action.href data-confirm=action.confirm || null)= action.label

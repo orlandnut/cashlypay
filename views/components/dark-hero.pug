@@ -5,6 +5,7 @@ mixin darkHero(options)
   - const actions = Array.isArray(opts.actions) ? opts.actions : [];
   - const back = typeof opts.back === 'undefined' ? { href: "/", label: "Dashboard" } : opts.back;
   - const status = typeof opts.status === 'object' ? opts.status : null;
+  - const envBadge = typeof opts.envBadge === 'string' ? opts.envBadge : null;
   - const showBack = back !== false;
   - const backHref = showBack && back && back.href ? back.href : "/";
   - const backLabel = showBack && back && back.label ? back.label : "Dashboard";
@@ -38,12 +39,13 @@ mixin darkHero(options)
             span.wordmark__main Cashly
             span.wordmark__accent Pay
             span.wordmark__signal
-          span.brand-chip__meta Finance OS Platform
+          span.brand-chip__meta Navigate & automate finance work
         .brand-chip__badge
-          span.brand-chip__badge-text Navigate & automate
+          span.brand-chip__badge-text Ops signal
           span.brand-chip__status-bar
           span.brand-chip__pulse
-      span.dark-hero__brand-pill Finance OS Platform
+      if envBadge
+        span.dark-hero__brand-pill= envBadge
     if subtitle
       p.dark-hero__subtitle #{subtitle}
     if actions && actions.length

@@ -24,10 +24,7 @@ block hero
       { type: "primary", label: "Customer Hub", href: "/customers" },
       { type: "secondary", label: "View Analytics", href: "/analytics" }
     ],
-    status: {
-      label: heroStatusLabel === 'Live' ? 'Live Environment' : 'Testing Environment',
-      tone: heroStatusLabel === 'Live' ? 'success' : 'warning'
-    }
+    envBadge: heroStatusLabel === 'Live' ? 'Live environment' : 'Sandbox test mode'
   })
 
 
@@ -191,6 +188,6 @@ block commandDrawer
   -
     const drawerActions = [
       { label: "Create Invoice", href: managementHref, tone: "primary" },
-      { label: "Run Reminder Queue", href: "/admin/reminders", tone: "secondary" }
+      { label: "Run Reminder Queue", href: "/admin/reminders", tone: "danger", confirm: "Run the reminder queue now?" }
     ];
   +commandDrawer({ links: drawerLinks, actions: drawerActions, currentPath })

@@ -377,6 +377,26 @@
   height: 48px;
 }
 
+.command-drawer__nav-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.command-drawer__nav-row > a:first-child {
+  flex: 1;
+}
+
+.command-drawer__inline-action {
+  margin-left: auto;
+  min-width: auto;
+  padding: 0.35rem 0.85rem;
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .command-drawer__close {
   width: 32px;
   height: 32px;

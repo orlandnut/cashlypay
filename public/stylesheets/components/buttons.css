@@ -333,6 +333,24 @@
   padding: var(--space-sm);
   width: 48px;
 }
+
+.button-danger {
+  background: rgba(255, 77, 109, 0.12);
+  color: #ff4d6d;
+  border: 1px solid rgba(255, 77, 109, 0.35);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+}
+
+.button-danger:hover {
+  background: rgba(255, 77, 109, 0.18);
+  transform: translateY(-1px);
+  border-color: rgba(255, 77, 109, 0.55);
+}
+
+.button-danger:active {
+  transform: translateY(0);
+  background: rgba(255, 77, 109, 0.22);
+}
 .button-secondary {
   background-color: rgba(23, 23, 23, 0.9);
   color: #ffffff;

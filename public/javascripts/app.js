@@ -149,6 +149,35 @@ function initSearch() {
   searchInput?.addEventListener("input", (e) => performSearch(e.target.value));
 }
 
+function updateSearchResults(results = []) {
+  const container = document.querySelector("[data-search-results]");
+  if (!container) return;
+  const fragment = document.createDocumentFragment();
+
+  results.slice(0, 5).forEach((result) => {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "search-result";
+    item.textContent = result.label || result.name || "Untitled";
+    item.addEventListener("click", () => {
+      if (result.href) {
+        window.location.href = result.href;
+      }
+    });
+    fragment.appendChild(item);
+  });
+
+  container.innerHTML = "";
+  if (!fragment.childNodes.length) {
+    const empty = document.createElement("p");
+    empty.className = "search-result search-result--empty";
+    empty.textContent = "No matches yet";
+    container.appendChild(empty);
+    return;
+  }
+  container.appendChild(fragment);
+}
+
 // Interactive Data Tables
 function initDataTables() {
   const tables = document.querySelectorAll(".table");
@@ -183,6 +212,27 @@ function initDataTables() {
       });
     });
   });
+}
+
+function sortTable(table, column, asc = true) {
+  const tbody = table.querySelector("tbody");
+  if (!tbody) return;
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+  const columnIndex = Array.from(table.querySelectorAll("th")).findIndex(
+    (th) => th.dataset.column === column,
+  );
+  if (columnIndex === -1) return;
+
+  const multiplier = asc ? 1 : -1;
+  rows.sort((a, b) => {
+    const aValue =
+      a.children[columnIndex]?.textContent?.trim().toLowerCase() || "";
+    const bValue =
+      b.children[columnIndex]?.textContent?.trim().toLowerCase() || "";
+    return aValue.localeCompare(bValue) * multiplier;
+  });
+
+  rows.forEach((row) => tbody.appendChild(row));
 }
 
 // Initialize all interactive features

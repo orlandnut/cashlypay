@@ -230,7 +230,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/issue", requireRole("finance", "admin"), async (req, res, next) => {
+router.post("/issue", requireRole("finance", "admin"), async (req, res) => {
   try {
     const {
       type,
@@ -263,7 +263,7 @@ router.post("/issue", requireRole("finance", "admin"), async (req, res, next) =>
   }
 });
 
-router.post("/load", requireRole("finance", "admin"), async (req, res, next) => {
+router.post("/load", requireRole("finance", "admin"), async (req, res) => {
   try {
     const { giftCardId, amount, currency = "USD", referenceId } = req.body;
     const amountCents = centsFromAmount(amount);

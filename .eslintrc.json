@@ -1,0 +1,25 @@
+{
+  "env": {
+    "browser": false,
+    "es2021": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended"],
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "script"
+  },
+  "rules": {},
+  "overrides": [
+    {
+      "files": ["public/javascripts/**/*.js"],
+      "env": {
+        "browser": true
+      },
+      "globals": {
+        "Chart": "readonly",
+        "tippy": "readonly"
+      }
+    }
+  ]
+}

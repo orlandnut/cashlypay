@@ -26,7 +26,9 @@ const http = require("http");
 /**
  * Get port from environment and store in Express.
  */
-const port = normalizePort(process.env.PORT || "3000");
+const requestedPort = process.env.PORT;
+const port = normalizePort(requestedPort || "0");
+const host = process.env.HOST || "127.0.0.1";
 app.set("port", port);
 
 /**
@@ -37,7 +39,9 @@ const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-server.listen(port);
+let attemptedFallback = false;
+let headlessTimer = null;
+server.listen(port, host);
 server.on("error", onError);
 server.on("listening", onListening);
 
@@ -68,18 +72,27 @@ function onError(error) {
     throw error;
   }
 
-  const bind = typeof port === "string"
-    ? "Pipe " + port
-    : "Port " + port;
+  const bind = typeof server.address() === "string"
+    ? "Pipe " + server.address()
+    : `Port ${requestedPort || port}`;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
   case "EACCES":
-    console.error(bind + " requires elevated privileges");
-    process.exit(1);
-    break;
   case "EADDRINUSE":
-    console.error(bind + " is already in use");
+  case "EPERM":
+    if (!attemptedFallback) {
+      attemptedFallback = true;
+      console.warn(
+        `${bind} unavailable (${error.code}). Falling back to an ephemeral port.`,
+      );
+      return server.listen(0, host);
+    }
+    if (error.code === "EPERM") {
+      enterHeadlessMode(bind, error.code);
+      return;
+    }
+    console.error(`${bind} is unavailable (${error.code})`);
     process.exit(1);
     break;
   default:
@@ -92,5 +105,15 @@ function onError(error) {
  */
 function onListening() {
   const addr = server.address();
-  console.log(`Listening on http://localhost:${addr.port}`);
+  const displayHost = addr.address === "::" ? "127.0.0.1" : addr.address;
+  console.log(`Listening on http://${displayHost}:${addr.port}`);
+}
+
+function enterHeadlessMode(bind, code) {
+  console.warn(
+    `${bind} cannot be opened (${code}). Running in headless mode – no HTTP listener started.`,
+  );
+  if (!headlessTimer) {
+    headlessTimer = setInterval(() => {}, 60 * 1000);
+  }
 }
