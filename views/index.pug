@@ -65,17 +65,26 @@ block content
   - balanceMetrics.push({ label: "Manual billing", value: manualCustomers, meta: manualCustomers === 1 ? "Needs reminder" : "Need reminders" })
   - balanceMetrics.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" })
   main.dashboard(data-reminders=reminderCountValue data-overdue=invoiceTicker.overdueInvoiceCount)
-    section.balance-card.balance-card--hero
-      .balance-card__top
-        span.balance-label Customer Directory
-        span.balance-meta= cardCoverage ? `${cardCoverage}% cards on file` : "Sync to unlock coverage"
-      h2.balance-value #{totalCustomers} Active Customers
-      ul.balance-card__metrics
-        each metric in balanceMetrics
-          li.balance-metric
-            span.balance-metric__label #{metric.label}
-            span.balance-metric__value #{metric.value}
-            span.balance-metric__meta #{metric.meta}
+    section.balance-card.balance-card--hero(data-collapsible)
+      button.balance-card__toggle(type="button" data-collapsible-trigger)
+        div
+          span.balance-label Customer Directory
+          small.balance-meta= cardCoverage ? `${cardCoverage}% cards on file` : "Sync to unlock coverage"
+        span.balance-card__indicator
+      .balance-card__summary
+        h2.balance-value #{totalCustomers} Active Customers
+        .chip-row
+          each metric in balanceMetrics
+            span.metric-chip
+              span.metric-chip__value #{metric.value}
+              span.metric-chip__label #{metric.label}
+      .balance-card__details(data-collapsible-content)
+        ul.balance-card__metrics
+          each metric in balanceMetrics
+            li.balance-metric
+              span.balance-metric__label #{metric.label}
+              span.balance-metric__value #{metric.value}
+              span.balance-metric__meta #{metric.meta}
 
     section.quick-actions
       .action-card
@@ -153,21 +162,37 @@ block content
     section.money-section
       h2.section-label Operations Radar
       .feature-grid
-        .feature-card.feature-card--wide
-          span.feature-card__eyebrow Env status
-          h3 Modern Customer Workspace
-          p.text-secondary Manage clients, invoices, reminders, and analytics from a single command center.
-          span.hero__panel-chip.hero__panel-chip--status #{statusLabel}
-        .feature-card
-          span.feature-card__eyebrow Automation
-          h3 #{reminderCountValue} reminders staged
-          p.text-secondary Jobs continue running while you focus elsewhere.
-          a.button.button-secondary.button-sm(href="/admin/reminders") Review queue
-        .feature-card
-          span.feature-card__eyebrow Insights
-          h3 View Analytics
-          p.text-secondary Surface KPIs, backlog, and reminder runs in one dashboard.
-          a.button.button-secondary.button-sm(href="/analytics") Open analytics
+        .feature-card.feature-card--wide(data-collapsible data-expanded)
+          button.feature-card__toggle(type="button" data-collapsible-trigger)
+            span.feature-card__eyebrow Env status
+            span.feature-card__indicator
+          .feature-card__summary
+            h3 Modern Customer Workspace
+            span.hero__panel-chip.hero__panel-chip--status #{statusLabel}
+          .feature-card__details(data-collapsible-content)
+            p.text-secondary Manage clients, invoices, reminders, and analytics from a single command center.
+        .feature-card(data-collapsible)
+          button.feature-card__toggle(type="button" data-collapsible-trigger)
+            span.feature-card__eyebrow Automation
+            span.feature-card__indicator
+          .feature-card__summary
+            h3 #{reminderCountValue} reminders staged
+          .feature-card__details(data-collapsible-content)
+            p.text-secondary Jobs continue running while you focus elsewhere.
+            ul.metric-chips
+              li.metric-chip
+                span.metric-chip__value #{reminderCountValue}
+                span.metric-chip__label Queue size
+            a.button.button-secondary.button-sm(href="/admin/reminders") Review queue
+        .feature-card(data-collapsible)
+          button.feature-card__toggle(type="button" data-collapsible-trigger)
+            span.feature-card__eyebrow Insights
+            span.feature-card__indicator
+          .feature-card__summary
+            h3 View Analytics
+          .feature-card__details(data-collapsible-content)
+            p.text-secondary Surface KPIs, backlog, and reminder runs in one dashboard.
+            a.button.button-secondary.button-sm(href="/analytics") Open analytics
 
   .reminder-toast(data-toast role="status" aria-live="polite")
     span.toast-dot

@@ -276,6 +276,30 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  function handleCollapsible(element) {
+    var trigger = element.querySelector("[data-collapsible-trigger]");
+    var content = element.querySelector("[data-collapsible-content]");
+    if (!trigger || !content) return;
+    var isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    if (isDesktop && !element.hasAttribute("data-expanded")) {
+      element.setAttribute("data-expanded", "");
+    }
+    trigger.addEventListener("click", function () {
+      var expanded = element.hasAttribute("data-expanded");
+      if (expanded) {
+        element.removeAttribute("data-expanded");
+      } else {
+        element.setAttribute("data-expanded", "");
+      }
+    });
+  }
+
+  document
+    .querySelectorAll("[data-collapsible]")
+    .forEach(function (element) {
+      handleCollapsible(element);
+    });
+
   function showToast(message, tone) {
     var stack = document.getElementById("toast-stack");
     if (!stack) return;

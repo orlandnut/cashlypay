@@ -436,6 +436,109 @@
   color: var(--text-secondary);
 }
 
+/* Progressive disclosure */
+[data-collapsible] {
+  border-radius: var(--radius-2xl);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(6, 10, 10, 0.85);
+  margin-bottom: var(--space-xl);
+}
+
+.balance-card__toggle,
+.feature-card__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: var(--space-md);
+  cursor: pointer;
+  border-radius: inherit;
+  text-align: left;
+}
+
+.balance-card__indicator,
+.feature-card__indicator {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.balance-card__indicator::after,
+.feature-card__indicator::after {
+  content: "";
+  width: 12px;
+  height: 2px;
+  background: currentColor;
+  position: absolute;
+}
+
+.balance-card__indicator::before,
+.feature-card__indicator::before {
+  content: "";
+  width: 2px;
+  height: 12px;
+  background: currentColor;
+}
+
+[data-expanded] .balance-card__indicator::before,
+[data-expanded] .feature-card__indicator::before {
+  opacity: 0;
+}
+
+.balance-card__summary,
+.feature-card__summary {
+  padding: 0 var(--space-md) var(--space-md);
+}
+
+.balance-card__details,
+.feature-card__details {
+  padding: 0 var(--space-md) var(--space-md);
+  display: none;
+}
+
+[data-expanded] .balance-card__details,
+[data-expanded] .feature-card__details {
+  display: block;
+}
+
+.chip-row,
+.metric-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.metric-chip {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 120px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.metric-chip__value {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.metric-chip__label {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
 .balance-card__actions {
   display: flex;
   gap: var(--space-md);
@@ -1023,4 +1126,8 @@ main.content {
   padding: 0.75rem;
   background: transparent;
   color: var(--text-primary);
+}
+[data-collapsible][data-expanded] {
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
 }

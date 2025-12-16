@@ -1,0 +1,28 @@
+mixin mobileTabs(opts)
+  - const options = opts || {};
+  - const currentPath = options.currentPath || "";
+  -
+    const defaultTabs = [
+      { label: "Dashboard", href: "/", icon: "icon-dashboard", match: "/" },
+      { label: "Customer Hub", href: "/customers", icon: "icon-invoice", match: ["/customers", "/management"] },
+      { label: "Analytics", href: "/analytics", icon: "icon-dashboard", match: "/analytics" },
+    ];
+  nav.mobile-tabs(role="navigation" aria-label="Quick navigation")
+    ul.mobile-tabs__list
+      each tab in defaultTabs
+        -
+          const matchTarget = tab.match || tab.href;
+          const matches = Array.isArray(matchTarget) ? matchTarget : [matchTarget];
+          const isActive = matches.some((target) =>
+            target ? currentPath === target || currentPath.startsWith(target) : false
+          );
+        li.mobile-tabs__item
+          a(
+            href=tab.href
+            class=isActive ? "active" : ""
+            aria-current=isActive ? "page" : null
+          )
+            span.mobile-tabs__icon
+              svg(width="20" height="20" aria-hidden="true")
+                use(href=`#${tab.icon}`)
+            span.mobile-tabs__label= tab.label

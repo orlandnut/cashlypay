@@ -48,6 +48,7 @@ html(lang="en" class="dark")
     include ../public/images/sprites.svg
     include components/dark-hero.pug
     include components/command-drawer.pug
+    include components/mobile-tabs.pug
 
     //- Sidebar
     aside.sidebar
@@ -159,3 +160,4 @@ html(lang="en" class="dark")
             a.text-sm(href="#") Support
     block commandDrawer
       +commandDrawer({ currentPath, status: envStatus })
+    +mobileTabs({ currentPath })

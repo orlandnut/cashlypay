@@ -26,6 +26,7 @@ Licensed under the Apache License, Version 2.0
 @import "components/invoice-card.css";
 @import "components/data-table.css";
 @import "components/charts.css";
+@import "components/mobile-tabs.css";
 @import "components/toast.css";
 
 /* Layout Imports */
