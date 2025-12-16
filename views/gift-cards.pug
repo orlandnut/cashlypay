@@ -75,7 +75,7 @@ block content
         a.button.button-ghost(href="/gift-cards") Reset
     if giftCards && giftCards.length
       .table-wrapper
-        table.table
+        table.table(data-card-table)
           thead
             tr
               th Scope
@@ -86,7 +86,7 @@ block content
               th Created
           tbody
             each card in giftCards
-              tr
+              tr(data-card-row data-card-id=card.id)
                 td
                   strong= card.gan || card.id
                   if card.id && card.gan
@@ -169,3 +169,40 @@ block content
       p.text-secondary No activity yet.
     if activitiesCursor
       p.text-secondary.mt-sm Additional activity available in Square (cursor #{activitiesCursor}).
+
+  .card-overlay(data-card-overlay aria-hidden="true")
+    .card-overlay__backdrop(data-card-close)
+    .card-overlay__panel
+      button.card-overlay__close(type="button" data-card-close aria-label="Close panel") ×
+      .card-overlay__header
+        span.card-overlay__label Gift Card
+        h3.card-overlay__title(data-card-gan) —
+        p.card-overlay__meta
+          span(data-card-state) —
+          span ·
+          span(data-card-created) —
+      .card-overlay__alert(hidden data-card-alert)
+      .card-overlay__balance
+        span Balance
+        strong(data-card-balance) —
+      .card-overlay__actions
+        div
+          h4 Block / Unblock
+          input(type="text" placeholder="Reason (optional)" data-card-reason)
+          .action-buttons
+            button.button.button-secondary(type="button" data-action-block) Block card
+            button.button.button-ghost(type="button" data-action-unblock) Unblock
+        div
+          h4 Adjust balance
+          form(data-action-adjust)
+            input(type="number" step="1" placeholder="Amount (USD)" required data-adjust-amount)
+            input(type="text" value="USD" maxlength="3" data-adjust-currency)
+            input(type="text" placeholder="Reason (optional)" data-adjust-reason)
+            button.button.button-primary(type="submit") Apply adjustment
+      .card-overlay__activities
+        h4 Recent activity
+        ul(data-card-activities)
+          li Loading activity...
+
+block append scripts
+  script(defer src="/javascripts/gift-cards.js")

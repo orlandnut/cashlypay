@@ -217,6 +217,91 @@ const buildGiftCardStats = (cards = []) => {
   };
 };
 
+const retrieveGiftCard = async (giftCardId) => {
+  if (!giftCardId) {
+    throw new Error("Gift card id is required");
+  }
+  const { result } = await safeCall(() =>
+    giftCardsApi.retrieveGiftCard(giftCardId),
+  );
+  return mapGiftCard(result.giftCard);
+};
+
+const blockGiftCard = async ({ giftCardId, locationId, reason }) => {
+  if (!giftCardId || !locationId) {
+    throw new Error("Gift card and location are required");
+  }
+  await safeCall(() =>
+    giftCardActivitiesApi.createGiftCardActivity({
+      idempotencyKey: crypto.randomUUID(),
+      giftCardActivity: {
+        type: "BLOCK",
+        locationId,
+        giftCardId,
+        blockActivityDetails: {
+          reason: reason || "Blocked via dashboard",
+        },
+      },
+    }),
+  );
+};
+
+const unblockGiftCard = async ({ giftCardId, locationId, reason }) => {
+  if (!giftCardId || !locationId) {
+    throw new Error("Gift card and location are required");
+  }
+  await safeCall(() =>
+    giftCardActivitiesApi.createGiftCardActivity({
+      idempotencyKey: crypto.randomUUID(),
+      giftCardActivity: {
+        type: "UNBLOCK",
+        locationId,
+        giftCardId,
+        unblockActivityDetails: {
+          reason: reason || "Unblocked via dashboard",
+        },
+      },
+    }),
+  );
+};
+
+const adjustGiftCardBalance = async ({
+  giftCardId,
+  amountCents,
+  currency = "USD",
+  locationId,
+  reason,
+}) => {
+  if (!giftCardId || !locationId) {
+    throw new Error("Gift card and location are required");
+  }
+  if (!amountCents || amountCents === 0) {
+    throw new Error("Adjustment amount must be non-zero");
+  }
+  const isIncrement = amountCents > 0;
+  const payloadKey = isIncrement
+    ? "adjustIncrementActivityDetails"
+    : "adjustDecrementActivityDetails";
+  const amount = Math.abs(amountCents);
+  await safeCall(() =>
+    giftCardActivitiesApi.createGiftCardActivity({
+      idempotencyKey: crypto.randomUUID(),
+      giftCardActivity: {
+        type: isIncrement ? "ADJUST_INCREMENT" : "ADJUST_DECREMENT",
+        locationId,
+        giftCardId,
+        [payloadKey]: {
+          amountMoney: {
+            amount,
+            currency,
+          },
+          reason: reason || "Manual adjustment",
+        },
+      },
+    }),
+  );
+};
+
 module.exports = {
   centsFromAmount,
   listGiftCards,
@@ -224,4 +309,8 @@ module.exports = {
   issueGiftCard,
   loadGiftCardBalance,
   buildGiftCardStats,
+  retrieveGiftCard,
+  blockGiftCard,
+  unblockGiftCard,
+  adjustGiftCardBalance,
 };

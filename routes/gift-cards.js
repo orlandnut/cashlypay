@@ -6,6 +6,10 @@ const {
   loadGiftCardBalance,
   centsFromAmount,
   buildGiftCardStats,
+  retrieveGiftCard,
+  blockGiftCard,
+  unblockGiftCard,
+  adjustGiftCardBalance,
 } = require("../util/gift-card-service");
 const { locationsApi } = require("../util/square-client");
 
@@ -129,6 +133,73 @@ router.post("/load", async (req, res, next) => {
   } catch (error) {
     const detail = error.message || "Unable to load gift card";
     res.redirect(`/gift-cards?error=${encodeURIComponent(detail)}`);
+  }
+});
+
+router.get("/:giftCardId/detail", async (req, res) => {
+  try {
+    const { giftCardId } = req.params;
+    const [card, activityResult] = await Promise.all([
+      retrieveGiftCard(giftCardId),
+      listGiftCardActivities({ giftCardId, limit: 50 }),
+    ]);
+    res.json({
+      card,
+      activities: activityResult.activities,
+    });
+  } catch (error) {
+    res.status(error.status || 500).json({
+      error: error.message || "Unable to load gift card detail",
+    });
+  }
+});
+
+router.post("/:giftCardId/block", async (req, res) => {
+  try {
+    const { giftCardId } = req.params;
+    const { reason } = req.body;
+    const locationId = await fetchPrimaryLocationId();
+    await blockGiftCard({ giftCardId, locationId, reason });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(error.status || 500).json({
+      error: error.message || "Unable to block gift card",
+    });
+  }
+});
+
+router.post("/:giftCardId/unblock", async (req, res) => {
+  try {
+    const { giftCardId } = req.params;
+    const { reason } = req.body;
+    const locationId = await fetchPrimaryLocationId();
+    await unblockGiftCard({ giftCardId, locationId, reason });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(error.status || 500).json({
+      error: error.message || "Unable to unblock gift card",
+    });
+  }
+});
+
+router.post("/:giftCardId/adjust", async (req, res) => {
+  try {
+    const { giftCardId } = req.params;
+    const { amount, currency = "USD", reason } = req.body;
+    const amountCents = centsFromAmount(amount);
+    const locationId = await fetchPrimaryLocationId();
+    await adjustGiftCardBalance({
+      giftCardId,
+      amountCents,
+      currency,
+      locationId,
+      reason,
+    });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(error.status || 500).json({
+      error: error.message || "Unable to adjust card balance",
+    });
   }
 });
 
