@@ -5,24 +5,19 @@ mixin commandDrawer(opts)
   - const currentPath = options.currentPath || "";
   - const status = typeof options.status === 'object' ? options.status : null;
   - const drawerEnvLabel = status && status.label ? `${status.label} mode` : null;
-  - const drawerEnvTone = drawerEnvLabel
-      ? (status && status.tone
-          ? status.tone
-          : drawerEnvLabel.toLowerCase().includes('live')
-            ? 'live'
-            : 'sandbox')
-      : null;
+  - const drawerEnvTone = drawerEnvLabel ? ((status && status.tone) ? status.tone : (drawerEnvLabel.toLowerCase().includes('live') ? 'live' : 'sandbox')) : null;
   -
     const defaultLinks = links.length
       ? links
       : [
-          { label: "Dashboard", href: "/", match: "/" },
-          { label: "Customer Hub", href: "/customers", match: ["/customers", "/management"] },
-          { label: "Services", href: "/catalog", match: "/catalog" },
-          { label: "Gift Cards", href: "/gift-cards", match: "/gift-cards" },
-          { label: "Analytics", href: "/analytics", match: "/analytics" },
-          { label: "Reminder Queue", href: "/admin/reminders", match: "/admin" },
-          { label: "Payouts", href: "/payouts/console", match: "/payouts" }
+          { label: "Dashboard", href: "/", match: "/", icon: "#icon-dashboard", meta: "Command overview" },
+          { label: "Customer Hub", href: "/customers", match: ["/customers", "/management"], icon: "#icon-invoice", meta: "Accounts & billing" },
+          { label: "Invoices", href: "/invoice/create", match: "/invoice", icon: "#icon-invoice", meta: "Composer & history" },
+          { label: "Estimates", href: "/estimate", match: "/estimate", icon: "#icon-dashboard", meta: "Quotes & approvals" },
+          { label: "Subscriptions", href: "/subscription", match: "/subscription", icon: "#icon-dashboard", meta: "Recurring services" },
+          { label: "Analytics", href: "/analytics", match: "/analytics", icon: "#icon-dashboard", meta: "KPIs & health" },
+          { label: "Reminder Queue", href: "/admin/reminders", match: "/admin", icon: "#icon-invoice", meta: "Automation feed" },
+          { label: "Settings", href: "/admin", match: "/settings", icon: "#icon-dashboard", meta: "Controls & access" }
         ];
   -
     const defaultActions = actions.length
@@ -73,7 +68,15 @@ mixin commandDrawer(opts)
               );
             li
               .command-drawer__nav-row
-                a(class=isActive ? 'active' : '' href=link.href)= link.label
+                a.command-drawer__nav-link(class=isActive ? 'active' : '' href=link.href)
+                  if link.icon
+                    span.command-drawer__nav-icon
+                      svg(width="20" height="20" aria-hidden="true")
+                        use(href=link.icon)
+                  span.command-drawer__nav-body
+                    span.command-drawer__nav-label= link.label
+                    if link.meta
+                      span.command-drawer__nav-meta= link.meta
                 if inlineInvoiceAction && link.label === "Invoices"
                   a.command-drawer__inline-action.button.button-secondary.button-sm(href=inlineInvoiceAction.href)= inlineInvoiceAction.label
       if drawerActions.length

@@ -7,11 +7,7 @@ mixin darkHero(options)
   - const status = typeof opts.status === 'object' ? opts.status : null;
   - const envBadge = typeof opts.envBadge === 'string' ? opts.envBadge : null;
   - const envBadgeText = envBadge || (status && status.label ? `${status.label} mode` : null);
-  - const envTone = envBadgeText
-      ? (status && status.tone
-          ? status.tone
-          : (envBadgeText.toLowerCase().includes('live') ? 'live' : 'sandbox'))
-      : null;
+  - const envTone = envBadgeText ? ((status && status.tone) ? status.tone : (envBadgeText.toLowerCase().includes('live') ? 'live' : 'sandbox')) : null;
   - const showBack = back !== false;
   - const backHref = showBack && back && back.href ? back.href : "/";
   - const backLabel = showBack && back && back.label ? back.label : "Dashboard";

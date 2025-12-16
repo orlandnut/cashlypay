@@ -24,7 +24,8 @@ block hero
       { type: "primary", label: "View Analytics", href: "/analytics" },
       { type: "secondary", label: "Customer Hub", href: "/customers" }
     ],
-    envBadge: heroStatusLabel === 'Live' ? 'Live mode' : 'Sandbox mode'
+    envBadge: heroStatusLabel === 'Live' ? 'Live mode' : 'Sandbox mode',
+    status: envStatus
   })
 
 
@@ -176,14 +177,14 @@ block content
 block commandDrawer
   -
     const drawerLinks = [
-      { label: "Dashboard", href: "/" },
-      { label: "Customer Hub", href: '/customers', match: ['/customers', '/management'] },
-      { label: "Invoices", href: invoiceHref },
-      { label: "Estimates", href: estimateHref },
-      { label: "Subscriptions", href: subscriptionHref },
-      { label: "Analytics", href: "/analytics" },
-      { label: "Reminder Queue", href: "/admin/reminders" },
-      { label: "Settings", href: settingsHref }
+      { label: "Dashboard", href: "/", icon: "#icon-dashboard", meta: "Command overview" },
+      { label: "Customer Hub", href: '/customers', match: ['/customers', '/management'], icon: "#icon-invoice", meta: "Accounts & billing" },
+      { label: "Invoices", href: invoiceHref, icon: "#icon-invoice", meta: "Composer & history" },
+      { label: "Estimates", href: estimateHref, icon: "#icon-dashboard", meta: "Quotes & approvals" },
+      { label: "Subscriptions", href: subscriptionHref, icon: "#icon-dashboard", meta: "Recurring services" },
+      { label: "Analytics", href: "/analytics", icon: "#icon-dashboard", meta: "KPIs & health" },
+      { label: "Reminder Queue", href: "/admin/reminders", icon: "#icon-invoice", meta: "Automation feed" },
+      { label: "Settings", href: settingsHref, icon: "#icon-dashboard", meta: "Controls & access" }
     ];
   -
     const drawerActions = [
