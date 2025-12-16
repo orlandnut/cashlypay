@@ -25,6 +25,7 @@ const adminRoute = require("./admin");
 const analyticsRoute = require("./analytics");
 const catalogRoute = require("./catalog");
 const payoutRoute = require("./payout");
+const giftCardRoute = require("./gift-cards");
 const {
   customersApi,
   locationsApi,
@@ -52,6 +53,7 @@ router.use("/admin", adminRoute);
 router.use("/analytics", analyticsRoute);
 router.use("/catalog", catalogRoute);
 router.use("/payouts", payoutRoute);
+router.use("/gift-cards", giftCardRoute);
 
 /**
  * Matches: GET /

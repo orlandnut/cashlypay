@@ -37,6 +37,7 @@ Licensed under the Apache License, Version 2.0
 @import "pages/management.css";
 @import "pages/estimate.css";
 @import "pages/reminders.css";
+@import "pages/gift-cards.css";
 
 /* Utility Classes */
 .flex {

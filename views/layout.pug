@@ -86,6 +86,9 @@ html(lang="en" class="dark")
         a.nav-item(href="/catalog" class=(currentPath && currentPath.startsWith('/catalog') ? 'active' : ''))
           svg: use(href="#icon-dashboard")
           span Services
+        a.nav-item(href="/gift-cards" class=(currentPath && currentPath.startsWith('/gift-cards') ? 'active' : ''))
+          svg: use(href="#icon-invoice")
+          span Gift Cards
         a.nav-item(href="/analytics" class=(currentPath && currentPath.startsWith('/analytics') ? 'active' : ''))
           svg: use(href="#icon-dashboard")
           span Analytics

@@ -1,0 +1,144 @@
+extends layout
+
+block hero
+  +darkHero({
+    title: "Gift Card Control",
+    subtitle: "Issue, load, and monitor Square gift cards without leaving Cashly.",
+    status: envStatus,
+    actions: [
+      { type: "primary", label: "Issue card", href: "#issue-card" },
+      { type: "secondary", label: "Record load", href: "#load-card" }
+    ]
+  })
+
+block content
+  - const formatMoney = (money) => {
+  -   const amount = money && typeof money.amount === 'number' ? money.amount : 0;
+  -   const currency = (money && money.currency) || 'USD';
+  -   return `$${(amount / 100).toFixed(2)} ${currency}`;
+  - };
+  - const formatDate = (value) => value ? new Date(value).toLocaleString() : '—';
+  if message
+    .toast-banner.toast-banner--success
+      span Gift card action #{message === 'loaded' ? 'recorded' : 'completed'} successfully.
+  if errorMessage
+    .toast-banner.toast-banner--error
+      span= errorMessage
+
+  section.gift-card-grid
+    .gift-card-stat
+      span.stat-label Total issued
+      strong.stat-value #{stats.totalIssued}
+      span.stat-meta All card states
+    .gift-card-stat
+      span.stat-label Active
+      strong.stat-value #{stats.activeCards}
+      span.stat-meta Ready for spend
+    .gift-card-stat
+      span.stat-label Blocked / Inactive
+      strong.stat-value #{stats.blockedCards + stats.deactivatedCards}
+      span.stat-meta Controls engaged
+    .gift-card-stat
+      span.stat-label Balance outstanding
+      strong.stat-value= formatMoney({ amount: stats.totalBalance, currency: 'USD' })
+      span.stat-meta Across visible cards
+
+  section.money-section
+    .section-heading
+      h2.section-label Gift card directory
+      span.section-meta= `${giftCards.length} records`
+    if giftCards && giftCards.length
+      .table-wrapper
+        table.table
+          thead
+            tr
+              th Scope
+              th Balance
+              th Type
+              th State
+              th Customers
+              th Created
+          tbody
+            each card in giftCards
+              tr
+                td
+                  strong= card.gan || card.id
+                  if card.id && card.gan
+                    span.table-meta ##{card.id.slice(-6)}
+                td
+                  span.table-amount= formatMoney(card.balance)
+                td= card.type
+                td
+                  span.badge(class=`badge--${card.state?.toLowerCase()}`)= card.state || '—'
+                td
+                  if card.customerIds && card.customerIds.length
+                    span.table-meta= card.customerIds.join(", ")
+                  else
+                    span.table-meta —
+                td
+                  span.table-meta= formatDate(card.createdAt)
+    else
+      p.text-secondary No gift cards yet. Issue your first card below.
+    if cardsCursor
+      p.text-secondary.mt-sm More cards available via Square dashboard (cursor #{cardsCursor}).
+
+  section.money-section.gift-card-forms
+    .form-card
+      form.gift-card-form(id="issue-card" action="/gift-cards/issue" method="post")
+        h3.form-title Issue gift card
+        label
+          span.form-label Card type
+          select(name="type")
+            option(value="DIGITAL") Digital
+            option(value="PHYSICAL") Physical
+        label
+          span.form-label Initial amount (USD)
+          input(type="number" name="amount" min="0" step="1" placeholder="100" required)
+        label
+          span.form-label Currency
+          input(type="text" name="currency" value="USD" maxlength="3" required)
+        label
+          span.form-label Customer ID (optional)
+          input(type="text" name="customerId" placeholder="square-customer-id")
+        label
+          span.form-label Reference (optional)
+          input(type="text" name="referenceId" placeholder="Promo, order #, etc.")
+        button.button.button-primary(type="submit") Issue & activate
+    .form-card
+      form.gift-card-form(id="load-card" action="/gift-cards/load" method="post")
+        h3.form-title Record load / adjustment
+        label
+          span.form-label Gift card ID
+          input(type="text" name="giftCardId" placeholder="GCXXXX" required)
+        label
+          span.form-label Amount (USD)
+          input(type="number" name="amount" min="1" step="1" required)
+        label
+          span.form-label Currency
+          input(type="text" name="currency" value="USD" maxlength="3" required)
+        label
+          span.form-label Reference (optional)
+          input(type="text" name="referenceId" placeholder="case-123")
+        button.button.button-secondary(type="submit") Create load activity
+      p.text-secondary.form-hint Use card ID from the directory above; activity logs update instantly.
+
+  section.money-section
+    .section-heading
+      h2.section-label Activity timeline
+      span.section-meta= `${activities.length} recent events`
+    if activities && activities.length
+      ul.activity-timeline
+        each activity in activities
+          li
+            div
+              span.activity-type= activity.type
+              span.activity-meta Card #{activity.giftCardId}
+            div
+              strong= formatMoney(activity.amount)
+              span.activity-meta= formatDate(activity.createdAt)
+            div
+              span.activity-balance Balance: #{formatMoney(activity.balance)}
+    else
+      p.text-secondary No activity yet.
+    if activitiesCursor
+      p.text-secondary.mt-sm Additional activity available in Square (cursor #{activitiesCursor}).
