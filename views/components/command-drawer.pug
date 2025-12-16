@@ -26,11 +26,15 @@ mixin commandDrawer(opts)
     .command-drawer__panel
       .command-drawer__header
         .command-drawer__brand
-          .logo-mark
-            span.logo-initial C
-          .drawer-meta
-            span.drawer-title CashlyPay OS
-            span.drawer-subtitle Navigate & automate
+          a.command-drawer__brand-lockup(href="/")
+            span.sr-only CashlyPay home
+            .logo-mark
+              img(src="/images/cashly-logo.png" alt="CashlyPay mark" width="48" height="48" loading="lazy" decoding="async")
+            .drawer-meta
+              span.drawer-title CashlyPay OS
+              img.drawer-meta__wordmark(src="/images/cashly-full-logo.png" alt="CashlyPay logotype" width="160" height="36" loading="lazy" decoding="async")
+              span.drawer-subtitle Navigate & automate
+              span.drawer-meta__tagline Finance OS
         button.command-drawer__close(type="button" aria-label="Close navigation panel")
           span
       nav.command-drawer__nav

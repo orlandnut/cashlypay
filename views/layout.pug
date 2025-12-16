@@ -25,9 +25,8 @@ html(lang="en" class="dark")
     meta(name="format-detection" content="telephone=no")
     
     //- Favicon
-    link(rel="icon" type="image/svg+xml" href="/images/logo.svg")
-    link(rel="alternate icon" type="image/png" href="/images/logo.png")
-    link(rel="apple-touch-icon" href="/images/logo.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/images/cashly-logo.png")
+    link(rel="apple-touch-icon" href="/images/cashly-logo.png")
     
     //- Main Stylesheet
     link(rel="stylesheet" href="/stylesheets/main.css")
@@ -53,11 +52,14 @@ html(lang="en" class="dark")
     aside.sidebar
       .sidebar__header
         .sidebar__branding
-          .logo-mark.avatar.avatar--live
-            span.logo-initial C
-          .brand__text
-            h1.brand__name Cashly
-            p.brand__tagline Finance OS
+          a.brand-lockup(href="/")
+            span.sr-only CashlyPay home
+            .logo-mark
+              img(src="/images/cashly-logo.png" alt="CashlyPay mark" width="56" height="56" loading="lazy" decoding="async")
+            .brand__text
+              span.brand__name CashlyPay
+              img.brand__wordmark(src="/images/cashly-full-logo.png" alt="CashlyPay logotype" width="168" height="38" loading="lazy" decoding="async")
+              p.brand__tagline Finance OS
           span.sidebar__title-command Command Center
       .sidebar__profile
         .avatar A

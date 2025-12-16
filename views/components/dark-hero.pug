@@ -28,6 +28,14 @@ mixin darkHero(options)
           button.dark-hero__profile(type="button" aria-label="Quick actions")
             svg(width="16" height="16" viewBox="0 0 24 24" fill="none")
               path(d="M12 5a1 1 0 110-2 1 1 0 010 2zm0 8a1 1 0 110-2 1 1 0 010 2zm0 8a1 1 0 110-2 1 1 0 010 2z" fill="currentColor")
+    .dark-hero__brand-lockup
+      .dark-hero__brand-chip
+        .dark-hero__brand-icon
+          img(src="/images/cashly-logo.png" alt="CashlyPay mark" width="56" height="56" loading="lazy" decoding="async")
+        .dark-hero__brand-text
+          span.dark-hero__brand-name CashlyPay
+          img.dark-hero__brand-logo(src="/images/cashly-full-logo.png" alt="CashlyPay logotype" width="188" height="42" loading="lazy" decoding="async")
+      span.dark-hero__brand-pill Finance OS Platform
     if subtitle
       p.dark-hero__subtitle #{subtitle}
     if actions && actions.length
