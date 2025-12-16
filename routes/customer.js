@@ -17,6 +17,7 @@ limitations under the License.
 const express = require("express");
 const Joi = require("joi");
 const { customersApi, locationsApi } = require("../util/square-client");
+const giftCardCache = require("../util/gift-card-cache");
 
 const router = express.Router();
 
@@ -59,6 +60,32 @@ router.get("/", async (req, res, next) => {
       ).toLowerCase() === "production"
         ? { label: "Live", tone: "live" }
         : { label: "Testing", tone: "testing" };
+    const cardSnapshots = giftCardCache.listCards();
+    const customerGiftCards = {};
+    cardSnapshots.forEach((card) => {
+      const customerIds = card.customerIds || [];
+      customerIds.forEach((id) => {
+        if (!id) return;
+        if (!customerGiftCards[id]) {
+          customerGiftCards[id] = [];
+        }
+        customerGiftCards[id].push({
+          id: card.id,
+          gan: card.gan,
+          state: card.state,
+          balance: card.balance,
+          updatedAt: card.cachedAt,
+        });
+      });
+    });
+    Object.values(customerGiftCards).forEach((cards) =>
+      cards.sort((a, b) => {
+        const aTime = a.updatedAt ? Date.parse(a.updatedAt) : 0;
+        const bTime = b.updatedAt ? Date.parse(b.updatedAt) : 0;
+        return bTime - aTime;
+      }),
+    );
+
     res.render("customer-hub", {
       customers: displayCustomers,
       totalCustomers: displayCustomers.length,
@@ -66,6 +93,7 @@ router.get("/", async (req, res, next) => {
       manualCustomers: displayCustomers.length - customersWithCards.length,
       envStatus: env,
       locationId: location.id,
+      customerGiftCards,
     });
   } catch (error) {
     next(error);

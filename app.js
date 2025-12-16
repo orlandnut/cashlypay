@@ -26,6 +26,7 @@ const rateLimit = require("express-rate-limit");
 const routes = require("./routes/index");
 const webhookRoutes = require("./routes/webhooks");
 const { startGiftCardReconciler } = require("./util/gift-card-sync");
+const { attachUserContext } = require("./middleware/user");
 const app = express();
 app.set("trust proxy", 1);
 
@@ -70,6 +71,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, ".well-known")));
+app.use(attachUserContext);
 
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;

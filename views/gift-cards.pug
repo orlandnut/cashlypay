@@ -65,6 +65,24 @@ block content
                   span.sync-meta-text Cache #{(issue.cachedBalance / 100).toFixed(2)}
       else
         p.text-secondary All good — no discrepancies detected.
+  if permissions && permissions.canAuditGiftCards
+    section.money-section
+      .section-heading
+        h2.section-label Audit log
+        span.section-meta Tracking recent gift card actions
+      if auditLogs && auditLogs.length
+        ul.audit-list
+          each audit in auditLogs
+            li
+              div
+                span.audit-type= audit.type
+                span.audit-meta Actor: #{audit.actor || 'system'}
+              div
+                span.audit-meta #{formatDate(audit.timestamp)}
+                if audit.payload
+                  pre.audit-payload= JSON.stringify(audit.payload, null, 2)
+      else
+        p.text-secondary No audit entries yet.
 
   if searchMeta && searchMeta.query && searchMeta.notFound
     .toast-banner.toast-banner--error
@@ -167,45 +185,53 @@ block content
       .pagination-links
         a.button.button-ghost(href=pagination.cards) Load more cards
 
-  section.money-section.gift-card-forms
-    .form-card
-      form.gift-card-form(id="issue-card" action="/gift-cards/issue" method="post")
-        h3.form-title Issue gift card
-        label
-          span.form-label Card type
-          select(name="type")
-            option(value="DIGITAL") Digital
-            option(value="PHYSICAL") Physical
-        label
-          span.form-label Initial amount (USD)
-          input(type="number" name="amount" min="0" step="1" placeholder="100" required)
-        label
-          span.form-label Currency
-          input(type="text" name="currency" value="USD" maxlength="3" required)
-        label
-          span.form-label Customer ID (optional)
-          input(type="text" name="customerId" placeholder="square-customer-id")
-        label
-          span.form-label Reference (optional)
-          input(type="text" name="referenceId" placeholder="Promo, order #, etc.")
-        button.button.button-primary(type="submit") Issue & activate
-    .form-card
-      form.gift-card-form(id="load-card" action="/gift-cards/load" method="post")
-        h3.form-title Record load / adjustment
-        label
-          span.form-label Gift card ID
-          input(type="text" name="giftCardId" placeholder="GCXXXX" required)
-        label
-          span.form-label Amount (USD)
-          input(type="number" name="amount" min="1" step="1" required)
-        label
-          span.form-label Currency
-          input(type="text" name="currency" value="USD" maxlength="3" required)
-        label
-          span.form-label Reference (optional)
-          input(type="text" name="referenceId" placeholder="case-123")
-        button.button.button-secondary(type="submit") Create load activity
-      p.text-secondary.form-hint Use card ID from the directory above; activity logs update instantly.
+  if permissions && permissions.canManageGiftCards
+    section.money-section.gift-card-forms
+      .form-card
+        form.gift-card-form(id="issue-card" action="/gift-cards/issue" method="post")
+          h3.form-title Issue gift card
+          label
+            span.form-label Card type
+            select(name="type")
+              option(value="DIGITAL") Digital
+              option(value="PHYSICAL") Physical
+          label
+            span.form-label Initial amount (USD)
+            input(type="number" name="amount" min="0" step="1" placeholder="100" required)
+          label
+            span.form-label Currency
+            input(type="text" name="currency" value="USD" maxlength="3" required)
+          label
+            span.form-label Link customer (optional)
+            input(type="text" name="customerId" placeholder="Search customer..." list="customerOptions" value=filters.customerId)
+          if customerOptions && customerOptions.length
+            datalist#customerOptions
+              each customer in customerOptions
+                option(value=customer.id)= `${customer.label}${customer.email ? ' · ' + customer.email : ''}`
+          label
+            span.form-label Reference (optional)
+            input(type="text" name="referenceId" placeholder="Promo, order #, etc.")
+          button.button.button-primary(type="submit") Issue & activate
+      .form-card
+        form.gift-card-form(id="load-card" action="/gift-cards/load" method="post")
+          h3.form-title Record load / adjustment
+          label
+            span.form-label Gift card ID
+            input(type="text" name="giftCardId" placeholder="GCXXXX" required)
+          label
+            span.form-label Amount (USD)
+            input(type="number" name="amount" min="1" step="1" required)
+          label
+            span.form-label Currency
+            input(type="text" name="currency" value="USD" maxlength="3" required)
+          label
+            span.form-label Reference (optional)
+            input(type="text" name="referenceId" placeholder="case-123")
+          button.button.button-secondary(type="submit") Create load activity
+        p.text-secondary.form-hint Use card ID from the directory above; activity logs update instantly.
+  else
+    section.money-section.gift-card-forms
+      p.text-secondary Access to issuing or loading gift cards requires Finance permissions.
 
   section.money-section
     .section-heading
@@ -244,20 +270,24 @@ block content
       .card-overlay__balance
         span Balance
         strong(data-card-balance) —
-      .card-overlay__actions
-        div
-          h4 Block / Unblock
-          input(type="text" placeholder="Reason (optional)" data-card-reason)
-          .action-buttons
-            button.button.button-secondary(type="button" data-action-block) Block card
-            button.button.button-ghost(type="button" data-action-unblock) Unblock
-        div
-          h4 Adjust balance
-          form(data-action-adjust)
-            input(type="number" step="1" placeholder="Amount (USD)" required data-adjust-amount)
-            input(type="text" value="USD" maxlength="3" data-adjust-currency)
-            input(type="text" placeholder="Reason (optional)" data-adjust-reason)
-            button.button.button-primary(type="submit") Apply adjustment
+      if permissions && permissions.canManageGiftCards
+        .card-overlay__actions
+          div
+            h4 Block / Unblock
+            input(type="text" placeholder="Reason (optional)" data-card-reason)
+            .action-buttons
+              button.button.button-secondary(type="button" data-action-block) Block card
+              button.button.button-ghost(type="button" data-action-unblock) Unblock
+          div
+            h4 Adjust balance
+            form(data-action-adjust)
+              input(type="number" step="1" placeholder="Amount (USD)" required data-adjust-amount)
+              input(type="text" value="USD" maxlength="3" data-adjust-currency)
+              input(type="text" placeholder="Reason (optional)" data-adjust-reason)
+              button.button.button-primary(type="submit") Apply adjustment
+      else
+        .card-overlay__actions
+          p.text-secondary Finance role required to manage gift cards.
       .card-overlay__activities
         h4 Recent activity
         ul(data-card-activities)

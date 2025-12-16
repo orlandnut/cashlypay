@@ -12,8 +12,10 @@ const {
   unblockGiftCard,
   adjustGiftCardBalance,
 } = require("../util/gift-card-service");
-const { locationsApi } = require("../util/square-client");
+const { locationsApi, customersApi } = require("../util/square-client");
 const giftCardCache = require("../util/gift-card-cache");
+const activityStore = require("../util/activity-store");
+const { requireRole } = require("../middleware/user");
 
 const router = express.Router();
 
@@ -74,6 +76,19 @@ const fetchPrimaryLocationId = async () => {
   return location.id;
 };
 
+const logGiftCardAction = (req, type, payload) => {
+  activityStore.addEvent({
+    type: `GIFT_CARD_${type}`,
+    payload,
+    actor:
+      req.user?.email ||
+      req.user?.id ||
+      req.user?.name ||
+      process.env.DEFAULT_USER_EMAIL ||
+      "unknown",
+  });
+};
+
 router.get("/", async (req, res, next) => {
   try {
     const {
@@ -106,6 +121,19 @@ router.get("/", async (req, res, next) => {
       cursor: activityCursor || undefined,
     };
     const locationPromise = fetchPrimaryLocationId();
+    const customersPromise = customersApi
+      .listCustomers()
+      .then(({ result }) => {
+        const list = result?.customers || [];
+        return list.map((customer) => ({
+          id: customer.id,
+          label:
+            `${customer.givenName || "Customer"} ${customer.familyName || ""}`.trim() ||
+            customer.id,
+          email: customer.emailAddress || "",
+        }));
+      })
+      .catch(() => []);
     let cardsResult;
     const searchMeta = {
       query: searchQuery,
@@ -123,9 +151,10 @@ router.get("/", async (req, res, next) => {
     } else {
       cardsResult = await listGiftCards(listOptions);
     }
-    const [activityResult, locationId] = await Promise.all([
+    const [activityResult, locationId, customerOptions] = await Promise.all([
       listGiftCardActivities(activityOptions),
       locationPromise,
+      customersPromise,
     ]);
     const stats = buildGiftCardStats(cardsResult.cards);
     const baseQueryParams = {
@@ -154,6 +183,10 @@ router.get("/", async (req, res, next) => {
           })}`
         : null,
     };
+
+    const auditLogs = activityStore.listByTypePrefix
+      ? activityStore.listByTypePrefix("GIFT_CARD", 12)
+      : [];
 
     res.render("gift-cards", {
       giftCards: cardsResult.cards,
@@ -185,6 +218,8 @@ router.get("/", async (req, res, next) => {
       },
       pagination,
       searchMeta,
+      customerOptions,
+      auditLogs,
       syncMeta: {
         lastReconciledAt: giftCardCache.getLastReconciledAt(),
         discrepancies: giftCardCache.listDiscrepancies(5),
@@ -195,7 +230,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/issue", async (req, res, next) => {
+router.post("/issue", requireRole("finance", "admin"), async (req, res, next) => {
   try {
     const {
       type,
@@ -206,13 +241,20 @@ router.post("/issue", async (req, res, next) => {
     } = req.body;
     const amountCents = centsFromAmount(amount);
     const locationId = await fetchPrimaryLocationId();
-    await issueGiftCard({
+    const issuedCard = await issueGiftCard({
       type: type || "DIGITAL",
       amountCents,
       currency: currency || "USD",
       customerId: customerId || undefined,
       referenceId: referenceId || undefined,
       locationId,
+    });
+    logGiftCardAction(req, "ISSUE", {
+      cardId: issuedCard?.id,
+      amountCents,
+      currency,
+      customerId,
+      referenceId,
     });
     res.redirect("/gift-cards?status=issued");
   } catch (error) {
@@ -221,7 +263,7 @@ router.post("/issue", async (req, res, next) => {
   }
 });
 
-router.post("/load", async (req, res, next) => {
+router.post("/load", requireRole("finance", "admin"), async (req, res, next) => {
   try {
     const { giftCardId, amount, currency = "USD", referenceId } = req.body;
     const amountCents = centsFromAmount(amount);
@@ -232,6 +274,12 @@ router.post("/load", async (req, res, next) => {
       currency: currency || "USD",
       referenceId: referenceId || undefined,
       locationId,
+    });
+    logGiftCardAction(req, "LOAD", {
+      cardId: giftCardId,
+      amountCents,
+      currency,
+      referenceId,
     });
     res.redirect("/gift-cards?status=loaded");
   } catch (error) {
@@ -258,53 +306,73 @@ router.get("/:giftCardId/detail", async (req, res) => {
   }
 });
 
-router.post("/:giftCardId/block", async (req, res) => {
-  try {
-    const { giftCardId } = req.params;
-    const { reason } = req.body;
-    const locationId = await fetchPrimaryLocationId();
-    await blockGiftCard({ giftCardId, locationId, reason });
-    res.json({ success: true });
-  } catch (error) {
-    res.status(error.status || 500).json({
-      error: error.message || "Unable to block gift card",
-    });
-  }
-});
+router.post(
+  "/:giftCardId/block",
+  requireRole("finance", "admin"),
+  async (req, res) => {
+    try {
+      const { giftCardId } = req.params;
+      const { reason } = req.body;
+      const locationId = await fetchPrimaryLocationId();
+      await blockGiftCard({ giftCardId, locationId, reason });
+      logGiftCardAction(req, "BLOCK", { cardId: giftCardId, reason });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(error.status || 500).json({
+        error: error.message || "Unable to block gift card",
+      });
+    }
+  },
+);
 
-router.post("/:giftCardId/unblock", async (req, res) => {
-  try {
-    const { giftCardId } = req.params;
-    const { reason } = req.body;
-    const locationId = await fetchPrimaryLocationId();
-    await unblockGiftCard({ giftCardId, locationId, reason });
-    res.json({ success: true });
-  } catch (error) {
-    res.status(error.status || 500).json({
-      error: error.message || "Unable to unblock gift card",
-    });
-  }
-});
+router.post(
+  "/:giftCardId/unblock",
+  requireRole("finance", "admin"),
+  async (req, res) => {
+    try {
+      const { giftCardId } = req.params;
+      const { reason } = req.body;
+      const locationId = await fetchPrimaryLocationId();
+      await unblockGiftCard({ giftCardId, locationId, reason });
+      logGiftCardAction(req, "UNBLOCK", { cardId: giftCardId, reason });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(error.status || 500).json({
+        error: error.message || "Unable to unblock gift card",
+      });
+    }
+  },
+);
 
-router.post("/:giftCardId/adjust", async (req, res) => {
-  try {
-    const { giftCardId } = req.params;
-    const { amount, currency = "USD", reason } = req.body;
-    const amountCents = centsFromAmount(amount);
-    const locationId = await fetchPrimaryLocationId();
+router.post(
+  "/:giftCardId/adjust",
+  requireRole("finance", "admin"),
+  async (req, res) => {
+    try {
+      const { giftCardId } = req.params;
+      const { amount, currency = "USD", reason } = req.body;
+      const amountCents = centsFromAmount(amount);
+      const locationId = await fetchPrimaryLocationId();
     await adjustGiftCardBalance({
       giftCardId,
       amountCents,
-      currency,
-      locationId,
-      reason,
-    });
-    res.json({ success: true });
-  } catch (error) {
-    res.status(error.status || 500).json({
-      error: error.message || "Unable to adjust card balance",
-    });
-  }
-});
+        currency,
+        locationId,
+        reason,
+      });
+      logGiftCardAction(req, "ADJUST", {
+        cardId: giftCardId,
+        amountCents,
+        currency,
+        reason,
+      });
+      res.json({ success: true });
+    } catch (error) {
+      res.status(error.status || 500).json({
+        error: error.message || "Unable to adjust card balance",
+      });
+    }
+  },
+);
 
 module.exports = router;

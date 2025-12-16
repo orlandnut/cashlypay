@@ -42,10 +42,12 @@ db.prepare(
     invoice_id TEXT,
     type TEXT NOT NULL,
     payload TEXT,
+    actor TEXT,
     timestamp TEXT NOT NULL
   )
 `,
 ).run();
+ensureColumn("activity_log", "actor", "TEXT");
 
 db.prepare(
   `

@@ -1,7 +1,7 @@
 const db = require("./db");
 
 const insertStmt = db.prepare(
-  "INSERT INTO activity_log (id, invoice_id, type, payload, timestamp) VALUES (?, ?, ?, ?, ?)",
+  "INSERT INTO activity_log (id, invoice_id, type, payload, actor, timestamp) VALUES (?, ?, ?, ?, ?, ?)",
 );
 
 const addEvent = (event) => {
@@ -11,6 +11,7 @@ const addEvent = (event) => {
     event.invoiceId || null,
     event.type,
     JSON.stringify(event.payload || null),
+    event.actor || null,
     new Date().toISOString(),
   );
 };
@@ -26,6 +27,7 @@ const listByInvoice = (invoiceId) => {
       invoiceId: row.invoice_id,
       type: row.type,
       payload: row.payload ? JSON.parse(row.payload) : null,
+      actor: row.actor,
       timestamp: row.timestamp,
     }));
 };
@@ -39,6 +41,23 @@ const listAll = () => {
       invoiceId: row.invoice_id,
       type: row.type,
       payload: row.payload ? JSON.parse(row.payload) : null,
+      actor: row.actor,
+      timestamp: row.timestamp,
+    }));
+};
+
+const listByTypePrefix = (prefix, limit = 20) => {
+  const stmt = db.prepare(
+    "SELECT * FROM activity_log WHERE type LIKE ? ORDER BY timestamp DESC LIMIT ?",
+  );
+  return stmt
+    .all(`${prefix}%`, limit)
+    .map((row) => ({
+      id: row.id,
+      invoiceId: row.invoice_id,
+      type: row.type,
+      payload: row.payload ? JSON.parse(row.payload) : null,
+      actor: row.actor,
       timestamp: row.timestamp,
     }));
 };
@@ -47,4 +66,5 @@ module.exports = {
   addEvent,
   listByInvoice,
   listAll,
+  listByTypePrefix,
 };

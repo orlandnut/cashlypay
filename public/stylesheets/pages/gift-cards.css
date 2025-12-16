@@ -135,6 +135,47 @@
   font-size: var(--text-sm);
 }
 
+.audit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.audit-list li {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md);
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.audit-type {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.audit-meta {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  display: inline-block;
+  margin-left: var(--space-xs);
+}
+
+.audit-payload {
+  margin: 0;
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 0.85rem;
+  overflow-x: auto;
+}
+
 .pagination-links {
   margin-top: var(--space-md);
 }

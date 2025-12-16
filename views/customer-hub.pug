@@ -12,6 +12,12 @@ block hero
 
 block content
   - const managementLocationId = locationId || 'main'
+  - const formatCardBalance = (money) => {
+  -   const amount = money && typeof money.amount === 'number' ? money.amount : 0;
+  -   const currency = (money && money.currency) || 'USD';
+  -   return `$${(amount / 100).toFixed(2)} ${currency}`;
+  - }
+  - const formatCardDate = (value) => value ? new Date(value).toLocaleString() : '—'
   - const cardCount = cardCustomers || 0
   - const manualCount = manualCustomers || Math.max((totalCustomers || 0) - cardCount, 0)
   main.dashboard
@@ -43,6 +49,7 @@ block content
             - const paymentLabel = hasCard ? 'Card on file' : 'Manual billing'
             - const paymentMeta = hasCard ? `${customer.cards[0].cardBrand || 'Card'} •••• ${customer.cards[0].last4 || '0000'}` : 'Sync payment source'
             - const phoneMeta = customer.phoneNumber ? customer.phoneNumber : null
+            - const linkedCards = (customerGiftCards && customerGiftCards[customer.id]) || []
             .customer-card
               a.customer-link(href=customer.id ? `/management/${managementLocationId}/${customer.id}` : '#')
                 .customer-card__halo
@@ -63,6 +70,24 @@ block content
                     span.card-brand #{paymentMeta}
                     if phoneMeta
                       span.card-meta #{phoneMeta}
+                  if linkedCards.length
+                    .linked-card-panel
+                      span.panel-label Linked gift cards
+                      each card in linkedCards
+                        .linked-card-pill
+                          div
+                            strong= card.gan || card.id
+                            span.linked-card-balance= formatCardBalance(card.balance)
+                            span.linked-card-state #{card.state || '—'}
+                            span.linked-card-meta Updated #{formatCardDate(card.updatedAt)}
+                          .linked-card-actions
+                            a.button.button-ghost.button-sm(href=`/gift-cards?q=${card.id}`) View
+                            if permissions && permissions.canManageGiftCards
+                              a.button.button-secondary.button-sm(href=`/gift-cards?q=${card.id}#load-card`) Load funds
+                  else if permissions && permissions.canManageGiftCards
+                    .linked-card-empty
+                      span.text-secondary No gift card linked.
+                      a.button.button-ghost.button-sm(href=`/gift-cards?customerId=${customer.id}#issue-card`) Issue card
                   .customer-card__cta
                     span.cta-label Command Center
                     svg.icon-arrow(width="20" height="20" viewBox="0 0 24 24" fill="none")
