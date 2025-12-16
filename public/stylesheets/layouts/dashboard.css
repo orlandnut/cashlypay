@@ -303,7 +303,8 @@ body.sidebar-collapsed .main-wrapper {
 .sidebar__branding {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  justify-content: space-between;
+  gap: var(--space-md);
   width: 100%;
 }
 
@@ -314,6 +315,7 @@ body.sidebar-collapsed .main-wrapper {
   text-decoration: none;
   color: inherit;
   flex: 1;
+  min-width: 0;
   padding: var(--space-sm);
   border-radius: var(--radius-xl);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -374,14 +376,29 @@ body.sidebar-collapsed .main-wrapper {
   flex-direction: column;
   gap: var(--space-xxs);
   line-height: 1.1;
+  min-width: 0;
 }
 
-.brand__name {
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+.brand__eyebrow {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--text-tertiary);
+}
+
+.brand__descriptor {
+  display: block;
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.brand-lockup__env {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .brand__wordmark {
@@ -392,14 +409,6 @@ body.sidebar-collapsed .main-wrapper {
 
 .brand__wordmark .wordmark__signal {
   margin-bottom: 0.2rem;
-}
-
-.brand__tagline {
-  margin: 0;
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
 }
 
 .sidebar__profile {
@@ -512,7 +521,24 @@ body.sidebar-collapsed .main-wrapper {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: var(--text-xs);
-  margin: var(--space-sm) var(--space-lg) var(--space-xs);
+  margin: 0 0 var(--space-xs);
+}
+
+.nav__section {
+  padding: var(--space-sm) var(--space-lg) var(--space-md);
+}
+
+.nav__section + .nav__section {
+  margin-top: var(--space-sm);
+}
+
+.nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
 }
 
 .nav-item {
@@ -571,4 +597,20 @@ body.sidebar-collapsed .main-wrapper {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.15),
     0 10px 22px rgba(0, 0, 0, 0.4);
+}
+
+.nav-item--cta {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.02);
+  font-weight: 600;
+}
+
+.nav-item--cta:hover {
+  background: rgba(0, 213, 75, 0.16);
+  border-color: rgba(0, 213, 75, 0.45);
+  color: #f4fff8;
+}
+
+.nav__section--actions .nav-item {
+  justify-content: center;
 }

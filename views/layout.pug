@@ -51,6 +51,8 @@ html(lang="en" class="dark")
 
     //- Sidebar
     aside.sidebar
+      - const sidebarEnv = envStatus && typeof envStatus === 'object' ? envStatus : null;
+      - const sidebarEnvTone = sidebarEnv && sidebarEnv.tone ? sidebarEnv.tone : (sidebarEnv && sidebarEnv.label && sidebarEnv.label.toLowerCase().includes('live') ? 'live' : 'sandbox');
       .sidebar__header
         .sidebar__branding
           a.brand-lockup(href="/")
@@ -58,13 +60,18 @@ html(lang="en" class="dark")
             .logo-mark
               img(src="/images/cashly-logo.png" alt="CashlyPay mark" width="56" height="56" loading="lazy" decoding="async")
             .brand__text
-              span.brand__name CashlyPay
+              span.brand__eyebrow Finance OS
               .brand__wordmark.wordmark.wordmark--compact
                 span.wordmark__main Cashly
                 span.wordmark__accent Pay
                 span.wordmark__signal
-              p.brand__tagline Finance OS
-          span.sidebar__title-command Command Center
+              span.brand__descriptor Command Center
+          if sidebarEnv
+            span.brand-lockup__env(class=`env-pill env-pill--${sidebarEnvTone === 'live' ? 'live' : 'sandbox'}`)
+              span.env-pill__dot
+              span.env-pill__label= sidebarEnvTone === 'live' ? 'Live mode' : 'Sandbox mode'
+          else
+            span.sidebar__title-command Command Center
       .sidebar__profile
         .avatar A
         .profile__meta
@@ -76,36 +83,49 @@ html(lang="en" class="dark")
           span Insights
 
       nav.nav
-        p.nav-section Heading
-        a.nav-item(href="/" class=currentPath === '/' ? 'active' : '')
-          svg: use(href="#icon-dashboard")
-          span Dashboard
-        -
-          const customersActive =
-            currentPath &&
-            (currentPath.startsWith('/customers') || currentPath.startsWith('/management'));
-        a.nav-item(href="/customers" class=customersActive ? 'active' : '')
-          svg: use(href="#icon-invoice")
-          span Customer Hub
-        a.nav-item(href="/catalog" class=(currentPath && currentPath.startsWith('/catalog') ? 'active' : ''))
-          svg: use(href="#icon-dashboard")
-          span Services
-        a.nav-item(href="/gift-cards" class=(currentPath && currentPath.startsWith('/gift-cards') ? 'active' : ''))
-          svg: use(href="#icon-invoice")
-          span Gift Cards
-        a.nav-item(href="/analytics" class=(currentPath && currentPath.startsWith('/analytics') ? 'active' : ''))
-          svg: use(href="#icon-dashboard")
-          span Analytics
-        a.nav-item(href="/admin/reminders" class=(currentPath && currentPath.startsWith('/admin') ? 'active' : ''))
-          svg: use(href="#icon-invoice")
-          span Reminders
-        a.nav-item(href="/payouts/console" class=(currentPath && currentPath.startsWith('/payouts') ? 'active' : ''))
-          svg: use(href="#icon-dashboard")
-          span Payouts
-        p.nav-section Actions
-        a.nav-item(href="/customers/new")
-          svg: use(href="#icon-dashboard")
-          span Add Customer
+        .nav__section
+          p.nav-section Workspace
+          ul.nav__list
+            li
+              a.nav-item(href="/" class=currentPath === '/' ? 'active' : '')
+                svg: use(href="#icon-dashboard")
+                span Dashboard
+            -
+              const customersActive =
+                currentPath &&
+                (currentPath.startsWith('/customers') || currentPath.startsWith('/management'));
+            li
+              a.nav-item(href="/customers" class=customersActive ? 'active' : '')
+                svg: use(href="#icon-invoice")
+                span Customer Hub
+            li
+              a.nav-item(href="/catalog" class=(currentPath && currentPath.startsWith('/catalog') ? 'active' : ''))
+                svg: use(href="#icon-dashboard")
+                span Services
+        .nav__section
+          p.nav-section Revenue Ops
+          ul.nav__list
+            li
+              a.nav-item(href="/gift-cards" class=(currentPath && currentPath.startsWith('/gift-cards') ? 'active' : ''))
+                svg: use(href="#icon-invoice")
+                span Gift Cards
+            li
+              a.nav-item(href="/analytics" class=(currentPath && currentPath.startsWith('/analytics') ? 'active' : ''))
+                svg: use(href="#icon-dashboard")
+                span Analytics
+            li
+              a.nav-item(href="/admin/reminders" class=(currentPath && currentPath.startsWith('/admin') ? 'active' : ''))
+                svg: use(href="#icon-invoice")
+                span Reminders
+            li
+              a.nav-item(href="/payouts/console" class=(currentPath && currentPath.startsWith('/payouts') ? 'active' : ''))
+                svg: use(href="#icon-dashboard")
+                span Payouts
+        .nav__section.nav__section--actions
+          p.nav-section Quick Action
+          a.nav-item.nav-item--cta(href="/customers/new")
+            svg: use(href="#icon-dashboard")
+            span Add Customer
     
     .sidebar-overlay
     //- Main Content
@@ -138,4 +158,4 @@ html(lang="en" class="dark")
             a.text-sm(href="#") Privacy
             a.text-sm(href="#") Support
     block commandDrawer
-      +commandDrawer({ currentPath })
+      +commandDrawer({ currentPath, status: envStatus })

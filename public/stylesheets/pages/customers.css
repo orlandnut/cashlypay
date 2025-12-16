@@ -342,6 +342,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-md);
+  flex-wrap: wrap;
 }
 
 .command-drawer__brand {
@@ -349,6 +350,11 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-sm);
+}
+
+.command-drawer__env {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .command-drawer__brand-lockup {
