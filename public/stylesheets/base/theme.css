@@ -1,4 +1,4 @@
-/* Modern Dark Theme - Cash App Inspired */
+/* Cashly Theme Tokens */
 :root {
   /* Layout Variables */
   --header-height: 64px;
@@ -28,14 +28,14 @@
   --theme-info-bg: rgba(10, 132, 255, 0.1);
 
   /* Core Theme Colors - Light */
-  --theme-background: #ffffff;
-  --theme-surface: #f8f9fa;
-  --theme-surface-raised: #ffffff;
-  --theme-surface-overlay: rgba(248, 249, 250, 0.8);
-  --theme-surface-hover: #f1f3f5;
-  --theme-divider: rgba(0, 0, 0, 0.08);
-  --theme-border: rgba(0, 0, 0, 0.1);
-  --theme-border-hover: rgba(0, 0, 0, 0.2);
+  --theme-background: #010103;
+  --theme-surface: rgba(5, 8, 10, 0.96);
+  --theme-surface-raised: rgba(8, 12, 16, 0.94);
+  --theme-surface-overlay: rgba(5, 6, 8, 0.8);
+  --theme-surface-hover: rgba(12, 16, 20, 0.98);
+  --theme-divider: rgba(255, 255, 255, 0.05);
+  --theme-border: rgba(255, 255, 255, 0.08);
+  --theme-border-hover: rgba(255, 255, 255, 0.15);
 
   /* Accent Colors */
   --theme-accent: #00d54b;
@@ -43,9 +43,9 @@
   --theme-accent-bg: rgba(0, 213, 75, 0.1);
 
   /* Text Colors - Light */
-  --text-primary: rgba(0, 0, 0, 0.95);
-  --text-secondary: rgba(0, 0, 0, 0.7);
-  --text-tertiary: rgba(0, 0, 0, 0.5);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-tertiary: rgba(255, 255, 255, 0.55);
   --text-brand: var(--color-brand);
 
   /* Font Variables */
@@ -53,6 +53,14 @@
     "Square Sans Text", system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, sans-serif;
   --font-mono: "SF Mono", "Roboto Mono", monospace;
+
+  --density-space: 1;
+  --density-line-height: 1.35;
+}
+
+body[data-density="compact"] {
+  --density-space: 0.7;
+  --density-line-height: 1.15;
 }
 
 .skip-link {

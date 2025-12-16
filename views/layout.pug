@@ -31,6 +31,7 @@ html(lang="en" class="dark")
     //- Main Stylesheet
     link(rel="stylesheet" href="/stylesheets/main.css")
     //- Shared dark theme (payout) styles
+    link(rel="stylesheet" href="/stylesheets/themes/modern-dark.css")
     link(rel="stylesheet" href="/stylesheets/pages/dark-theme.css")
     block styles
     
@@ -41,7 +42,7 @@ html(lang="en" class="dark")
       script(defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js")
     script(defer src="/javascripts/dashboard.js")
   
-  body.dark
+  body.dark(data-theme="command")
     a.skip-link(href="#dashboardMain") Skip to dashboard
     #sr-announcer.sr-only(aria-live="assertive" aria-atomic="true")
     #toast-stack.toast-stack
@@ -49,6 +50,7 @@ html(lang="en" class="dark")
     include components/dark-hero.pug
     include components/command-drawer.pug
     include components/mobile-tabs.pug
+    include components/action-dock.pug
 
     //- Sidebar
     aside.sidebar
@@ -161,3 +163,4 @@ html(lang="en" class="dark")
     block commandDrawer
       +commandDrawer({ currentPath, status: envStatus })
     +mobileTabs({ currentPath })
+    +actionDock()

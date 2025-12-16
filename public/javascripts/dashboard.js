@@ -1,4 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const themeToggle = document.querySelector("[data-theme-toggle]");
+  const root = document.documentElement;
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      const current = root.getAttribute("data-theme") || "command";
+      const next = current === "command" ? "studio" : "command";
+      root.setAttribute("data-theme", next);
+      themeToggle.setAttribute("aria-pressed", next === "studio");
+    });
+  }
   var drawer = document.querySelector(".command-drawer");
   var drawerPanel = drawer
     ? drawer.querySelector(".command-drawer__panel")
@@ -300,6 +310,35 @@ document.addEventListener("DOMContentLoaded", function () {
       handleCollapsible(element);
     });
 
+  var densityToggle = document.querySelector("[data-density-toggle]");
+  var densityLabel = densityToggle
+    ? densityToggle.querySelector("[data-density-label]")
+    : null;
+  var densityKey = "cashly-density";
+  if (densityToggle) {
+    var storedDensity = localStorage.getItem(densityKey);
+    if (storedDensity) {
+      document.body.setAttribute("data-density", storedDensity);
+      densityToggle.setAttribute("aria-pressed", storedDensity === "compact");
+      if (densityLabel) {
+        densityLabel.textContent =
+          storedDensity === "compact" ? "Compact" : "Comfortable";
+      }
+    }
+    densityToggle.addEventListener("click", function () {
+      var current =
+        document.body.getAttribute("data-density") || "comfortable";
+      var next = current === "comfortable" ? "compact" : "comfortable";
+      document.body.setAttribute("data-density", next);
+      localStorage.setItem(densityKey, next);
+      densityToggle.setAttribute("aria-pressed", next === "compact");
+      if (densityLabel) {
+        densityLabel.textContent =
+          next === "compact" ? "Compact" : "Comfortable";
+      }
+    });
+  }
+
   function showToast(message, tone) {
     var stack = document.getElementById("toast-stack");
     if (!stack) return;
@@ -325,7 +364,8 @@ document.addEventListener("DOMContentLoaded", function () {
         button.getAttribute("data-confirm") ||
         "Run the reminder queue now? This sends due notices.";
       if (!window.confirm(message)) return;
-      fetch("/admin/reminders/run", {
+      var endpoint = button.getAttribute("data-queue-endpoint") || "/admin/reminders/run";
+      fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,0 +1,23 @@
+mixin actionDock(opts)
+  - const options = opts || {};
+  - const primaryHref = options.primaryHref || "/management";
+  - const queueHref = options.queueHref || "/admin/reminders";
+  nav.action-dock(aria-label="Quick actions")
+    a.action-dock__button.action-dock__button--primary(href=primaryHref)
+      span.action-dock__label Create Invoice
+      span.action-dock__hint Launch composer
+    button.action-dock__button.action-dock__button--danger(
+      type="button"
+      data-run-reminders="true"
+      data-confirm="Run the reminder queue now?"
+      data-queue-endpoint=queueHref
+    )
+      span.action-dock__label Run Reminder Queue
+      span.action-dock__hint Automation
+    button.action-dock__button.action-dock__button--ghost(
+      type="button"
+      data-density-toggle="true"
+      aria-pressed="false"
+    )
+      span.action-dock__label Density
+      span.action-dock__hint(data-density-label) Comfortable

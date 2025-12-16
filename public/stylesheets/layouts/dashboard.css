@@ -110,7 +110,10 @@ body.sidebar-collapsed .main-wrapper {
 .main-wrapper {
   margin-left: var(--sidebar-width);
   min-height: 100vh;
-  padding: var(--space-lg);
+  padding:
+    calc(var(--safe-area-top) + clamp(var(--space-md), 2vw, var(--space-xl)))
+    clamp(calc(var(--safe-area-left) + 1rem), 4vw, var(--space-3xl))
+    calc(var(--safe-area-bottom) + clamp(var(--space-md), 2vw, var(--space-xl)));
 }
 
 .page-header {
