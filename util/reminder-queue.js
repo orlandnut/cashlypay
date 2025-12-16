@@ -30,9 +30,25 @@ const writeReminders = (reminders) => {
   fs.writeFileSync(DATA_FILE, JSON.stringify(reminders, null, 2));
 };
 
+const logPrefix = "[ReminderQueue]";
 const log = (message) => {
   // eslint-disable-next-line no-console
-  console.log(`[ReminderQueue] ${message}`);
+  console.log(`${logPrefix} ${message}`);
+};
+
+const recordActivity = (payload) => {
+  try {
+    activityStore.addEvent(payload);
+  } catch (error) {
+    if (error?.code === "SQLITE_READONLY") {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `${logPrefix} Unable to write activity log for ${payload.invoiceId}: ${error.message}`,
+      );
+      return;
+    }
+    throw error;
+  }
 };
 
 const scheduleReminder = (reminder) => {
@@ -152,7 +168,7 @@ const processReminders = () => {
         log(
           `Sending ${reminder.type} reminder for invoice ${reminder.invoiceId}`,
         );
-        activityStore.addEvent({
+        recordActivity({
           invoiceId: reminder.invoiceId,
           type: "REMINDER_SENT",
           payload: reminder,

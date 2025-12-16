@@ -42,12 +42,15 @@ const handleGiftCardWebhookEvent = async (eventType, data) => {
 
 const fetchAllGiftCards = async () => {
   const cards = [];
-  let cursor = null;
+  let cursor;
   do {
-    const { cards: batch, cursor: nextCursor } = await listGiftCards({
-      limit: 50,
-      cursor,
-    });
+    const listOptions = { limit: 50 };
+    if (cursor) {
+      listOptions.cursor = cursor;
+    }
+    const { cards: batch, cursor: nextCursor } = await listGiftCards(
+      listOptions,
+    );
     cards.push(...batch);
     cursor = nextCursor;
   } while (cursor);

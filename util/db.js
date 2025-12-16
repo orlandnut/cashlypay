@@ -7,10 +7,17 @@ const db = new Database(DB_FILE);
 db.pragma("journal_mode = WAL");
 
 const ensureColumn = (table, column, definition) => {
-  const columns = db.prepare(`PRAGMA table_info(${table})`).all();
-  const exists = columns.some((entry) => entry.name === column);
-  if (!exists) {
-    db.prepare(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`).run();
+  try {
+    const columns = db.prepare(`PRAGMA table_info(${table})`).all();
+    const exists = columns.some((entry) => entry.name === column);
+    if (!exists) {
+      db.prepare(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`).run();
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[DB] Unable to ensure column ${table}.${column}: ${error.message}`,
+    );
   }
 };
 

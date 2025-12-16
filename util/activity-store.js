@@ -1,19 +1,65 @@
 const db = require("./db");
 
-const insertStmt = db.prepare(
-  "INSERT INTO activity_log (id, invoice_id, type, payload, actor, timestamp) VALUES (?, ?, ?, ?, ?, ?)",
-);
+const hasActorColumn = (() => {
+  try {
+    const columns = db.prepare("PRAGMA table_info(activity_log)").all();
+    return columns.some((entry) => entry.name === "actor");
+  } catch (error) {
+    return false;
+  }
+})();
+
+const insertStmt = hasActorColumn
+  ? db.prepare(
+      "INSERT INTO activity_log (id, invoice_id, type, payload, actor, timestamp) VALUES (?, ?, ?, ?, ?, ?)",
+    )
+  : db.prepare(
+      "INSERT INTO activity_log (id, invoice_id, type, payload, timestamp) VALUES (?, ?, ?, ?, ?)",
+    );
+
+const runInsert = (args, event) => {
+  try {
+    insertStmt.run(...args);
+  } catch (error) {
+    if (error && error.code === "SQLITE_READONLY") {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[ActivityLog] Unable to persist event ${event.type || "unknown"}: ${
+          error.message
+        }`,
+      );
+      return;
+    }
+    throw error;
+  }
+};
 
 const addEvent = (event) => {
   const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  insertStmt.run(
-    id,
-    event.invoiceId || null,
-    event.type,
-    JSON.stringify(event.payload || null),
-    event.actor || null,
-    new Date().toISOString(),
-  );
+  if (hasActorColumn) {
+    runInsert(
+      [
+        id,
+        event.invoiceId || null,
+        event.type,
+        JSON.stringify(event.payload || null),
+        event.actor || null,
+        new Date().toISOString(),
+      ],
+      event,
+    );
+  } else {
+    runInsert(
+      [
+        id,
+        event.invoiceId || null,
+        event.type,
+        JSON.stringify(event.payload || null),
+        new Date().toISOString(),
+      ],
+      event,
+    );
+  }
 };
 
 const listByInvoice = (invoiceId) => {
