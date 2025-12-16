@@ -46,6 +46,41 @@
   font-size: var(--text-sm);
 }
 
+.sync-meta {
+  margin-bottom: var(--space-2xl);
+  padding: var(--space-lg);
+  border-radius: var(--radius-2xl);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.sync-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.sync-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.sync-meta-text {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
 .filter-bar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

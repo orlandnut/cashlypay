@@ -18,6 +18,7 @@ const express = require("express");
 const crypto = require("crypto");
 const activityStore = require("../util/activity-store");
 const reminderQueue = require("../util/reminder-queue");
+const { handleGiftCardWebhookEvent } = require("../util/gift-card-sync");
 
 const router = express.Router();
 
@@ -43,7 +44,7 @@ const verifySignature = (req) => {
   );
 };
 
-router.post("/square", (req, res) => {
+router.post("/square", async (req, res) => {
   if (!verifySignature(req)) {
     return res.status(401).json({ message: "Invalid webhook signature" });
   }
@@ -63,6 +64,13 @@ router.post("/square", (req, res) => {
 
   if (invoice) {
     reminderQueue.scheduleFromInvoice(invoice);
+  }
+
+  if (
+    type &&
+    (type.startsWith("gift_card") || type.startsWith("gift_card_activity"))
+  ) {
+    await handleGiftCardWebhookEvent(type, { object: data?.object });
   }
 
   return res.status(200).json({ received: true });

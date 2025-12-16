@@ -12,6 +12,7 @@ const {
   adjustGiftCardBalance,
 } = require("../util/gift-card-service");
 const { locationsApi } = require("../util/square-client");
+const giftCardCache = require("../util/gift-card-cache");
 
 const router = express.Router();
 
@@ -84,6 +85,10 @@ router.get("/", async (req, res, next) => {
       filterChoices: {
         types: GIFT_CARD_TYPES,
         states: GIFT_CARD_STATES,
+      },
+      syncMeta: {
+        lastReconciledAt: giftCardCache.getLastReconciledAt(),
+        discrepancies: giftCardCache.listDiscrepancies(5),
       },
     });
   } catch (error) {

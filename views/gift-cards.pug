@@ -42,6 +42,29 @@ block content
       span.stat-label Balance outstanding
       strong.stat-value= formatMoney({ amount: stats.totalBalance, currency: 'USD' })
       span.stat-meta Across visible cards
+  if syncMeta
+    section.sync-meta
+      .section-heading
+        h2.section-label Sync health
+        if syncMeta.lastReconciledAt
+          span.section-meta Last run #{new Date(syncMeta.lastReconciledAt).toLocaleString()}
+        else
+          span.section-meta Awaiting first reconciliation
+      if syncMeta.discrepancies && syncMeta.discrepancies.length
+        ul.sync-list
+          each issue in syncMeta.discrepancies
+            li
+              div
+                strong= issue.kind || 'Alert'
+                span.sync-meta-text Card #{issue.giftCardId}
+              div
+                span.sync-meta-text Detected #{new Date(issue.detectedAt).toLocaleString()}
+                if typeof issue.squareBalance === 'number'
+                  span.sync-meta-text Square #{(issue.squareBalance / 100).toFixed(2)}
+                if typeof issue.cachedBalance === 'number'
+                  span.sync-meta-text Cache #{(issue.cachedBalance / 100).toFixed(2)}
+      else
+        p.text-secondary All good — no discrepancies detected.
 
   section.money-section
     .section-heading
