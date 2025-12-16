@@ -1,0 +1,39 @@
+service: cashlypay
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  environment:
+    NODE_ENV: production
+    SQUARE_ENVIRONMENT: ${env:SQUARE_ENVIRONMENT, 'sandbox'}
+    SQUARE_ACCESS_TOKEN: ${env:SQUARE_ACCESS_TOKEN, ''}
+    SQUARE_APP_ID: ${env:SQUARE_APP_ID, ''}
+    SQUARE_LOCATION_ID: ${env:SQUARE_LOCATION_ID, ''}
+    DEFAULT_USER_EMAIL: ${env:DEFAULT_USER_EMAIL, 'ops@cashly.local'}
+    DB_FILE_PATH: ${env:DB_FILE_PATH, '/tmp/app.db'}
+  httpApi:
+    cors: true
+
+package:
+  patterns:
+    - '!docs/**'
+    - '!data/**'
+    - '!tests/**'
+    - '!**/*.test.js'
+    - '!**/*.spec.js'
+    - '!node_modules/.cache/**'
+
+functions:
+  web:
+    handler: handler.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: '*'
+
+plugins:
+  - serverless-offline

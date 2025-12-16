@@ -381,11 +381,13 @@ body.sidebar-collapsed .main-wrapper {
 }
 
 .brand__wordmark {
-  height: 32px;
-  width: auto;
-  display: block;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
-  opacity: 0.98;
+  --wordmark-size: 1.35rem;
+  --wordmark-gap: 0.3rem;
+  --wordmark-spacing: 0.2em;
+}
+
+.brand__wordmark .wordmark__signal {
+  margin-bottom: 0.2rem;
 }
 
 .brand__tagline {

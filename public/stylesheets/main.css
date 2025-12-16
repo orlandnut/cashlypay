@@ -21,6 +21,7 @@ Licensed under the Apache License, Version 2.0
 /* Component Imports */
 @import "components/buttons.css";
 @import "components/forms.css";
+@import "components/brand.css";
 @import "components/tags.css";
 @import "components/invoice-card.css";
 @import "components/data-table.css";

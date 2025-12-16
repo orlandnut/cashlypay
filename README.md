@@ -89,6 +89,17 @@ Before you begin, note the following:
         npm run seed
         ```
 
+### Deploying with the Serverless Framework
+
+The repository now includes a ready-to-use `serverless.yml` and Lambda handler so you can ship the Express app through [Serverless.com](https://www.serverless.com/framework/docs/getting-started):
+
+1. Install the CLI (`npm install -g serverless`) or rely on the local dev dependency with `npx serverless --version`. Authenticate with your cloud provider (`serverless config credentials --provider aws --key … --secret …`) or `aws configure`.
+2. Ensure your environment variables are available to the CLI. For AWS, export them before deploying (for example `export SQUARE_ACCESS_TOKEN=…` and `export DB_FILE_PATH=/tmp/app.db`). The `serverless.yml` file maps these values into Lambda, defaulting the SQLite file path to `/tmp/app.db`, which is the only writable directory in Lambda. For persistent data you should ultimately replace SQLite with a managed database.
+3. Deploy with `npm run deploy:serverless` (or `npx serverless deploy`). The output will list the HTTPS URL provisioned by API Gateway.
+4. Develop locally with `npm run offline`, which uses `serverless-offline` to emulate API Gateway/Lambda (`localhost:3000` still works through `npm run dev` if preferred).
+
+Static assets and documentation folders are excluded from the deployment package; adjust the `package.patterns` block in `serverless.yml` if you need additional files.
+
 ## Project organization
 
 This Express.js project is organized as follows:

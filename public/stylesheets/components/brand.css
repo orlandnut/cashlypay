@@ -1,0 +1,204 @@
+@keyframes wordmarkPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.6;
+    box-shadow:
+      0 0 10px rgba(0, 255, 116, 0.45),
+      0 0 0 rgba(21, 180, 255, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+    box-shadow:
+      0 0 14px rgba(0, 255, 116, 0.75),
+      0 0 18px rgba(21, 180, 255, 0.45);
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+    box-shadow:
+      0 0 10px rgba(0, 255, 116, 0.45),
+      0 0 0 rgba(21, 180, 255, 0.2);
+  }
+}
+
+.wordmark {
+  --wordmark-size: 1.75rem;
+  --wordmark-gap: 0.45rem;
+  --wordmark-spacing: 0.18em;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: var(--wordmark-gap);
+  font-size: var(--wordmark-size);
+  font-weight: 700;
+  letter-spacing: var(--wordmark-spacing);
+  text-transform: uppercase;
+}
+
+.wordmark__main,
+.wordmark__accent {
+  display: inline-block;
+  position: relative;
+  background: linear-gradient(120deg, #f4fff8 0%, rgba(255, 255, 255, 0.85) 50%, rgba(170, 197, 255, 0.92) 100%);
+  color: #f4fff8;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 16px 25px rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.wordmark__accent {
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  background: linear-gradient(135deg, #00d54b 0%, #15b4ff 100%);
+  text-shadow:
+    0 20px 32px rgba(0, 0, 0, 0.35),
+    0 0 20px rgba(0, 213, 75, 0.5);
+}
+
+.wordmark__signal {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 50% 50%, #00ff74 40%, rgba(0, 213, 75, 0.6) 100%);
+  box-shadow:
+    0 0 12px rgba(0, 213, 75, 0.8),
+    0 0 24px rgba(21, 180, 255, 0.35);
+  animation: wordmarkPulse 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.wordmark--compact {
+  --wordmark-size: 1.3rem;
+  --wordmark-gap: 0.35rem;
+  --wordmark-spacing: 0.16em;
+}
+
+.wordmark--drawer {
+  --wordmark-size: 1.45rem;
+}
+
+.wordmark--hero {
+  --wordmark-size: 2rem;
+  --wordmark-gap: 0.55rem;
+  --wordmark-spacing: 0.24em;
+}
+
+.brand-chip {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    radial-gradient(circle at 5% 10%, rgba(255, 255, 255, 0.16), transparent 55%),
+    linear-gradient(135deg, rgba(0, 213, 75, 0.18), rgba(21, 180, 255, 0.12)),
+    rgba(4, 10, 10, 0.65);
+  box-shadow:
+    0 20px 42px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-chip::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+.brand-chip__icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 20px;
+  padding: 6px;
+  background:
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.3), transparent 55%),
+    rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: grid;
+  place-items: center;
+  box-shadow:
+    0 18px 30px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.brand-chip__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.brand-chip__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.brand-chip__eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.65));
+}
+
+.brand-chip__meta {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.75));
+}
+
+.brand-chip__badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.brand-chip__badge-text {
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.brand-chip__status-bar {
+  width: 46px;
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #00ff74 0%, #00d9ff 100%);
+  box-shadow:
+    0 0 15px rgba(0, 255, 116, 0.6),
+    inset 0 0 6px rgba(0, 0, 0, 0.35);
+}
+
+.brand-chip__pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #00ff74 35%, rgba(0, 213, 75, 0.65) 100%);
+  animation: wordmarkPulse 2.2s ease-in-out infinite;
+  box-shadow:
+    0 0 12px rgba(0, 213, 75, 0.85),
+    0 0 22px rgba(21, 180, 255, 0.35);
+}
+
+.brand-chip--drawer {
+  width: 100%;
+  padding: 0.75rem 1rem;
+}
+
+.brand-chip--hero {
+  padding: 1rem 1.25rem;
+  gap: 1.2rem;
+}

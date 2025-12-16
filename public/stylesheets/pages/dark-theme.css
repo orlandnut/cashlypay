@@ -100,10 +100,14 @@
 }
 
 .dark-hero__brand-logo {
-  height: 32px;
-  width: auto;
-  display: block;
+  --wordmark-size: 2.1rem;
+  --wordmark-gap: 0.55rem;
+  --wordmark-spacing: 0.3em;
   filter: drop-shadow(0 16px 30px rgba(0, 0, 0, 0.55));
+}
+
+.dark-hero__brand-logo .wordmark__signal {
+  margin-bottom: 0.35rem;
 }
 
 .dark-hero__brand-pill {
