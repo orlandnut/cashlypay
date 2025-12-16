@@ -11,6 +11,14 @@ const { locationsApi } = require("../util/square-client");
 
 const router = express.Router();
 
+const GIFT_CARD_TYPES = ["DIGITAL", "PHYSICAL"];
+const GIFT_CARD_STATES = [
+  "ACTIVE",
+  "BLOCKED",
+  "DEACTIVATED",
+  "PENDING",
+];
+
 const resolveEnvStatus = () => {
   const squareEnv = (
     process.env.SQUARE_ENVIRONMENT ||
@@ -31,9 +39,25 @@ const fetchPrimaryLocationId = async () => {
 
 router.get("/", async (req, res, next) => {
   try {
+    const {
+      type: typeFilter,
+      state: stateFilter,
+      customerId: customerFilter,
+      activityCardId,
+    } = req.query;
+    const listOptions = {
+      limit: 25,
+      type: typeFilter || undefined,
+      state: stateFilter || undefined,
+      customerId: customerFilter || undefined,
+    };
+    const activityOptions = {
+      limit: 25,
+      giftCardId: activityCardId || customerFilter || undefined,
+    };
     const [cardsResult, activityResult, locationId] = await Promise.all([
-      listGiftCards({ limit: 25 }),
-      listGiftCardActivities({ limit: 25 }),
+      listGiftCards(listOptions),
+      listGiftCardActivities(activityOptions),
       fetchPrimaryLocationId(),
     ]);
     const stats = buildGiftCardStats(cardsResult.cards);
@@ -47,6 +71,16 @@ router.get("/", async (req, res, next) => {
       message: req.query.status,
       errorMessage: req.query.error,
       locationId,
+      filters: {
+        type: typeFilter || "",
+        state: stateFilter || "",
+        customerId: customerFilter || "",
+        activityCardId: activityCardId || "",
+      },
+      filterChoices: {
+        types: GIFT_CARD_TYPES,
+        states: GIFT_CARD_STATES,
+      },
     });
   } catch (error) {
     next(error);

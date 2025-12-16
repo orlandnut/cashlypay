@@ -47,6 +47,32 @@ block content
     .section-heading
       h2.section-label Gift card directory
       span.section-meta= `${giftCards.length} records`
+    form.filter-bar(action="/gift-cards" method="get")
+      .filter-group
+        label
+          span Filter by type
+          select(name="type")
+            option(value="") All types
+            each type in filterChoices.types
+              option(value=type selected=filters.type === type)= type
+      .filter-group
+        label
+          span Filter by state
+          select(name="state")
+            option(value="") All states
+            each state in filterChoices.states
+              option(value=state selected=filters.state === state)= state
+      .filter-group
+        label
+          span Customer ID
+          input(type="text" name="customerId" placeholder="cust-id" value=filters.customerId)
+      .filter-group
+        label
+          span Activity card ID
+          input(type="text" name="activityCardId" placeholder="card-id" value=filters.activityCardId)
+      button.button.button-secondary(type="submit") Apply filters
+      if filters.type || filters.state || filters.customerId || filters.activityCardId
+        a.button.button-ghost(href="/gift-cards") Reset
     if giftCards && giftCards.length
       .table-wrapper
         table.table
@@ -69,7 +95,8 @@ block content
                   span.table-amount= formatMoney(card.balance)
                 td= card.type
                 td
-                  span.badge(class=`badge--${card.state?.toLowerCase()}`)= card.state || '—'
+                  - const stateClass = card.state ? `badge--${card.state.toLowerCase()}` : ''
+                  span.badge(class=stateClass)= card.state || '—'
                 td
                   if card.customerIds && card.customerIds.length
                     span.table-meta= card.customerIds.join(", ")
