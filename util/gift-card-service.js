@@ -302,6 +302,33 @@ const adjustGiftCardBalance = async ({
   );
 };
 
+const retrieveGiftCardByGan = async (gan) => {
+  const value = gan && gan.trim();
+  if (!value) {
+    throw new Error("GAN is required");
+  }
+  const { result } = await safeCall(() =>
+    giftCardsApi.retrieveGiftCardFromGAN({ gan: value }),
+  );
+  return mapGiftCard(result.giftCard);
+};
+
+const searchGiftCard = async (query) => {
+  if (!query) return null;
+  const value = query.trim();
+  if (!value) return null;
+  try {
+    return await retrieveGiftCard(value);
+  } catch (error) {
+    // continue to GAN lookup
+  }
+  try {
+    return await retrieveGiftCardByGan(value);
+  } catch (error) {
+    return null;
+  }
+};
+
 module.exports = {
   centsFromAmount,
   listGiftCards,
@@ -310,6 +337,8 @@ module.exports = {
   loadGiftCardBalance,
   buildGiftCardStats,
   retrieveGiftCard,
+  retrieveGiftCardByGan,
+  searchGiftCard,
   blockGiftCard,
   unblockGiftCard,
   adjustGiftCardBalance,

@@ -7,6 +7,7 @@ const {
   centsFromAmount,
   buildGiftCardStats,
   retrieveGiftCard,
+  searchGiftCard,
   blockGiftCard,
   unblockGiftCard,
   adjustGiftCardBalance,
@@ -23,6 +24,37 @@ const GIFT_CARD_STATES = [
   "DEACTIVATED",
   "PENDING",
 ];
+const LIMIT_OPTIONS = [10, 25, 50];
+const BUILT_IN_PRESETS = [
+  { label: "Active cards", params: { state: "ACTIVE" } },
+  { label: "Blocked cards", params: { state: "BLOCKED" } },
+  { label: "Digital cards", params: { type: "DIGITAL" } },
+];
+
+const sanitizeLimit = (value, fallback) => {
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed)) return fallback;
+  if (LIMIT_OPTIONS.includes(parsed)) return parsed;
+  return fallback;
+};
+
+const buildQueryString = (params = {}) => {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+    search.append(key, value);
+  });
+  return search.toString();
+};
+
+const appendToQuery = (base, extra = {}) => {
+  const search = new URLSearchParams(base || "");
+  Object.entries(extra).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+    search.set(key, value);
+  });
+  return search.toString();
+};
 
 const resolveEnvStatus = () => {
   const squareEnv = (
@@ -49,23 +81,80 @@ router.get("/", async (req, res, next) => {
       state: stateFilter,
       customerId: customerFilter,
       activityCardId,
+      cursor,
+      activityCursor,
+      limit: limitParam,
+      activityLimit: activityLimitParam,
+      q: searchQueryRaw,
     } = req.query;
+    const limit = sanitizeLimit(limitParam, 25);
+    const activityLimit = sanitizeLimit(activityLimitParam, 25);
+    const searchQuery =
+      typeof searchQueryRaw === "string" ? searchQueryRaw.trim() : "";
     const listOptions = {
-      limit: 25,
+      limit,
       type: typeFilter || undefined,
       state: stateFilter || undefined,
       customerId: customerFilter || undefined,
     };
+    if (cursor) {
+      listOptions.cursor = cursor;
+    }
     const activityOptions = {
-      limit: 25,
+      limit: activityLimit,
       giftCardId: activityCardId || customerFilter || undefined,
+      cursor: activityCursor || undefined,
     };
-    const [cardsResult, activityResult, locationId] = await Promise.all([
-      listGiftCards(listOptions),
+    const locationPromise = fetchPrimaryLocationId();
+    let cardsResult;
+    const searchMeta = {
+      query: searchQuery,
+      notFound: false,
+    };
+    if (searchQuery) {
+      const foundCard = await searchGiftCard(searchQuery);
+      if (foundCard) {
+        cardsResult = { cards: [foundCard], cursor: null };
+        activityOptions.giftCardId = foundCard.id;
+      } else {
+        cardsResult = { cards: [], cursor: null };
+        searchMeta.notFound = true;
+      }
+    } else {
+      cardsResult = await listGiftCards(listOptions);
+    }
+    const [activityResult, locationId] = await Promise.all([
       listGiftCardActivities(activityOptions),
-      fetchPrimaryLocationId(),
+      locationPromise,
     ]);
     const stats = buildGiftCardStats(cardsResult.cards);
+    const baseQueryParams = {
+      type: typeFilter || "",
+      state: stateFilter || "",
+      customerId: customerFilter || "",
+      activityCardId: activityCardId || "",
+      limit,
+      q: searchQuery,
+    };
+    const baseQueryString = buildQueryString(baseQueryParams);
+    const activityBaseQueryString = buildQueryString({
+      ...baseQueryParams,
+      activityLimit,
+    });
+    const pagination = {
+      cards:
+        !searchQuery && cardsResult.cursor
+          ? `/gift-cards?${appendToQuery(baseQueryString, {
+              cursor: cardsResult.cursor,
+            })}`
+          : null,
+      activities: activityResult.cursor
+        ? `/gift-cards?${appendToQuery(activityBaseQueryString, {
+            activityCursor: activityResult.cursor,
+          })}`
+        : null,
+    };
+
     res.render("gift-cards", {
       giftCards: cardsResult.cards,
       cardsCursor: cardsResult.cursor,
@@ -81,11 +170,21 @@ router.get("/", async (req, res, next) => {
         state: stateFilter || "",
         customerId: customerFilter || "",
         activityCardId: activityCardId || "",
+        limit,
+        activityLimit,
+        q: searchQuery,
       },
       filterChoices: {
         types: GIFT_CARD_TYPES,
         states: GIFT_CARD_STATES,
+        limitOptions: LIMIT_OPTIONS,
+        presets: BUILT_IN_PRESETS.map((preset) => ({
+          label: preset.label,
+          query: buildQueryString({ ...preset.params, limit }),
+        })),
       },
+      pagination,
+      searchMeta,
       syncMeta: {
         lastReconciledAt: giftCardCache.getLastReconciledAt(),
         discrepancies: giftCardCache.listDiscrepancies(5),

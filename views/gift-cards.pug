@@ -47,7 +47,7 @@ block content
       .section-heading
         h2.section-label Sync health
         if syncMeta.lastReconciledAt
-          span.section-meta Last run #{new Date(syncMeta.lastReconciledAt).toLocaleString()}
+          span.section-meta Last run #{formatDate(syncMeta.lastReconciledAt)}
         else
           span.section-meta Awaiting first reconciliation
       if syncMeta.discrepancies && syncMeta.discrepancies.length
@@ -58,7 +58,7 @@ block content
                 strong= issue.kind || 'Alert'
                 span.sync-meta-text Card #{issue.giftCardId}
               div
-                span.sync-meta-text Detected #{new Date(issue.detectedAt).toLocaleString()}
+                span.sync-meta-text Detected #{formatDate(issue.detectedAt)}
                 if typeof issue.squareBalance === 'number'
                   span.sync-meta-text Square #{(issue.squareBalance / 100).toFixed(2)}
                 if typeof issue.cachedBalance === 'number'
@@ -66,11 +66,18 @@ block content
       else
         p.text-secondary All good — no discrepancies detected.
 
+  if searchMeta && searchMeta.query && searchMeta.notFound
+    .toast-banner.toast-banner--error
+      span No cards matched "#{searchMeta.query}". Try a different ID or filter.
+  if searchMeta && searchMeta.query && !searchMeta.notFound
+    .toast-banner.toast-banner--success
+      span Showing results for "#{searchMeta.query}".
+
   section.money-section
     .section-heading
       h2.section-label Gift card directory
       span.section-meta= `${giftCards.length} records`
-    form.filter-bar(action="/gift-cards" method="get")
+    form.filter-bar(action="/gift-cards" method="get" data-filter-form)
       .filter-group
         label
           span Filter by type
@@ -93,9 +100,36 @@ block content
         label
           span Activity card ID
           input(type="text" name="activityCardId" placeholder="card-id" value=filters.activityCardId)
+      .filter-group
+        label
+          span Search ID / GAN
+          input(type="text" name="q" placeholder="Search..." value=filters.q)
+      .filter-group
+        label
+          span Cards per page
+          select(name="limit")
+            each option in filterChoices.limitOptions
+              option(value=option selected=filters.limit === option)= option
+      .filter-group
+        label
+          span Activity items
+          select(name="activityLimit")
+            each option in filterChoices.limitOptions
+              option(value=option selected=filters.activityLimit === option)= option
       button.button.button-secondary(type="submit") Apply filters
-      if filters.type || filters.state || filters.customerId || filters.activityCardId
+      if filters.type || filters.state || filters.customerId || filters.activityCardId || filters.q
         a.button.button-ghost(href="/gift-cards") Reset
+    .preset-panel
+      .preset-panel__header
+        h3 Saved presets
+        button.button.button-secondary.button-sm(type="button" data-save-preset) Save current
+      .preset-buttons
+        if filterChoices.presets && filterChoices.presets.length
+          each preset in filterChoices.presets
+            a.button.button-ghost(href=`/gift-cards?${preset.query}`)= preset.label
+        else
+          span.preset-empty No presets yet.
+      .preset-buttons(data-custom-presets)
     if giftCards && giftCards.length
       .table-wrapper
         table.table(data-card-table)
@@ -129,8 +163,9 @@ block content
                   span.table-meta= formatDate(card.createdAt)
     else
       p.text-secondary No gift cards yet. Issue your first card below.
-    if cardsCursor
-      p.text-secondary.mt-sm More cards available via Square dashboard (cursor #{cardsCursor}).
+    if pagination && pagination.cards
+      .pagination-links
+        a.button.button-ghost(href=pagination.cards) Load more cards
 
   section.money-section.gift-card-forms
     .form-card
@@ -190,8 +225,9 @@ block content
               span.activity-balance Balance: #{formatMoney(activity.balance)}
     else
       p.text-secondary No activity yet.
-    if activitiesCursor
-      p.text-secondary.mt-sm Additional activity available in Square (cursor #{activitiesCursor}).
+    if pagination && pagination.activities
+      .pagination-links
+        a.button.button-ghost(href=pagination.activities) Load more activity
 
   .card-overlay(data-card-overlay aria-hidden="true")
     .card-overlay__backdrop(data-card-close)
