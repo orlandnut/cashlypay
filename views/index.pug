@@ -43,8 +43,18 @@ extends layout
 - balanceMetrics.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" });
 - const statusStripMetrics = [
 -   { label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" },
--   { label: "Upcoming reminders", value: safeTickerStats.upcomingReminders, meta: "Next 24h window" },
--   { label: "Overdue invoices", value: invoiceTicker.overdueInvoiceCount, meta: invoiceTicker.overdueInvoiceCount ? "Escalate backlog" : "All clear" }
+-   {
+-     label: "Upcoming reminders",
+-     value: safeTickerStats.upcomingReminders,
+-     meta: "Next 24h window",
+-     delta: safeTickerStats.upcomingReminders > 5 ? { label: "High load", tone: "danger" } : null
+-   },
+-   {
+-     label: "Overdue invoices",
+-     value: invoiceTicker.overdueInvoiceCount,
+-     meta: invoiceTicker.overdueInvoiceCount ? "Escalate backlog" : "All clear",
+-     delta: invoiceTicker.overdueInvoiceCount ? { label: "Attention", tone: "danger" } : { label: "Clear", tone: "info" }
+-   }
 - ];
 - const heroBreadcrumbs = [
 -   { label: "Navigate", href: "/" },
@@ -94,30 +104,30 @@ block content
           button.balance-card__toggle(type="button" data-collapsible-trigger)
             div
               span.balance-label Customer Directory
-          small.balance-meta= cardCoverage ? `${cardCoverage}% cards on file` : "Sync to unlock coverage"
-        span.balance-card__indicator
-      .balance-card__summary(data-shimmer="true")
-        h2.balance-value #{totalCustomers} Active Customers
-        .chip-row
-          each metric, metricIndex in balanceMetrics
-            - const metricSlug = slugify(metric.label)
-            span.metric-chip(
-              data-metric-chip=metricSlug
-              data-animate-seq=metricIndex
-            )
-              span.metric-chip__value #{metric.value}
-              span.metric-chip__label #{metric.label}
-      .balance-card__details(data-collapsible-content)
-        ul.balance-card__metrics
-          each metric, detailIndex in balanceMetrics
-            - const detailSlug = slugify(metric.label)
-            li.balance-metric(
-              data-metric-chip=detailSlug
-              data-animate-seq=detailIndex
-            )
-              span.balance-metric__label #{metric.label}
-              span.balance-metric__value #{metric.value}
-              span.balance-metric__meta #{metric.meta}
+              small.balance-meta= cardCoverage ? `${cardCoverage}% cards on file` : "Sync to unlock coverage"
+            span.balance-card__indicator
+          .balance-card__summary(data-shimmer="true")
+            h2.balance-value #{totalCustomers} Active Customers
+            .chip-row
+              each metric, metricIndex in balanceMetrics
+                - const metricSlug = slugify(metric.label)
+                span.metric-chip(
+                  data-metric-chip=metricSlug
+                  data-animate-seq=metricIndex
+                )
+                  span.metric-chip__value #{metric.value}
+                  span.metric-chip__label #{metric.label}
+          .balance-card__details(data-collapsible-content)
+            ul.balance-card__metrics
+              each metric, detailIndex in balanceMetrics
+                - const detailSlug = slugify(metric.label)
+                li.balance-metric(
+                  data-metric-chip=detailSlug
+                  data-animate-seq=detailIndex
+                )
+                  span.balance-metric__label #{metric.label}
+                  span.balance-metric__value #{metric.value}
+                  span.balance-metric__meta #{metric.meta}
 
         section.quick-actions
           .action-card
@@ -127,112 +137,112 @@ block content
             h3 Add Service
             p Launch catalog with curated services per location.
             a.button.button-secondary.button-sm(href=managementHref) Go to catalog
-      .action-card
-        span.action-card__icon
-          svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
-            path(d="M5 4h14v16H5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round")
-        h3 Create Invoice
-        p Build an invoice or estimate with autopay preferences.
-        a.button.button-secondary.button-sm(href=invoiceHref) Launch composer
-      .action-card
-        span.action-card__icon
-          svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
-            path(d="M4 12h16M4 6h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round")
-        h3 Payout Console
-        p Monitor rails, approvals, and cash positions.
-        a.button.button-secondary.button-sm(href="/payouts/console") View console
+          .action-card
+            span.action-card__icon
+              svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
+                path(d="M5 4h14v16H5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round")
+            h3 Create Invoice
+            p Build an invoice or estimate with autopay preferences.
+            a.button.button-secondary.button-sm(href=invoiceHref) Launch composer
+          .action-card
+            span.action-card__icon
+              svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
+                path(d="M4 12h16M4 6h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+            h3 Payout Console
+            p Monitor rails, approvals, and cash positions.
+            a.button.button-secondary.button-sm(href="/payouts/console") View console
 
         section.money-section
           h2.section-label Command Surface
           .service-actions
-        .service-card(data-shimmer="true" data-animate-seq="1")
-          .service-card__icon
-            span 📊
-          h3 Reminder Pipeline
-          p.text-secondary AI pacing keeps finance teams ahead of due dates.
-          ul.metric-stack
-            each signal, signalIndex in heroSignals
-              - const signalSlug = slugify(signal.label)
-              li(
-                data-metric-chip=signalSlug
-                data-animate-seq=signalIndex
-              )
-                span.metric-label #{signal.label}
-                span.metric-value #{signal.value}
-                span.metric-meta #{signal.meta}
-        .service-card(data-shimmer="true" data-animate-seq="2")
-          .service-card__icon
-            span 🧾
-          h3 Invoice Pulse
-          p.text-secondary Track overdue pressure and scheduled cash-in.
-          .stat-stack-grid
-            .stat-stack(data-metric-chip=slugify("Overdue invoices") data-animate-seq="2")
-              span.stat-label Overdue invoices
-              span.stat-value #{invoiceTicker.overdueInvoiceCount}
-              span.stat-meta= invoiceTicker.overdueInvoiceCount ? "Escalate with ops" : "All clear"
-            .stat-stack(data-metric-chip=slugify("Scheduled invoices") data-animate-seq="3")
-              span.stat-label Scheduled / unpaid
-              span.stat-value #{invoiceTicker.scheduledInvoiceCount}
-              span.stat-meta Billing in next 7 days
-          .pill-row
-            a.pill-button(href="/analytics") Analytics
-            a.pill-button(href="/admin/reminders") Reminder Queue
-        .service-card(data-shimmer="true" data-animate-seq="3")
-          .service-card__icon
-            span 🙋
-          h3 Customer Snapshot
-          if customerBadge
-            p.text-secondary Latest sync: #{customerBadge}
-          else
-            p.text-secondary Waiting for first customer sync.
-          ul.metric-stack
-            li
-              span.metric-label Cards on file
-              span.metric-value #{cardCustomers.length}
-              span.metric-meta= `${cardCoverage}% of directory`
-            li
-              span.metric-label Manual billing
-              span.metric-value #{manualCustomers}
-              span.metric-meta Requires reminders
-          span.status-pill.status-pill--neutral Directory pulse
+            .service-card(data-shimmer="true" data-animate-seq="1")
+              .service-card__icon
+                span 📊
+              h3 Reminder Pipeline
+              p.text-secondary AI pacing keeps finance teams ahead of due dates.
+              ul.metric-stack
+                each signal, signalIndex in heroSignals
+                  - const signalSlug = slugify(signal.label)
+                  li(
+                    data-metric-chip=signalSlug
+                    data-animate-seq=signalIndex
+                  )
+                    span.metric-label #{signal.label}
+                    span.metric-value #{signal.value}
+                    span.metric-meta #{signal.meta}
+            .service-card(data-shimmer="true" data-animate-seq="2")
+              .service-card__icon
+                span 🧾
+              h3 Invoice Pulse
+              p.text-secondary Track overdue pressure and scheduled cash-in.
+              .stat-stack-grid
+                .stat-stack(data-metric-chip=slugify("Overdue invoices") data-animate-seq="2")
+                  span.stat-label Overdue invoices
+                  span.stat-value #{invoiceTicker.overdueInvoiceCount}
+                  span.stat-meta= invoiceTicker.overdueInvoiceCount ? "Escalate with ops" : "All clear"
+                .stat-stack(data-metric-chip=slugify("Scheduled invoices") data-animate-seq="3")
+                  span.stat-label Scheduled / unpaid
+                  span.stat-value #{invoiceTicker.scheduledInvoiceCount}
+                  span.stat-meta Billing in next 7 days
+              .pill-row
+                a.pill-button(href="/analytics") Analytics
+                a.pill-button(href="/admin/reminders") Reminder Queue
+            .service-card(data-shimmer="true" data-animate-seq="3")
+              .service-card__icon
+                span 🙋
+              h3 Customer Snapshot
+              if customerBadge
+                p.text-secondary Latest sync: #{customerBadge}
+              else
+                p.text-secondary Waiting for first customer sync.
+              ul.metric-stack
+                li
+                  span.metric-label Cards on file
+                  span.metric-value #{cardCustomers.length}
+                  span.metric-meta= `${cardCoverage}% of directory`
+                li
+                  span.metric-label Manual billing
+                  span.metric-value #{manualCustomers}
+                  span.metric-meta Requires reminders
+              span.status-pill.status-pill--neutral Directory pulse
 
         section.money-section
           h2.section-label Operations Radar
           .feature-grid
-        .feature-card.feature-card--wide(data-collapsible data-expanded data-animate-seq="4")
-          button.feature-card__toggle(type="button" data-collapsible-trigger)
-            span.feature-card__eyebrow Env status
-            span.feature-card__indicator
-          .feature-card__summary
-            h3 Modern Customer Workspace
-            span.hero__panel-chip.hero__panel-chip--status #{statusLabel}
-          .feature-card__details(data-collapsible-content)
-            p.text-secondary Manage clients, invoices, reminders, and analytics from a single command center.
-        .feature-card(data-collapsible data-animate-seq="5")
-          button.feature-card__toggle(type="button" data-collapsible-trigger)
-            span.feature-card__eyebrow Automation
-            span.feature-card__indicator
-          .feature-card__summary
-            h3 #{reminderCountValue} reminders staged
-          .feature-card__details(data-collapsible-content)
-            p.text-secondary Jobs continue running while you focus elsewhere.
-            ul.metric-chips
-              li.metric-chip(
-                data-metric-chip=slugify("Reminder queue")
-                data-animate-seq="6"
-              )
-                span.metric-chip__value #{reminderCountValue}
-                span.metric-chip__label Queue size
-            a.button.button-secondary.button-sm(href="/admin/reminders") Review queue
-        .feature-card(data-collapsible data-animate-seq="7")
-          button.feature-card__toggle(type="button" data-collapsible-trigger)
-            span.feature-card__eyebrow Insights
-            span.feature-card__indicator
-          .feature-card__summary
-            h3 View Analytics
-          .feature-card__details(data-collapsible-content)
-            p.text-secondary Surface KPIs, backlog, and reminder runs in one dashboard.
-            a.button.button-secondary.button-sm(href="/analytics") Open analytics
+            .feature-card.feature-card--wide(data-collapsible data-expanded data-animate-seq="4")
+              button.feature-card__toggle(type="button" data-collapsible-trigger)
+                span.feature-card__eyebrow Env status
+                span.feature-card__indicator
+              .feature-card__summary
+                h3 Modern Customer Workspace
+                span.hero__panel-chip.hero__panel-chip--status #{statusLabel}
+              .feature-card__details(data-collapsible-content)
+                p.text-secondary Manage clients, invoices, reminders, and analytics from a single command center.
+            .feature-card(data-collapsible data-animate-seq="5")
+              button.feature-card__toggle(type="button" data-collapsible-trigger)
+                span.feature-card__eyebrow Automation
+                span.feature-card__indicator
+              .feature-card__summary
+                h3 #{reminderCountValue} reminders staged
+              .feature-card__details(data-collapsible-content)
+                p.text-secondary Jobs continue running while you focus elsewhere.
+                ul.metric-chips
+                  li.metric-chip(
+                    data-metric-chip=slugify("Reminder queue")
+                    data-animate-seq="6"
+                  )
+                    span.metric-chip__value #{reminderCountValue}
+                    span.metric-chip__label Queue size
+                a.button.button-secondary.button-sm(href="/admin/reminders") Review queue
+            .feature-card(data-collapsible data-animate-seq="7")
+              button.feature-card__toggle(type="button" data-collapsible-trigger)
+                span.feature-card__eyebrow Insights
+                span.feature-card__indicator
+              .feature-card__summary
+                h3 View Analytics
+              .feature-card__details(data-collapsible-content)
+                p.text-secondary Surface KPIs, backlog, and reminder runs in one dashboard.
+                a.button.button-secondary.button-sm(href="/analytics") Open analytics
 
       aside.dashboard-shell__secondary
         .timeline-panel

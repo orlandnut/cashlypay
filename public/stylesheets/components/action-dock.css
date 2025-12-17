@@ -73,6 +73,27 @@
   background: rgba(255, 255, 255, 0.04);
   text-decoration: none;
   min-height: 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-dock__button.is-disabled,
+.action-dock__button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-dock__button.is-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  animation: dockPulse 1s ease infinite;
+}
+
+.action-dock__button.is-loading span {
+  opacity: 0.5;
 }
 
 .action-dock__button--primary {
@@ -123,5 +144,20 @@
 @media (max-width: 640px) {
   .action-dock__grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@keyframes dockPulse {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(0.98);
   }
 }

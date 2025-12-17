@@ -13,8 +13,6 @@ mixin statusStrip(metrics)
             span.status-strip__label= metric.label
             if metric.meta
               span.status-strip__meta= metric.meta
-      if typeof block !== 'undefined'
-        block
   else
     section.status-strip.status-strip--empty(data-status-strip="true")
       span.status-strip__label Workspace synced to Cashly
