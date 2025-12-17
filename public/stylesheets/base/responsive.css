@@ -133,18 +133,6 @@ footer.footer {
   }
 }
 
-/* Responsive Typography */
-@media (max-width: 640px) {
-  :root {
-    --text-xs: 0.75rem;
-    --text-sm: 0.875rem;
-    --text-base: 1rem;
-    --text-lg: 1.125rem;
-    --text-xl: 1.25rem;
-    --text-2xl: 1.5rem;
-  }
-}
-
 /* Responsive Spacing */
 @media (max-width: 640px) {
   :root {
