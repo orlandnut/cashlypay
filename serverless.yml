@@ -1,3 +1,5 @@
+org: ednutlab
+app: cashlypay
 service: cashlypay
 frameworkVersion: '3'
 

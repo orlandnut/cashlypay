@@ -2,10 +2,24 @@ document.addEventListener("DOMContentLoaded", function () {
   const themeToggle = document.querySelector("[data-theme-toggle]");
   const root = document.documentElement;
   const body = document.body;
+  const statusStrip = document.querySelector("[data-status-strip]");
+  let lastScrollY = 0;
   window.requestAnimationFrame(function () {
     body.classList.add("is-ready");
     initializeStagger();
   });
+  if (statusStrip) {
+    var handleStripScroll = function () {
+      var current = window.scrollY || 0;
+      if (current > lastScrollY && current > 80) {
+        statusStrip.classList.add("status-strip--hidden");
+      } else {
+        statusStrip.classList.remove("status-strip--hidden");
+      }
+      lastScrollY = current;
+    };
+    window.addEventListener("scroll", handleStripScroll, { passive: true });
+  }
   if (themeToggle) {
     themeToggle.addEventListener("click", () => {
       const current = root.getAttribute("data-theme") || "command";
@@ -103,6 +117,14 @@ document.addEventListener("DOMContentLoaded", function () {
       document.body.classList.remove("sidebar-open");
     }
   };
+
+  var commandSearch = document.querySelector("[data-command-search]");
+  if (commandSearch) {
+    commandSearch.addEventListener("click", function () {
+      toggleDrawer(true);
+      commandSearch.blur();
+    });
+  }
 
   if (trigger) {
     trigger.addEventListener("click", function () {
@@ -377,6 +399,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 3200);
   }
 
+  document.querySelectorAll("[data-sync-directory]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      if (button.disabled) return;
+      button.disabled = true;
+      button.classList.add("is-loading");
+      setTimeout(function () {
+        showToast("Directory sync kicked off", "success");
+        button.disabled = false;
+        button.classList.remove("is-loading");
+      }, 900);
+    });
+  });
+
   document.querySelectorAll("[data-run-reminders]").forEach(function (button) {
     button.addEventListener("click", function (event) {
       event.preventDefault();
@@ -403,6 +438,27 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
   });
+
+  var railToggle = document.querySelector("[data-rail-toggle]");
+  var railMedia = window.matchMedia("(min-width: 1200px)");
+  var syncRailState = function (mq) {
+    if (mq.matches) {
+      body.classList.add("rail-open");
+    } else {
+      body.classList.remove("rail-open");
+    }
+  };
+  if (railMedia.addEventListener) {
+    railMedia.addEventListener("change", syncRailState);
+  } else if (railMedia.addListener) {
+    railMedia.addListener(syncRailState);
+  }
+  syncRailState(railMedia);
+  if (railToggle) {
+    railToggle.addEventListener("click", function () {
+      body.classList.toggle("rail-open");
+    });
+  }
 
   enableDrawerGestures({
     drawer: drawer,

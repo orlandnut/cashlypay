@@ -13,9 +13,56 @@
 //- limitations under the License. 
 
 extends layout
+- const pageKey = 'dashboard';
+- const heroStatusLabel = (envStatus && envStatus.label) || 'Testing';
+- const totalCustomers = customers.length;
+- const cardCustomers = customers.filter((customer) => customer.cards && customer.cards.length);
+- const manualCustomers = totalCustomers - cardCustomers.length;
+- const lastCustomer = customers[0];
+- const primaryCustomerId = lastCustomer && lastCustomer.id;
+- const customerDetailHref = primaryCustomerId ? `/management/${locationId}/${primaryCustomerId}` : '/customers/new';
+- const managementHref = customerDetailHref;
+- const invoiceHref = customerDetailHref;
+- const estimateHref = primaryCustomerId ? `/estimate/new/${locationId}/${primaryCustomerId}` : '/customers/new';
+- const subscriptionHref = primaryCustomerId ? `/subscription/new/${locationId}/${primaryCustomerId}` : '/customers/new';
+- const reminderCountValue = typeof reminderCount === 'number' ? reminderCount : 0;
+- const directoryCustomers = Array.isArray(displayCustomers) ? displayCustomers : (customers || []);
+- const settingsHref = '/admin';
+- const safeTickerStats = tickerStats || { upcomingReminders: 0, overdueReminders: 0 };
+- const invoiceTicker = invoiceStats || { overdueInvoiceCount: 0, scheduledInvoiceCount: 0 };
+- const heroSignals = [];
+- heroSignals.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job waiting to send" : `${reminderCountValue} reminders staged` });
+- heroSignals.push({ label: "Upcoming reminders", value: safeTickerStats.upcomingReminders, meta: "Next 24h window" });
+- heroSignals.push({ label: "Overdue reminders", value: safeTickerStats.overdueReminders, meta: safeTickerStats.overdueReminders ? "Escalate with ops" : "All clear" });
+- heroSignals.push({ label: "Scheduled invoices", value: invoiceTicker.scheduledInvoiceCount, meta: "In-flight billing" });
+- const cardCoverage = totalCustomers ? Math.round((cardCustomers.length / totalCustomers) * 100) : 0;
+- const statusLabel = heroStatusLabel;
+- const balanceMetrics = [];
+- balanceMetrics.push({ label: "Cards on file", value: cardCustomers.length, meta: cardCoverage ? `${cardCoverage}% coverage` : "Sync to unlock" });
+- balanceMetrics.push({ label: "Manual billing", value: manualCustomers, meta: manualCustomers === 1 ? "Needs reminder" : "Need reminders" });
+- balanceMetrics.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" });
+- const statusStripMetrics = [
+-   { label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" },
+-   { label: "Upcoming reminders", value: safeTickerStats.upcomingReminders, meta: "Next 24h window" },
+-   { label: "Overdue invoices", value: invoiceTicker.overdueInvoiceCount, meta: invoiceTicker.overdueInvoiceCount ? "Escalate backlog" : "All clear" }
+- ];
+- const heroBreadcrumbs = [
+-   { label: "Navigate", href: "/" },
+-   { label: "Dashboard", active: true }
+- ];
+- const actionDockOptions = {
+-   primaryHref: invoiceHref,
+-   queueHref: "/admin/reminders",
+-   context: 'dashboard',
+-   shortcuts: [
+-     { label: "Add Customer", hint: "Customer Hub", href: "/customers/new", tone: "secondary", animateSeq: 5 },
+-     { label: "Sync Directory", hint: "Square sandbox", tone: "ghost", attrs: { "data-sync-directory": "true" }, animateSeq: 6 }
+-   ]
+- };
+- const timelineEntries = Array.isArray(reminderTimeline) ? reminderTimeline : [];
+- const customerBadge = lastCustomer ? `${lastCustomer.givenName || 'Customer'} ${lastCustomer.familyName || ''}`.trim() : null;
 
 block hero
-  - var heroStatusLabel = (envStatus && envStatus.label) || 'Testing'
   +darkHero({
     title: "Modern Customer Workspace",
     subtitle: "Manage clients, invoices, reminders, and analytics from a single hub designed for finance teams on the go.",
@@ -25,51 +72,28 @@ block hero
       { type: "secondary", label: "Customer Hub", href: "/customers" }
     ],
     envBadge: heroStatusLabel === 'Live' ? 'Live mode' : 'Sandbox mode',
-    status: envStatus
+    status: envStatus,
+    breadcrumbs: heroBreadcrumbs,
+    search: { label: "Search workspace", hint: "⌘K" }
   })
 
+block statusStrip
+  +statusStrip(statusStripMetrics)
 
 block content
-  - const totalCustomers = customers.length
-  - const cardCustomers = customers.filter((customer) => customer.cards && customer.cards.length)
-  - const manualCustomers = totalCustomers - cardCustomers.length
-  - const lastCustomer = customers[0]
-  - const statusLabel = typeof heroStatusLabel !== 'undefined' ? heroStatusLabel : (envStatus && envStatus.label) || 'Testing'
-  - const primaryCustomerId = lastCustomer && lastCustomer.id
-  - const customerDetailHref = primaryCustomerId ? `/management/${locationId}/${primaryCustomerId}` : '/customers/new'
-  - const managementHref = customerDetailHref
-  - const invoiceHref = customerDetailHref
-  - const estimateHref = primaryCustomerId ? `/estimate/new/${locationId}/${primaryCustomerId}` : '/customers/new'
-  - const subscriptionHref = primaryCustomerId ? `/subscription/new/${locationId}/${primaryCustomerId}` : '/customers/new'
-  - const reminderCountValue = typeof reminderCount === 'number' ? reminderCount : 0
-  - const directoryCustomers = Array.isArray(displayCustomers) ? displayCustomers : (customers || [])
-  - const settingsHref = '/admin'
-  - const safeTickerStats = tickerStats || { upcomingReminders: 0, overdueReminders: 0 }
-  - const invoiceTicker = invoiceStats || { overdueInvoiceCount: 0, scheduledInvoiceCount: 0 }
-  - const tickerItems = []
-  - tickerItems.push({ label: statusLabel === 'Live' ? 'Next settlement ETA' : 'Next sandbox sync', value: statusLabel === 'Live' ? '2h 15m' : 'Sandbox sync in 2h' })
-  - tickerItems.push({ label: 'Upcoming reminders', value: safeTickerStats.upcomingReminders })
-  - tickerItems.push({ label: 'Overdue reminders', value: safeTickerStats.overdueReminders })
-  - tickerItems.push({ label: 'Overdue invoices', value: invoiceTicker.overdueInvoiceCount })
-  - tickerItems.push({ label: 'Scheduled invoices', value: invoiceTicker.scheduledInvoiceCount })
-  - const heroSignals = []
-  - heroSignals.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job waiting to send" : `${reminderCountValue} reminders staged` })
-  - heroSignals.push({ label: "Upcoming reminders", value: safeTickerStats.upcomingReminders, meta: "Next 24h window" })
-  - heroSignals.push({ label: "Overdue reminders", value: safeTickerStats.overdueReminders, meta: safeTickerStats.overdueReminders ? "Escalate with ops" : "All clear" })
-  - heroSignals.push({ label: "Scheduled invoices", value: invoiceTicker.scheduledInvoiceCount, meta: "In-flight billing" })
-  - const cardCoverage = totalCustomers ? Math.round((cardCustomers.length / totalCustomers) * 100) : 0
-  - const payoutHeadline = payoutStats ? `${payoutStats.pending} pending via ${payoutStats.lastRail || 'rail TBD'}` : "No payouts pending"
-  - const customerBadge = lastCustomer ? `${lastCustomer.givenName || 'Customer'} ${lastCustomer.familyName || ''}`.trim() : null
-  - const balanceMetrics = []
-  - balanceMetrics.push({ label: "Cards on file", value: cardCustomers.length, meta: cardCoverage ? `${cardCoverage}% coverage` : "Sync to unlock" })
-  - balanceMetrics.push({ label: "Manual billing", value: manualCustomers, meta: manualCustomers === 1 ? "Needs reminder" : "Need reminders" })
-  - balanceMetrics.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" })
   - const slugify = (label) => (label || '').toString().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+  - const formatTimelineTime = (timestamp) => {
+  -   const date = new Date(timestamp);
+  -   return Number.isNaN(date.getTime()) ? 'Queued' : date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  - }
+  - const timelineTone = (type) => type && type.includes('OVERDUE') ? 'danger' : 'info';
   main.dashboard(data-reminders=reminderCountValue data-overdue=invoiceTicker.overdueInvoiceCount)
-    section.balance-card.balance-card--hero(data-collapsible)
-      button.balance-card__toggle(type="button" data-collapsible-trigger)
-        div
-          span.balance-label Customer Directory
+    .dashboard-shell
+      .dashboard-shell__primary
+        section.balance-card.balance-card--hero(data-collapsible)
+          button.balance-card__toggle(type="button" data-collapsible-trigger)
+            div
+              span.balance-label Customer Directory
           small.balance-meta= cardCoverage ? `${cardCoverage}% cards on file` : "Sync to unlock coverage"
         span.balance-card__indicator
       .balance-card__summary(data-shimmer="true")
@@ -95,14 +119,14 @@ block content
               span.balance-metric__value #{metric.value}
               span.balance-metric__meta #{metric.meta}
 
-    section.quick-actions
-      .action-card
-        span.action-card__icon
-          svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
-            path(d="M12 5v14m7-7H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
-        h3 Add Service
-        p Launch catalog with curated services per location.
-        a.button.button-secondary.button-sm(href=managementHref) Go to catalog
+        section.quick-actions
+          .action-card
+            span.action-card__icon
+              svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
+                path(d="M12 5v14m7-7H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+            h3 Add Service
+            p Launch catalog with curated services per location.
+            a.button.button-secondary.button-sm(href=managementHref) Go to catalog
       .action-card
         span.action-card__icon
           svg(width="20" height="20" viewBox="0 0 24 24" fill="none")
@@ -118,9 +142,9 @@ block content
         p Monitor rails, approvals, and cash positions.
         a.button.button-secondary.button-sm(href="/payouts/console") View console
 
-    section.money-section
-      h2.section-label Command Surface
-      .service-actions
+        section.money-section
+          h2.section-label Command Surface
+          .service-actions
         .service-card(data-shimmer="true" data-animate-seq="1")
           .service-card__icon
             span 📊
@@ -172,9 +196,9 @@ block content
               span.metric-meta Requires reminders
           span.status-pill.status-pill--neutral Directory pulse
 
-    section.money-section
-      h2.section-label Operations Radar
-      .feature-grid
+        section.money-section
+          h2.section-label Operations Radar
+          .feature-grid
         .feature-card.feature-card--wide(data-collapsible data-expanded data-animate-seq="4")
           button.feature-card__toggle(type="button" data-collapsible-trigger)
             span.feature-card__eyebrow Env status
@@ -209,6 +233,30 @@ block content
           .feature-card__details(data-collapsible-content)
             p.text-secondary Surface KPIs, backlog, and reminder runs in one dashboard.
             a.button.button-secondary.button-sm(href="/analytics") Open analytics
+
+      aside.dashboard-shell__secondary
+        .timeline-panel
+          .timeline-panel__header
+            .timeline-panel__title
+              span.timeline-panel__eyebrow Reminder timeline
+              h3 Timeline queue
+            button.timeline-panel__toggle(type="button" data-rail-toggle)
+              span Toggle panel
+          if timelineEntries && timelineEntries.length
+            ul.timeline-panel__list
+              each event, timelineIndex in timelineEntries
+                - const tone = timelineTone(event.type);
+                li.timeline-panel__item(class=`timeline-panel__item--${tone}`)
+                  span.timeline-panel__time= formatTimelineTime(event.runAt)
+                  h4.timeline-panel__label= event.message || event.type
+                  if event.invoiceId
+                    span.timeline-panel__meta= `Invoice ${event.invoiceId}`
+                  else
+                    span.timeline-panel__meta Broadcast
+          else
+            .timeline-panel__empty
+              span.timeline-panel__emoji 🛰
+              p No reminders staged — queue idle.
 
   .reminder-toast(data-toast role="status" aria-live="polite")
     span.toast-dot

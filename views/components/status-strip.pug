@@ -1,0 +1,20 @@
+mixin statusStrip(metrics)
+  - const items = Array.isArray(metrics) ? metrics.filter((metric) => metric && typeof metric === 'object') : [];
+  if items.length
+    section.status-strip(data-status-strip="true" aria-label="Workspace highlights")
+      ul.status-strip__metrics
+        each metric in items
+          li.status-strip__item
+            .status-strip__value-group
+              span.status-strip__value= metric.value
+              if metric.delta
+                span.status-strip__delta(class=`status-strip__delta--${metric.delta.tone || 'neutral'}`)
+                  span= metric.delta.label
+            span.status-strip__label= metric.label
+            if metric.meta
+              span.status-strip__meta= metric.meta
+      if typeof block !== 'undefined'
+        block
+  else
+    section.status-strip.status-strip--empty(data-status-strip="true")
+      span.status-strip__label Workspace synced to Cashly

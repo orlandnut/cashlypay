@@ -11,6 +11,10 @@ mixin darkHero(options)
   - const showBack = back !== false;
   - const backHref = showBack && back && back.href ? back.href : "/";
   - const backLabel = showBack && back && back.label ? back.label : "Dashboard";
+  - const breadcrumbs = Array.isArray(opts.breadcrumbs) ? opts.breadcrumbs : [];
+  - const showSearch = opts.search !== false;
+  - const searchLabel = (opts.search && opts.search.label) || "Jump to workspace";
+  - const searchHint = (opts.search && opts.search.hint) || "⌘K";
   .dark-hero
     .dark-hero__rail
       .dark-hero__rail-left
@@ -23,6 +27,22 @@ mixin darkHero(options)
             svg(width="16" height="16" viewBox="0 0 24 24" fill="none")
               path(d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
             span= backLabel
+      .dark-hero__context
+        if breadcrumbs && breadcrumbs.length
+          nav.hero-breadcrumbs(aria-label="Breadcrumb")
+            each crumb, crumbIndex in breadcrumbs
+              if crumb && crumb.href && !crumb.active
+                a.hero-breadcrumbs__link(href=crumb.href)= crumb.label
+              else if crumb && crumb.label
+                span.hero-breadcrumbs__current= crumb.label
+              if crumbIndex !== breadcrumbs.length - 1
+                span.hero-breadcrumbs__separator /
+        if showSearch
+          button.hero-search(type="button" data-command-search aria-label="Open quick search")
+            svg(width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true")
+              path(d="M11 5a6 6 0 014.9 9.6l4.25 4.24-1.4 1.42-4.26-4.26A6 6 0 1111 5zm0 2a4 4 0 100 8 4 4 0 000-8z" fill="currentColor")
+            span.hero-search__label= searchLabel
+            span.hero-search__hint= searchHint
       h1.dark-hero__title #{title}
       .dark-hero__rail-right
         if status

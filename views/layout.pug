@@ -41,16 +41,20 @@ html(lang="en" class="dark")
     block scripts
       script(defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js")
     script(defer src="/javascripts/dashboard.js")
+  include components/dark-hero.pug
+  include components/command-drawer.pug
+  include components/mobile-tabs.pug
+  include components/action-dock.pug
+  include components/status-strip.pug
+  - const bodyPageKey = typeof pageKey === 'string' ? pageKey : 'workspace';
+  - const initialDockConfig = (typeof actionDockOptions === 'object' && actionDockOptions) || {};
+  - const actionDockConfig = Object.assign({ context: bodyPageKey }, initialDockConfig);
   
-  body.dark(data-theme="command")
+  body.dark(data-theme="command" data-page=bodyPageKey)
     a.skip-link(href="#dashboardMain") Skip to dashboard
     #sr-announcer.sr-only(aria-live="assertive" aria-atomic="true")
     #toast-stack.toast-stack
     include ../public/images/sprites.svg
-    include components/dark-hero.pug
-    include components/command-drawer.pug
-    include components/mobile-tabs.pug
-    include components/action-dock.pug
 
     //- Sidebar
     aside.sidebar
@@ -134,6 +138,7 @@ html(lang="en" class="dark")
     //- Main Content
     main.content
       .container#dashboardMain
+        block statusStrip
         .money-dashboard
           block hero
           block content
@@ -163,4 +168,5 @@ html(lang="en" class="dark")
     block commandDrawer
       +commandDrawer({ currentPath, status: envStatus })
     +mobileTabs({ currentPath })
-    +actionDock()
+    block actionDock
+      +actionDock(actionDockConfig)

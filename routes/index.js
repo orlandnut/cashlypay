@@ -127,12 +127,28 @@ router.get("/", async (req, res, next) => {
       squareEnv === "production"
         ? { label: "Live", tone: "live" }
         : { label: "Testing", tone: "testing" };
+    const reminderTimeline = reminderSnapshots
+      .slice()
+      .sort(
+        (a, b) =>
+          new Date(a.runAt).getTime() - new Date(b.runAt).getTime(),
+      )
+      .slice(0, 8)
+      .map((entry) => ({
+        id: entry.id,
+        runAt: entry.runAt,
+        type: entry.type,
+        message: entry.message,
+        invoiceId: entry.invoiceId,
+        invoiceNumber: entry.invoiceNumber,
+      }));
 
     res.render("index", {
       customers: displayCustomers,
       locationId: location.id, // use the main location as the default
       envStatus,
       reminderCount,
+      reminderTimeline,
       invoiceStats: {
         overdueInvoiceCount,
         scheduledInvoiceCount,
