@@ -454,6 +454,18 @@
   font-size: 0.9rem;
 }
 
+@media (max-width: 640px) {
+  .dashboard-hero__header {
+    grid-template-columns: 1fr auto;
+  }
+
+  .dashboard-hero__menu {
+    order: 2;
+    margin-left: 0;
+    justify-self: flex-end;
+  }
+}
+
 .workspace-grid {
   display: grid;
   gap: clamp(1.5rem, 3vw, 2.5rem);
@@ -497,6 +509,10 @@
     width: 100%;
     justify-content: flex-start;
     flex-wrap: wrap;
+  }
+
+  .dashboard-hero {
+    border-radius: 2rem;
   }
 
   .dashboard-hero {
@@ -1969,6 +1985,7 @@ main.content {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  justify-content: flex-end;
 }
 
 .dashboard-hero__brand-pill {
@@ -2001,6 +2018,14 @@ main.content {
   height: 6px;
   border-radius: 50%;
   background: #00d54b;
+  box-shadow: 0 0 8px rgba(0, 213, 75, 0.8);
+}
+
+.dashboard-hero__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00d54b;
 }
 .dashboard-hero__menu {
   width: 52px;
@@ -2014,6 +2039,8 @@ main.content {
   align-items: center;
   gap: 6px;
   cursor: pointer;
+  justify-self: flex-start;
+  margin-left: -0.25rem;
   transition:
     border-color var(--transition-fast) var(--transition-ease),
     transform var(--transition-fast) var(--transition-ease);
