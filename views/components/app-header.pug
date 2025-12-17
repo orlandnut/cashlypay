@@ -24,7 +24,7 @@ mixin appHeader(options)
       ul.app-header__metrics
         each metric, metricIndex in metrics
           - const delta = metric && metric.delta ? metric.delta : null;
-          li.app-header__metric(data-animate-seq=metricIndex)
+          li.app-header__metric
             span.app-header__metric-label= metric.label || "Signal"
             span.app-header__metric-value= metric.value
             if metric.meta

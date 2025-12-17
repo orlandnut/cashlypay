@@ -10,7 +10,6 @@ mixin actionDock(opts)
         hint: "Launch composer",
         href: primaryHref,
         tone: "primary",
-        animateSeq: 8,
       },
       {
         label: "Run Reminder Queue",
@@ -21,7 +20,6 @@ mixin actionDock(opts)
           "data-confirm": "Run the reminder queue now?",
           "data-queue-endpoint": queueHref,
         },
-        animateSeq: 9,
       },
       {
         label: "Density",
@@ -32,27 +30,23 @@ mixin actionDock(opts)
           "aria-pressed": "false",
         },
         dynamicHint: true,
-        animateSeq: 10,
       },
     ];
   - const actions = shortcuts.concat(baseActions);
   nav.action-dock(aria-label="Quick actions" data-action-dock="true" data-context=options.context || 'workspace')
-    button.action-dock__handle(type="button" aria-label="Toggle quick actions dock" data-dock-handle)
-      span.action-dock__handle-bar
     .action-dock__grid
       each action, index in actions
         - if (!action || !action.label) continue;
         - const tone = action.tone || "ghost";
         - const actionAttrs = (action.attrs && typeof action.attrs === 'object') ? action.attrs : {};
         - const classes = `action-dock__button action-dock__button--${tone}` + (actionAttrs.disabled ? " is-disabled" : "");
-        - const animateSeq = typeof action.animateSeq !== 'undefined' ? action.animateSeq : index;
         if action.href
-          a(class=classes href=action.href data-animate-seq=animateSeq target=action.target || null)
+          a(class=classes href=action.href target=action.target || null)
             span.action-dock__label= action.label
             if action.hint
               span.action-dock__hint= action.hint
         else
-          button(class=classes type="button" data-animate-seq=animateSeq)&attributes(actionAttrs)
+          button(class=classes type="button")&attributes(actionAttrs)
             span.action-dock__label= action.label
             if action.dynamicHint
               span.action-dock__hint(data-density-label)= action.hint

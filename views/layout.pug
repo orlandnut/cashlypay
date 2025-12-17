@@ -53,28 +53,64 @@ html(lang="en" class="dark")
     - const initialDockConfig = (typeof actionDockOptions === 'object' && actionDockOptions) || {};
     - const actionDockConfig = Object.assign({ context: bodyPageKey }, initialDockConfig);
     - actionDockConfig.shortcuts = Array.isArray(actionDockConfig.shortcuts) ? actionDockConfig.shortcuts : [];
-    -
-      const contextualShortcuts = [];
-      if (currentPath && (currentPath.startsWith('/customers') || currentPath.startsWith('/management'))) {
-        contextualShortcuts.push(
-          { label: "Add Customer", hint: "New profile", href: "/customers/new", tone: "secondary", animateSeq: 2 },
-          { label: "Sync Directory", hint: "Square sandbox", attrs: { "data-sync-directory": "true" }, tone: "ghost", animateSeq: 3 },
-        );
-      } else if (currentPath && currentPath.startsWith('/gift-cards')) {
-        contextualShortcuts.push(
-          { label: "Issue Card", hint: "Finance desk", href: "/gift-cards", tone: "primary", animateSeq: 2 },
-          { label: "Reconcile", hint: "Run sync", attrs: { "data-sync-gift-cards": "true" }, tone: "ghost", animateSeq: 3 },
-        );
-      } else if (currentPath && currentPath.startsWith('/payouts')) {
-        contextualShortcuts.push(
-          { label: "Add Beneficiary", hint: "ACH & rails", href: "/payouts/console", tone: "secondary", animateSeq: 2 },
-        );
-      } else {
-        contextualShortcuts.push(
-          { label: "Add Customer", hint: "Customer Hub", href: "/customers/new", tone: "secondary", animateSeq: 2 },
-          { label: "Sync Directory", hint: "Square sandbox", attrs: { "data-sync-directory": "true" }, tone: "ghost", animateSeq: 3 },
-        );
-      }
+    - const contextualShortcuts = (() => {
+    -   const shortcuts = [];
+    -   if (currentPath && (currentPath.startsWith('/customers') || currentPath.startsWith('/management'))) {
+    -     shortcuts.push({
+    -       label: "Add Customer",
+    -       hint: "New profile",
+    -       href: "/customers/new",
+    -       tone: "secondary",
+    -       animateSeq: 2,
+    -     });
+    -     shortcuts.push({
+    -       label: "Sync Directory",
+    -       hint: "Square sandbox",
+    -       attrs: { "data-sync-directory": "true" },
+    -       tone: "ghost",
+    -       animateSeq: 3,
+    -     });
+    -   } else if (currentPath && currentPath.startsWith('/gift-cards')) {
+    -     shortcuts.push({
+    -       label: "Issue Card",
+    -       hint: "Finance desk",
+    -       href: "/gift-cards",
+    -       tone: "primary",
+    -       animateSeq: 2,
+    -     });
+    -     shortcuts.push({
+    -       label: "Reconcile",
+    -       hint: "Run sync",
+    -       attrs: { "data-sync-gift-cards": "true" },
+    -       tone: "ghost",
+    -       animateSeq: 3,
+    -     });
+    -   } else if (currentPath && currentPath.startsWith('/payouts')) {
+    -     shortcuts.push({
+    -       label: "Add Beneficiary",
+    -       hint: "ACH & rails",
+    -       href: "/payouts/console",
+    -       tone: "secondary",
+    -       animateSeq: 2,
+    -     });
+    -   } else {
+    -     shortcuts.push({
+    -       label: "Add Customer",
+    -       hint: "Customer Hub",
+    -       href: "/customers/new",
+    -       tone: "secondary",
+    -       animateSeq: 2,
+    -     });
+    -     shortcuts.push({
+    -       label: "Sync Directory",
+    -       hint: "Square sandbox",
+    -       attrs: { "data-sync-directory": "true" },
+    -       tone: "ghost",
+    -       animateSeq: 3,
+    -     });
+    -   }
+    -   return shortcuts;
+    - })();
     - actionDockConfig.shortcuts = contextualShortcuts.concat(actionDockConfig.shortcuts);
   
   body.dark(data-theme="command" data-page=bodyPageKey)
@@ -130,47 +166,48 @@ html(lang="en" class="dark")
             path(d="M4 12h16M4 6h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round")
           span Insights
 
-      nav.nav
-        .nav__section
-          p.nav-section Workspace
-          ul.nav__list
-            li
-              a.nav-item(href="/" class=currentPath === '/' ? 'active' : '')
-                svg: use(href="#icon-dashboard")
-                span Dashboard
-            - const customersActive = Boolean(currentPath && (currentPath.startsWith('/customers') || currentPath.startsWith('/management')));
-            li
-              a.nav-item(href="/customers" class=customersActive ? 'active' : '')
-                svg: use(href="#icon-invoice")
-                span Customer Hub
-            li
-              a.nav-item(href="/catalog" class=(currentPath && currentPath.startsWith('/catalog') ? 'active' : ''))
-                svg: use(href="#icon-dashboard")
-                span Services
-        .nav__section
-          p.nav-section Revenue Ops
-          ul.nav__list
-            li
-              a.nav-item(href="/gift-cards" class=(currentPath && currentPath.startsWith('/gift-cards') ? 'active' : ''))
-                svg: use(href="#icon-invoice")
-                span Gift Cards
-            li
-              a.nav-item(href="/analytics" class=(currentPath && currentPath.startsWith('/analytics') ? 'active' : ''))
-                svg: use(href="#icon-dashboard")
-                span Analytics
-            li
-              a.nav-item(href="/admin/reminders" class=(currentPath && currentPath.startsWith('/admin') ? 'active' : ''))
-                svg: use(href="#icon-invoice")
-                span Reminders
-            li
-              a.nav-item(href="/payouts/console" class=(currentPath && currentPath.startsWith('/payouts') ? 'active' : ''))
-                svg: use(href="#icon-dashboard")
-                span Payouts
-        .nav__section.nav__section--actions
-          p.nav-section Quick Action
-          a.nav-item.nav-item--cta(href="/customers/new")
-            svg: use(href="#icon-dashboard")
-            span Add Customer
+      .sidebar__scroll
+        nav.nav
+          .nav__section
+            p.nav-section Workspace
+            ul.nav__list
+              li
+                a.nav-item(href="/" class=currentPath === '/' ? 'active' : '')
+                  svg: use(href="#icon-dashboard")
+                  span Dashboard
+              - const customersActive = Boolean(currentPath && (currentPath.startsWith('/customers') || currentPath.startsWith('/management')));
+              li
+                a.nav-item(href="/customers" class=customersActive ? 'active' : '')
+                  svg: use(href="#icon-invoice")
+                  span Customer Hub
+              li
+                a.nav-item(href="/catalog" class=(currentPath && currentPath.startsWith('/catalog') ? 'active' : ''))
+                  svg: use(href="#icon-dashboard")
+                  span Services
+          .nav__section
+            p.nav-section Revenue Ops
+            ul.nav__list
+              li
+                a.nav-item(href="/gift-cards" class=(currentPath && currentPath.startsWith('/gift-cards') ? 'active' : ''))
+                  svg: use(href="#icon-invoice")
+                  span Gift Cards
+              li
+                a.nav-item(href="/analytics" class=(currentPath && currentPath.startsWith('/analytics') ? 'active' : ''))
+                  svg: use(href="#icon-dashboard")
+                  span Analytics
+              li
+                a.nav-item(href="/admin/reminders" class=(currentPath && currentPath.startsWith('/admin') ? 'active' : ''))
+                  svg: use(href="#icon-invoice")
+                  span Reminders
+              li
+                a.nav-item(href="/payouts/console" class=(currentPath && currentPath.startsWith('/payouts') ? 'active' : ''))
+                  svg: use(href="#icon-dashboard")
+                  span Payouts
+          .nav__section.nav__section--actions
+            p.nav-section Quick Action
+            a.nav-item.nav-item--cta(href="/customers/new")
+              svg: use(href="#icon-dashboard")
+              span Add Customer
     
     .sidebar-overlay
     //- Main Content
@@ -211,7 +248,17 @@ html(lang="en" class="dark")
             a.text-sm(href="#") Privacy
             a.text-sm(href="#") Support
     block commandDrawer
-      +commandDrawer({ currentPath, status: envStatus })
-    +mobileTabs({ currentPath })
-    block actionDock
-      +actionDock(actionDockConfig)
+      - const baseDrawerLinks = [];
+      - baseDrawerLinks.push({ label: "Dashboard", href: "/", icon: "#icon-dashboard", meta: "Command overview" });
+      - baseDrawerLinks.push({ label: "Customer Hub", href: "/customers", match: ['/customers', '/management'], icon: "#icon-invoice", meta: "Accounts & billing" });
+      - baseDrawerLinks.push({ label: "Invoices", href: "/invoice", icon: "#icon-invoice", meta: "Composer & history" });
+      - baseDrawerLinks.push({ label: "Estimates", href: "/estimate", icon: "#icon-dashboard", meta: "Quotes & approvals" });
+      - baseDrawerLinks.push({ label: "Subscriptions", href: "/subscription", icon: "#icon-dashboard", meta: "Recurring services" });
+      - baseDrawerLinks.push({ label: "Analytics", href: "/analytics", icon: "#icon-dashboard", meta: "KPIs & health" });
+      - baseDrawerLinks.push({ label: "Reminder Queue", href: "/admin/reminders", icon: "#icon-invoice", meta: "Automation feed" });
+      - baseDrawerLinks.push({ label: "Gift Cards", href: "/gift-cards", icon: "#icon-invoice", meta: "Card controls" });
+      - baseDrawerLinks.push({ label: "Settings", href: "/admin", icon: "#icon-dashboard", meta: "Controls & access" });
+      - const baseDrawerActions = [];
+      - baseDrawerActions.push({ label: "Create Invoice", href: "/invoice", tone: "primary" });
+      - baseDrawerActions.push({ label: "Run Reminder Queue", href: "/admin/reminders", tone: "danger", confirm: "Run the reminder queue now?" });
+      +commandDrawer({ links: baseDrawerLinks, actions: baseDrawerActions, currentPath, status: envStatus })

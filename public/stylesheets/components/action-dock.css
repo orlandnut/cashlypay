@@ -21,45 +21,6 @@
   gap: 0.75rem;
 }
 
-.action-dock__handle {
-  width: 100%;
-  background: transparent;
-  border: none;
-  display: flex;
-  justify-content: center;
-  padding: 0.35rem 0 0.5rem;
-  cursor: pointer;
-}
-
-.action-dock__handle-bar {
-  width: 56px;
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.35);
-  transition: transform 0.35s ease, background 0.3s ease;
-}
-
-.action-dock--collapsed {
-  transform: translateY(calc(100% - 44px));
-  opacity: 0.95;
-}
-
-.action-dock--collapsed .action-dock__grid {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(20px);
-  transition: opacity 0.25s ease, transform 0.3s ease;
-}
-
-.action-dock:not(.action-dock--collapsed) .action-dock__grid {
-  transition: opacity 0.3s ease 0.05s, transform 0.4s ease;
-}
-
-.action-dock--collapsed .action-dock__handle-bar {
-  transform: scaleX(0.75);
-  background: rgba(255, 255, 255, 0.2);
-}
-
 .action-dock__button {
   display: flex;
   flex-direction: column;
@@ -134,10 +95,6 @@
 
   .action-dock__grid {
     grid-template-columns: 1fr;
-  }
-
-  .action-dock--collapsed {
-    transform: translateY(0);
   }
 }
 
