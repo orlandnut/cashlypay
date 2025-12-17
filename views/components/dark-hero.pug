@@ -41,11 +41,11 @@ mixin darkHero(options)
             .brand-chip__wordmark.wordmark.wordmark--hero
               span.wordmark__main Cashly
               span.wordmark__accent Pay
+            if envBadgeText
+              span.brand-chip__env.brand-chip__env--hero= envBadgeText
           .brand-chip__accent
             span.brand-chip__status-bar
             span.brand-chip__pulse
-          if envBadgeText
-            span.brand-chip__env.brand-chip__env--hero= envBadgeText
     if subtitle
       p.dark-hero__subtitle #{subtitle}
     if actions && actions.length

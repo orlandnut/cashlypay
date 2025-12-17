@@ -74,28 +74,21 @@
 }
 
 .brand-chip {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.85rem;
-  padding: clamp(0.75rem, 1vw, 1rem) clamp(0.9rem, 1.5vw, 1.2rem);
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background:
-    radial-gradient(
-      circle at 5% 10%,
-      rgba(255, 255, 255, 0.16),
-      transparent 55%
-    ),
-    linear-gradient(135deg, rgba(0, 213, 75, 0.18), rgba(21, 180, 255, 0.12)),
-    rgba(4, 10, 10, 0.65);
+  --chip-padding-block: clamp(0.75rem, 1vw, 1.05rem);
+  --chip-padding-inline: clamp(1rem, 2vw, 1.6rem);
+  --chip-radius: clamp(26px, 6vw, 46px);
+  --chip-min-height: clamp(76px, 12vw, 110px);
+  padding: var(--chip-padding-block) var(--chip-padding-inline);
+  border-radius: var(--chip-radius);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.12));
+  background: var(--hero-panel-bg, rgba(4, 10, 10, 0.65));
   box-shadow:
-    0 20px 42px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px);
+    var(--glass-shadow, 0 20px 42px rgba(0, 0, 0, 0.55)),
+    inset 0 1px 0 var(--glass-highlight, rgba(255, 255, 255, 0.08));
+  backdrop-filter: blur(var(--glass-blur, 18px));
   position: relative;
   overflow: hidden;
-  min-height: 72px;
+  min-height: var(--chip-min-height);
 }
 
 .brand-chip::after {
@@ -107,9 +100,25 @@
   pointer-events: none;
 }
 
+.brand-chip__grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: clamp(0.65rem, 1vw, 1rem);
+  min-height: inherit;
+}
+
+.brand-chip__grid--hero {
+  min-height: inherit;
+}
+
+.brand-chip__grid--mini {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
 .brand-chip__icon {
-  width: clamp(42px, 6vw, 52px);
-  height: clamp(42px, 6vw, 52px);
+  width: clamp(36px, 5vw, 54px);
+  height: clamp(36px, 5vw, 54px);
   border-radius: 20px;
   padding: 6px;
   background:
@@ -128,6 +137,12 @@
   overflow: hidden;
 }
 
+.brand-chip__grid--hero .brand-chip__icon {
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+}
+
 .brand-chip__icon img {
   width: 100%;
   height: 100%;
@@ -139,15 +154,20 @@
 .brand-chip__body {
   display: flex;
   flex-direction: column;
-  gap: 0.12rem;
+  justify-content: center;
+  gap: 0.25rem;
   min-width: 0;
+  align-self: stretch;
 }
 
 .brand-chip__eyebrow {
-  font-size: 0.7rem;
-  letter-spacing: 0.35em;
+  font-size: clamp(0.64rem, 1.3vw, 0.72rem);
+  letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--text-tertiary, rgba(255, 255, 255, 0.65));
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .brand-chip__meta {
@@ -157,33 +177,25 @@
   color: var(--text-secondary, rgba(255, 255, 255, 0.75));
 }
 
-.brand-chip__badge {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 0.45rem;
-  margin-left: auto;
-  justify-content: flex-end;
-  min-width: max-content;
-}
-
-.brand-chip__badge,
+.brand-chip__accent,
 .brand-chip__status-bar,
 .brand-chip__pulse {
   min-height: 12px;
 }
 
-.brand-chip__badge-text {
-  font-size: 0.68rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.8);
-  white-space: nowrap;
+.brand-chip__accent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: clamp(54px, 6vw, 72px);
+  align-self: stretch;
 }
 
 .brand-chip__status-bar {
-  width: 64px;
-  height: 10px;
+  width: clamp(48px, 8vw, 76px);
+  height: clamp(9px, 1vw, 14px);
   border-radius: 999px;
   background: linear-gradient(120deg, rgba(0, 255, 116, 0.9), rgba(98, 236, 255, 0.9), rgba(0, 255, 116, 0.9));
   background-size: 200% auto;
@@ -208,67 +220,28 @@
     0 0 22px rgba(21, 180, 255, 0.35);
 }
 
-.brand-chip--drawer {
-  width: 100%;
-  padding: 0.75rem 1rem;
-}
-
-.brand-chip--hero {
-  padding: clamp(0.85rem, 1.2vw, 1.25rem);
-  gap: 1rem;
+.brand-chip__grid--mini .brand-chip__accent {
+  display: none;
 }
 
 .brand-chip--mini {
-  padding: 0.55rem 0.7rem;
-  gap: 0.6rem;
-  grid-template-columns: auto minmax(0, 1fr);
+  --chip-padding-block: 0.5rem;
+  --chip-padding-inline: 0.8rem;
+  --chip-min-height: 0;
+  border-radius: 22px;
 }
 
-.brand-chip__row,
-.brand-chip__grid {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.6rem;
+.brand-chip--drawer {
   width: 100%;
+  --chip-padding-block: 0.65rem;
+  --chip-padding-inline: 1rem;
+  border-radius: 24px;
 }
 
-.brand-chip__grid--hero {
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-rows: auto auto;
-  column-gap: 0.9rem;
-  row-gap: 0.35rem;
-}
-
-.brand-chip__grid--hero .brand-chip__icon {
-  grid-row: 1 / 3;
-}
-
-.brand-chip__grid--hero .brand-chip__body {
-  grid-column: 2 / 3;
-  grid-row: 1 / 2;
-}
-
-.brand-chip__grid--hero .brand-chip__accent {
-  grid-column: 3 / 4;
-  grid-row: 1 / 3;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-}
-
-.brand-chip__grid--hero .brand-chip__env {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
-  justify-self: start;
-}
-
-.brand-chip__accent {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+.brand-chip--hero {
+  --chip-padding-block: clamp(0.85rem, 1.5vw, 1.35rem);
+  --chip-padding-inline: clamp(1.2rem, 2.3vw, 1.8rem);
+  --chip-min-height: clamp(82px, 14vw, 128px);
 }
 
 .brand-chip__wordmark {
@@ -277,26 +250,28 @@
   text-overflow: ellipsis;
   overflow: hidden;
   line-height: 1;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
+  font-size: clamp(1.25rem, 2.8vw, 1.65rem);
 }
 
 .brand-chip--hero .brand-chip__body {
-  gap: 0.3rem;
+  gap: 0.35rem;
 }
 
 .brand-chip__env {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.28rem 0.85rem;
+  padding: 0.3rem 0.85rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(5, 12, 12, 0.55);
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.66rem;
+  color: rgba(255, 255, 255, 0.78);
   white-space: nowrap;
+  margin-top: 0.35rem;
 }
 
 .brand-chip__env--hero {
@@ -304,8 +279,7 @@
   font-size: 0.65rem;
 }
 
-.env-pill,
-.brand-chip__env {
+.env-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -357,19 +331,8 @@
 
 @media (max-width: 540px) {
   .brand-chip {
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-rows: auto auto;
-  }
-
-  .brand-chip__badge {
-    grid-column: 1 / -1;
-    width: 100%;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-  }
-
-  .brand-chip--hero {
-    width: 100%;
+    --chip-padding-inline: 1rem;
+    --chip-min-height: 0;
   }
 }
 
@@ -382,7 +345,7 @@
     animation: none !important;
   }
 }
-.@keyframes wordmarkPulse {
+@keyframes wordmarkPulse {
   0% {
     transform: scale(1);
     opacity: 0.8;

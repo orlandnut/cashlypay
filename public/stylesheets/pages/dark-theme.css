@@ -406,6 +406,7 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: calc(var(--space-md) * var(--density-space));
   margin-top: var(--space-xl);
+  transition: gap 0.4s var(--motion-breath);
 }
 
 .balance-metric {
@@ -417,6 +418,10 @@
   flex-direction: column;
   gap: calc(4px * var(--density-space));
   line-height: var(--density-line-height);
+  transition:
+    line-height 0.4s var(--motion-breath),
+    gap 0.4s var(--motion-breath),
+    padding 0.35s var(--motion-breath);
 }
 
 .balance-metric__label {
@@ -500,12 +505,26 @@
 .balance-card__details,
 .feature-card__details {
   padding: 0 clamp(var(--space-md), 4vw, var(--space-xl)) var(--space-md);
-  display: none;
+  display: block;
+}
+
+.balance-card__details,
+.feature-card__details {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-0.5rem);
+  transition:
+    max-height 0.6s var(--motion-spring),
+    opacity 0.45s ease,
+    transform 0.6s var(--motion-spring);
 }
 
 [data-expanded] .balance-card__details,
 [data-expanded] .feature-card__details {
-  display: block;
+  max-height: 1200px;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .chip-row,
@@ -524,6 +543,10 @@
   flex-direction: column;
   min-width: 120px;
   background: rgba(255, 255, 255, 0.03);
+  transition:
+    transform 0.45s var(--motion-spring),
+    box-shadow 0.45s ease,
+    opacity 0.45s ease;
 }
 
 .metric-chip__value {
@@ -536,6 +559,77 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-secondary);
+}
+
+[data-shimmer] {
+  position: relative;
+  overflow: hidden;
+}
+
+body:not(.is-ready) [data-shimmer]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmerSweep 1.8s linear infinite;
+  z-index: 2;
+}
+
+body:not(.is-ready) [data-shimmer] > * {
+  opacity: 0;
+}
+
+body.is-ready [data-shimmer]::after {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+[data-animate-seq] {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+body.is-ready [data-animate-seq] {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    transform 0.55s var(--motion-spring),
+    opacity 0.4s ease;
+  transition-delay: calc(0.035s * var(--stagger-index, 0));
+}
+
+.metric-chip.is-updated,
+[data-metric-chip].is-updated {
+  animation: metricPulse 0.9s var(--motion-spring);
+}
+
+@keyframes metricPulse {
+  0% {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+  50% {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 213, 75, 0.25);
+  }
+  100% {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 .balance-card__actions {
   display: flex;
@@ -987,6 +1081,15 @@ main.content {
   .button,
   .action-button {
     animation: none;
+  }
+
+  body:not(.is-ready) [data-shimmer]::after {
+    display: none;
+  }
+
+  [data-animate-seq],
+  .metric-chip {
+    transition: none !important;
   }
 }
 

@@ -1,6 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
   const themeToggle = document.querySelector("[data-theme-toggle]");
   const root = document.documentElement;
+  const body = document.body;
+  window.requestAnimationFrame(function () {
+    body.classList.add("is-ready");
+    initializeStagger();
+  });
   if (themeToggle) {
     themeToggle.addEventListener("click", () => {
       const current = root.getAttribute("data-theme") || "command";
@@ -18,6 +23,10 @@ document.addEventListener("DOMContentLoaded", function () {
   var closeBtn = document.querySelector(".command-drawer__close");
   var profileBtn = document.querySelector(".hero__profile-trigger");
   var profileDropdown = document.querySelector(".profile-dropdown");
+  var actionDock = document.querySelector("[data-action-dock]");
+  var dockHandle = actionDock
+    ? actionDock.querySelector("[data-dock-handle]")
+    : null;
   var announcer = document.getElementById("sr-announcer");
   var helpOverlay = document.querySelector("[data-help-overlay]");
   var helpDismiss = helpOverlay
@@ -233,11 +242,18 @@ document.addEventListener("DOMContentLoaded", function () {
       showReminderToast(
         "Reminder queue updated — " + reminderCount + " items pending.",
       );
+      pulseMetric(["reminder-queue"]);
       announce("Reminder queue updated");
     }
     if (!Number.isNaN(reminderCount)) {
       localStorage.setItem("cashly-reminder-count", reminderCount);
     }
+    watchDataDelta(
+      dashboard,
+      "data-overdue",
+      "cashly-overdue-count",
+      ["overdue-invoices"],
+    );
   }
 
   var showHelp = function () {
@@ -336,6 +352,10 @@ document.addEventListener("DOMContentLoaded", function () {
         densityLabel.textContent =
           next === "compact" ? "Compact" : "Comfortable";
       }
+      body.classList.add("density-transitioning");
+      setTimeout(function () {
+        body.classList.remove("density-transitioning");
+      }, 500);
     });
   }
 
@@ -370,16 +390,201 @@ document.addEventListener("DOMContentLoaded", function () {
         headers: {
           "Content-Type": "application/json",
         },
-      })
+        })
         .then(function (res) {
           if (!res.ok) {
             throw new Error("Failed to run queue");
           }
           showToast("Reminder queue triggered", "success");
+          pulseMetric(["reminder-queue"]);
         })
         .catch(function () {
           showToast("Reminder queue failed", "danger");
         });
     });
   });
+
+  enableDrawerGestures({
+    drawer: drawer,
+    drawerPanel: drawerPanel,
+    toggleDrawer: toggleDrawer,
+  });
+  enableDockGestures({
+    dock: actionDock,
+    handle: dockHandle,
+  });
 });
+
+function initializeStagger() {
+  document.querySelectorAll("[data-animate-seq]").forEach(function (node, i) {
+    var attr = Number(node.getAttribute("data-animate-seq"));
+    var order = Number.isNaN(attr) ? i : attr;
+    node.style.setProperty("--stagger-index", order);
+  });
+}
+
+function pulseMetric(slugs) {
+  var list = Array.isArray(slugs) ? slugs : [slugs];
+  list.forEach(function (slug) {
+    document
+      .querySelectorAll('[data-metric-chip="' + slug + '"]')
+      .forEach(function (element) {
+        element.classList.remove("is-updated");
+        void element.offsetWidth;
+        element.classList.add("is-updated");
+        setTimeout(function () {
+          element.classList.remove("is-updated");
+        }, 900);
+      });
+  });
+}
+
+function watchDataDelta(element, attr, storageKey, metricSlugs) {
+  if (!element) return;
+  var value = Number(element.getAttribute(attr));
+  var stored = Number(localStorage.getItem(storageKey));
+  var hasStored = !Number.isNaN(stored);
+  if (!Number.isNaN(value) && hasStored && value !== stored) {
+    pulseMetric(metricSlugs);
+  }
+  if (!Number.isNaN(value)) {
+    localStorage.setItem(storageKey, String(value));
+  }
+}
+
+function enableDrawerGestures(options) {
+  var drawer = options && options.drawer;
+  var drawerPanel = options && options.drawerPanel;
+  var toggleDrawer = options && options.toggleDrawer;
+  if (!drawer || !drawerPanel || typeof toggleDrawer !== "function") return;
+  var pointerId = null;
+  var startX = 0;
+  var currentX = 0;
+  var dragging = false;
+  var threshold = 60;
+
+  drawerPanel.addEventListener("pointerdown", function (event) {
+    if (window.innerWidth > 1024) return;
+    if (!drawer.classList.contains("is-open")) return;
+    dragging = true;
+    pointerId = event.pointerId;
+    startX = event.clientX;
+    currentX = startX;
+    drawerPanel.setPointerCapture(pointerId);
+    drawerPanel.classList.add("is-gesturing");
+  });
+
+  drawerPanel.addEventListener("pointermove", function (event) {
+    if (!dragging || event.pointerId !== pointerId) return;
+    currentX = event.clientX;
+    var delta = currentX - startX;
+    if (delta < 0) {
+      drawerPanel.style.transform = "translateX(" + delta + "px)";
+    }
+  });
+
+  function endDrawerGesture(event) {
+    if (!dragging || event.pointerId !== pointerId) return;
+    drawerPanel.releasePointerCapture(pointerId);
+    drawerPanel.classList.remove("is-gesturing");
+    drawerPanel.style.transform = "";
+    dragging = false;
+    var delta = currentX - startX;
+    pointerId = null;
+    if (delta < -threshold) {
+      toggleDrawer(false);
+    }
+  }
+
+  drawerPanel.addEventListener("pointerup", endDrawerGesture);
+  drawerPanel.addEventListener("pointercancel", endDrawerGesture);
+
+  window.addEventListener("pointerdown", function (event) {
+    if (window.innerWidth > 1024) return;
+    if (drawer.classList.contains("is-open")) return;
+    if (event.clientX > 28) return;
+    var edgePointer = event.pointerId;
+    var startEdgeX = event.clientX;
+    var opened = false;
+    function onMove(moveEvent) {
+      if (moveEvent.pointerId !== edgePointer || opened) return;
+      var delta = moveEvent.clientX - startEdgeX;
+      if (delta > threshold) {
+        toggleDrawer(true);
+        opened = true;
+        cleanup();
+      }
+    }
+    function onEnd(endEvent) {
+      if (endEvent.pointerId !== edgePointer) return;
+      cleanup();
+    }
+    function cleanup() {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onEnd);
+      window.removeEventListener("pointercancel", onEnd);
+    }
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onEnd);
+    window.addEventListener("pointercancel", onEnd);
+  });
+}
+
+function enableDockGestures(options) {
+  var actionDock = options && options.dock;
+  var dockHandle = options && options.handle;
+  if (!actionDock || !dockHandle) return;
+  var dockCollapsed = false;
+  var pointerId = null;
+  var startY = 0;
+  var currentY = 0;
+  var dragging = false;
+  var threshold = 40;
+
+  function setDockCollapsed(state) {
+    dockCollapsed = state;
+    actionDock.classList.toggle("action-dock--collapsed", state);
+  }
+
+  dockHandle.addEventListener("click", function () {
+    setDockCollapsed(!dockCollapsed);
+  });
+
+  dockHandle.addEventListener("pointerdown", function (event) {
+    if (window.innerWidth > 1024) return;
+    dragging = true;
+    pointerId = event.pointerId;
+    startY = event.clientY;
+    currentY = startY;
+    dockHandle.setPointerCapture(pointerId);
+  });
+
+  dockHandle.addEventListener("pointermove", function (event) {
+    if (!dragging || event.pointerId !== pointerId) return;
+    currentY = event.clientY;
+  });
+
+  function endDockGesture(event) {
+    if (!dragging || event.pointerId !== pointerId) return;
+    dockHandle.releasePointerCapture(pointerId);
+    dragging = false;
+    var delta = currentY - startY;
+    if (Math.abs(delta) > threshold) {
+      if (delta > 0) {
+        setDockCollapsed(true);
+      } else {
+        setDockCollapsed(false);
+      }
+    }
+    pointerId = null;
+  }
+
+  dockHandle.addEventListener("pointerup", endDockGesture);
+  dockHandle.addEventListener("pointercancel", endDockGesture);
+
+  window.addEventListener("resize", function () {
+    if (window.innerWidth >= 1024) {
+      setDockCollapsed(false);
+    }
+  });
+}

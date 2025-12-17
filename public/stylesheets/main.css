@@ -29,6 +29,7 @@ Licensed under the Apache License, Version 2.0
 @import "components/mobile-tabs.css";
 @import "components/action-dock.css";
 @import "themes/cashly-palettes.css";
+@import "themes/design-tokens.css";
 @import "components/toast.css";
 
 /* Layout Imports */

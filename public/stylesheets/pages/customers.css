@@ -307,13 +307,18 @@
   flex-direction: column;
   gap: var(--space-xl);
   transform: translateX(-100%);
-  transition: transform var(--transition-fast) var(--transition-ease);
+  transition: transform 0.45s var(--motion-spring);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(16px);
+  will-change: transform;
 }
 
 .command-drawer.is-open .command-drawer__panel {
   transform: translateX(0);
+}
+
+.command-drawer__panel.is-gesturing {
+  transition: none;
 }
 
 @keyframes drawerSlide {
@@ -491,7 +496,8 @@
     background var(--transition-fast) var(--transition-ease),
     border var(--transition-fast) var(--transition-ease),
     color var(--transition-fast) var(--transition-ease),
-    transform var(--transition-fast) var(--transition-ease);
+    transform var(--transition-fast) var(--transition-ease),
+    padding 0.35s var(--motion-breath);
 }
 
 .command-drawer__nav-link:hover {

@@ -40,7 +40,7 @@ mixin commandDrawer(opts)
           a.command-drawer__brand-lockup(href="/")
             span.sr-only CashlyPay home
             .brand-chip.brand-chip--mini.command-drawer__brand-chip
-              .brand-chip__row
+              .brand-chip__grid.brand-chip__grid--mini
                 .brand-chip__icon
                   img(src="/images/cashly-logo.png" alt="CashlyPay mark" width="42" height="42" loading="lazy" decoding="async")
                 .brand-chip__body
@@ -48,7 +48,7 @@ mixin commandDrawer(opts)
                   .brand-chip__wordmark.wordmark.wordmark--compact
                     span.wordmark__main Cashly
                     span.wordmark__accent Pay
-                .brand-chip__badge
+                .brand-chip__accent
                   span.brand-chip__status-bar
                   span.brand-chip__pulse
         if drawerEnvLabel

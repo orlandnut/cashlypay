@@ -1,0 +1,44 @@
+:root {
+  /* Surface & Glass tokens */
+  --glass-surface: rgba(6, 10, 12, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 25px 55px rgba(0, 0, 0, 0.55);
+  --glass-blur: 18px;
+  --hero-panel-bg:
+    radial-gradient(circle at 0% 0%, rgba(0, 213, 75, 0.18), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(21, 180, 255, 0.16), transparent 50%),
+    linear-gradient(135deg, rgba(4, 6, 8, 0.96), rgba(2, 3, 4, 0.94));
+
+  /* Glows */
+  --glow-sm: 0 12px var(--glow-radius, 30px) rgba(0, 213, 75, 0.35);
+  --glow-md: 0 18px calc(var(--glow-radius, 30px) * 1.2) rgba(0, 213, 75, 0.25);
+
+  /* Icon sizing */
+  --icon-size-sm: 18px;
+  --icon-size-md: 20px;
+  --icon-size-lg: 24px;
+
+  /* Type ramp helpers */
+  --hero-title-size: clamp(2.4rem, 5vw, 3.6rem);
+  --section-title-size: clamp(1.6rem, 3vw, 2.2rem);
+  --card-title-size: clamp(1.2rem, 2.4vw, 1.5rem);
+  --body-line-height: 1.5;
+}
+
+:root[data-theme="studio"] {
+  --glass-surface: rgba(16, 22, 30, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --hero-panel-bg:
+    radial-gradient(circle at 0% 0%, rgba(79, 205, 255, 0.2), transparent 60%),
+    linear-gradient(135deg, rgba(12, 16, 20, 0.9), rgba(8, 10, 12, 0.92));
+}
+
+:root[data-theme="command"] {
+  --glass-surface: rgba(2, 4, 4, 0.86);
+  --glass-border: rgba(0, 213, 75, 0.2);
+  --hero-panel-bg:
+    radial-gradient(circle at 0% 0%, rgba(0, 213, 75, 0.22), transparent 60%),
+    radial-gradient(circle at 100% 0%, rgba(21, 180, 255, 0.2), transparent 55%),
+    linear-gradient(160deg, rgba(4, 8, 8, 0.95), rgba(2, 4, 5, 0.95));
+}
