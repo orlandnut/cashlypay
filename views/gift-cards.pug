@@ -25,30 +25,45 @@ block content
     .toast-banner.toast-banner--error
       span= errorMessage
 
-  section.gift-card-grid
-    .gift-card-stat
-      span.stat-label Total issued
-      strong.stat-value #{stats.totalIssued}
-      span.stat-meta All card states
-    .gift-card-stat
-      span.stat-label Active
-      strong.stat-value #{stats.activeCards}
-      span.stat-meta Ready for spend
-    .gift-card-stat
-      span.stat-label Blocked / Inactive
-      strong.stat-value #{stats.blockedCards + stats.deactivatedCards}
-      span.stat-meta Controls engaged
-    .gift-card-stat
-      span.stat-label Balance outstanding
-      strong.stat-value= formatMoney({ amount: stats.totalBalance, currency: 'USD' })
-      span.stat-meta Across visible cards
+  section.gift-card-grid(data-collapsible data-expanded)
+    button.section-toggle(type="button" data-collapsible-trigger)
+      span Gift card overview
+      span.section-toggle__meta= `${stats.totalIssued} issued`
+    ul.peek-chips
+      li.peek-chip= `${stats.activeCards} active`
+      li.peek-chip= `${stats.blockedCards + stats.deactivatedCards} blocked`
+      li.peek-chip= formatMoney({ amount: stats.totalBalance, currency: 'USD' })
+    .gift-card-grid__body(data-collapsible-content)
+      .gift-card-stat
+        span.stat-label Total issued
+        strong.stat-value #{stats.totalIssued}
+        span.stat-meta All card states
+      .gift-card-stat
+        span.stat-label Active
+        strong.stat-value #{stats.activeCards}
+        span.stat-meta Ready for spend
+      .gift-card-stat
+        span.stat-label Blocked / Inactive
+        strong.stat-value #{stats.blockedCards + stats.deactivatedCards}
+        span.stat-meta Controls engaged
+      .gift-card-stat
+        span.stat-label Balance outstanding
+        strong.stat-value= formatMoney({ amount: stats.totalBalance, currency: 'USD' })
+        span.stat-meta Across visible cards
   if syncMeta
-    section.sync-meta
-      .section-heading
-        h2.section-label Sync health
-        if syncMeta.lastReconciledAt
-          span.section-meta Last run #{formatDate(syncMeta.lastReconciledAt)}
-        else
+    section.sync-meta(data-collapsible data-expanded)
+      button.section-toggle(type="button" data-collapsible-trigger)
+        span Sync health
+        span.section-toggle__meta= syncMeta.lastReconciledAt ? `Reconciled ${formatDate(syncMeta.lastReconciledAt)}` : "Awaiting first run"
+      ul.peek-chips
+        li.peek-chip= syncMeta.discrepancies && syncMeta.discrepancies.length ? `${syncMeta.discrepancies.length} issues` : "No issues"
+        li.peek-chip= syncMeta.lastReconciledAt ? formatDate(syncMeta.lastReconciledAt) : "Pending sync"
+      .sync-meta__body(data-collapsible-content)
+        .section-heading
+          h2.section-label Sync health
+          if syncMeta.lastReconciledAt
+            span.section-meta Last run #{formatDate(syncMeta.lastReconciledAt)}
+          else
           span.section-meta Awaiting first reconciliation
       if syncMeta.discrepancies && syncMeta.discrepancies.length
         ul.sync-list
@@ -91,10 +106,19 @@ block content
     .toast-banner.toast-banner--success
       span Showing results for "#{searchMeta.query}".
 
-  section.money-section
-    .section-heading
-      h2.section-label Gift card directory
-      span.section-meta= `${giftCards.length} records`
+  section.money-section(data-collapsible data-expanded)
+    button.section-toggle(type="button" data-collapsible-trigger)
+      span Gift card directory
+      span.section-toggle__meta= `${giftCards.length} records`
+    ul.peek-chips
+      li.peek-chip= filters.type ? `Type: ${filters.type}` : "All types"
+      li.peek-chip= filters.state ? `State: ${filters.state}` : "All states"
+      if searchMeta && searchMeta.query
+        li.peek-chip= `Search: ${searchMeta.query}`
+    .money-section__body(data-collapsible-content)
+      .section-heading
+        h2.section-label Gift card directory
+        span.section-meta= `${giftCards.length} records`
     form.filter-bar(action="/gift-cards" method="get" data-filter-form)
       .filter-group
         label
@@ -149,19 +173,51 @@ block content
           span.preset-empty No presets yet.
       .preset-buttons(data-custom-presets)
     if giftCards && giftCards.length
-      .table-wrapper
-        table.table(data-card-table)
+      .table-wrapper.table-wrapper--interactive(data-table)
+        .table-toolbar
+          label.table-toolbar__search
+            span.sr-only Search cards
+            input(type="search" name="inlineSearch" placeholder="Search ID…" data-table-search)
+          button.button.button-ghost.button-sm(type="button" data-table-compact-toggle) Compact mode
+        table.table.table--interactive(role="grid" data-sticky-head data-table-scroll)
           thead
             tr
-              th Scope
-              th Balance
-              th Type
-              th State
+              th
+                button.sort-button(type="button" data-sort="gan") Scope
+              th
+                button.sort-button(type="button" data-sort="balance") Balance
+              th
+                button.sort-button(type="button" data-sort="type") Type
+              th
+                button.sort-button(type="button" data-sort="state") State
               th Customers
-              th Created
+              th
+                button.sort-button(type="button" data-sort="createdAt") Created
+            tr.table-filter-row
+              th
+                input(type="text" name="filterGan" placeholder="GAN" data-column-filter="gan")
+              th
+                input(type="number" name="filterBalance" placeholder=">= amount" data-column-filter="balance")
+              th
+                input(type="text" name="filterType" placeholder="Type" data-column-filter="type")
+              th
+                input(type="text" name="filterState" placeholder="State" data-column-filter="state")
+              th
+                input(type="text" name="filterCustomer" placeholder="Customer" data-column-filter="customer")
+              th
+                input(type="text" name="filterCreated" placeholder="Date" data-column-filter="createdAt")
           tbody
             each card in giftCards
-              tr(data-card-row data-card-id=card.id)
+              tr(
+                data-card-row
+                data-card-id=card.id
+                data-sort-gan=card.gan || card.id
+                data-sort-balance=card.balance && card.balance.amount
+                data-sort-type=card.type
+                data-sort-state=card.state
+                data-sort-createdAt=card.createdAt
+                tabindex="0"
+              )
                 td
                   strong= card.gan || card.id
                   if card.id && card.gan

@@ -26,13 +26,10 @@ const analyticsRoute = require("./analytics");
 const catalogRoute = require("./catalog");
 const payoutRoute = require("./payout");
 const giftCardRoute = require("./gift-cards");
-const {
-  customersApi,
-  locationsApi,
-  invoicesApi,
-} = require("../util/square-client");
+const { customersApi, invoicesApi } = require("../util/square-client");
 const reminderQueue = require("../util/reminder-queue");
 const payoutStore = require("../util/payout-store");
+const { getPrimaryLocation } = require("../util/location-service");
 
 const router = express.Router();
 
@@ -64,9 +61,7 @@ router.use("/gift-cards", giftCardRoute);
 router.get("/", async (req, res, next) => {
   try {
     // Retrieve the main location which is the very first location merchant has
-    const {
-      result: { location },
-    } = await locationsApi.retrieveLocation("main");
+    const location = await getPrimaryLocation();
 
     let overdueInvoiceCount = 0;
     let scheduledInvoiceCount = 0;

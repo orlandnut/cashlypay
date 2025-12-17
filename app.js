@@ -93,7 +93,10 @@ app.use(function (req, res, next) {
 
 // error handlers
 // For simplicity, we print all error information
-app.use(function (err, req, res) {
+app.use(function (err, req, res, next) {
+  if (res.headersSent) {
+    return next(err);
+  }
   res.status(err.status || 500);
   res.render("error", {
     status: err.status,

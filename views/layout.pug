@@ -41,16 +41,57 @@ html(lang="en" class="dark")
     block scripts
       script(defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js")
     script(defer src="/javascripts/dashboard.js")
+  include components/app-header.pug
+  include components/data-kpis.pug
   include components/dark-hero.pug
   include components/command-drawer.pug
   include components/mobile-tabs.pug
   include components/action-dock.pug
   include components/status-strip.pug
-  - const bodyPageKey = typeof pageKey === 'string' ? pageKey : 'workspace';
-  - const initialDockConfig = (typeof actionDockOptions === 'object' && actionDockOptions) || {};
-  - const actionDockConfig = Object.assign({ context: bodyPageKey }, initialDockConfig);
+  block pageVars
+    - const bodyPageKey = typeof pageKey === 'string' ? pageKey : 'workspace';
+    - const initialDockConfig = (typeof actionDockOptions === 'object' && actionDockOptions) || {};
+    - const actionDockConfig = Object.assign({ context: bodyPageKey }, initialDockConfig);
+    - actionDockConfig.shortcuts = Array.isArray(actionDockConfig.shortcuts) ? actionDockConfig.shortcuts : [];
+    -
+      const contextualShortcuts = [];
+      if (currentPath && (currentPath.startsWith('/customers') || currentPath.startsWith('/management'))) {
+        contextualShortcuts.push(
+          { label: "Add Customer", hint: "New profile", href: "/customers/new", tone: "secondary", animateSeq: 2 },
+          { label: "Sync Directory", hint: "Square sandbox", attrs: { "data-sync-directory": "true" }, tone: "ghost", animateSeq: 3 },
+        );
+      } else if (currentPath && currentPath.startsWith('/gift-cards')) {
+        contextualShortcuts.push(
+          { label: "Issue Card", hint: "Finance desk", href: "/gift-cards", tone: "primary", animateSeq: 2 },
+          { label: "Reconcile", hint: "Run sync", attrs: { "data-sync-gift-cards": "true" }, tone: "ghost", animateSeq: 3 },
+        );
+      } else if (currentPath && currentPath.startsWith('/payouts')) {
+        contextualShortcuts.push(
+          { label: "Add Beneficiary", hint: "ACH & rails", href: "/payouts/console", tone: "secondary", animateSeq: 2 },
+        );
+      } else {
+        contextualShortcuts.push(
+          { label: "Add Customer", hint: "Customer Hub", href: "/customers/new", tone: "secondary", animateSeq: 2 },
+          { label: "Sync Directory", hint: "Square sandbox", attrs: { "data-sync-directory": "true" }, tone: "ghost", animateSeq: 3 },
+        );
+      }
+    - actionDockConfig.shortcuts = contextualShortcuts.concat(actionDockConfig.shortcuts);
   
   body.dark(data-theme="command" data-page=bodyPageKey)
+    block appHeader
+      -
+        const derivedHeaderMetrics = typeof headerMetrics !== 'undefined'
+          ? headerMetrics
+          : (typeof statusStripMetrics !== 'undefined' ? statusStripMetrics : []);
+        const derivedHeaderTitle = typeof headerTitle !== 'undefined' ? headerTitle : (bodyPageKey || 'workspace');
+        const derivedHeaderSecondary = typeof headerSecondary !== 'undefined' ? headerSecondary : null;
+      +appHeader({
+        envStatus,
+        metrics: derivedHeaderMetrics,
+        title: derivedHeaderTitle,
+        secondary: derivedHeaderSecondary,
+        user: currentUser || {}
+      })
     a.skip-link(href="#dashboardMain") Skip to dashboard
     #sr-announcer.sr-only(aria-live="assertive" aria-atomic="true")
     #toast-stack.toast-stack
@@ -97,10 +138,7 @@ html(lang="en" class="dark")
               a.nav-item(href="/" class=currentPath === '/' ? 'active' : '')
                 svg: use(href="#icon-dashboard")
                 span Dashboard
-            -
-              const customersActive =
-                currentPath &&
-                (currentPath.startsWith('/customers') || currentPath.startsWith('/management'));
+            - const customersActive = Boolean(currentPath && (currentPath.startsWith('/customers') || currentPath.startsWith('/management')));
             li
               a.nav-item(href="/customers" class=customersActive ? 'active' : '')
                 svg: use(href="#icon-invoice")
@@ -139,9 +177,16 @@ html(lang="en" class="dark")
     main.content
       .container#dashboardMain
         block statusStrip
-        .money-dashboard
-          block hero
-          block content
+        -
+          const showAuxPanel = typeof enableAuxPanel !== 'undefined' ? !!enableAuxPanel : false;
+        .workspace-grid(class=showAuxPanel ? 'workspace-grid--split' : '')
+          .workspace-grid__primary
+            .money-dashboard
+              block hero
+              block content
+          if showAuxPanel
+            aside.workspace-grid__secondary(data-pin-panel)
+              block auxPanel
 
     .help-overlay(data-help-overlay aria-hidden="true")
       .help-overlay__backdrop

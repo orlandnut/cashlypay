@@ -1,0 +1,68 @@
+mixin kpiGauge(options)
+  - const opts = options || {};
+  - const percent = Math.min(Math.max(Number(opts.percent) || 0, 0), 1);
+  - const size = opts.size || 120;
+  - const stroke = 12;
+  - const radius = (size - stroke) / 2;
+  - const circumference = 2 * Math.PI * radius;
+  - const dashOffset = circumference * (1 - percent);
+  .kpi-gauge
+    svg(width=size height=size viewBox=`0 0 ${size} ${size}`)
+      circle.kpi-gauge__track(cx=size / 2 cy=size / 2 r=radius stroke-width=stroke fill="none")
+      circle.kpi-gauge__bar(
+        cx=size / 2
+        cy=size / 2
+        r=radius
+        stroke-width=stroke
+        stroke-dasharray=circumference
+        stroke-dashoffset=dashOffset
+        data-gauge-value=percent
+      )
+      text.kpi-gauge__value(x="50%" y="50%" dominant-baseline="middle" text-anchor="middle") #{Math.round(percent * 100)}%
+    if opts.label
+      span.kpi-gauge__label= opts.label
+    if opts.meta
+      span.kpi-gauge__meta= opts.meta
+
+mixin sparkCard(options)
+  - const opts = options || {};
+  - const points = Array.isArray(opts.points) && opts.points.length ? opts.points : [{ value: 0 }];
+  - const width = opts.width || 140;
+  - const height = opts.height || 56;
+  - const values = points.map((point) => Number(point.value) || 0);
+  - const maxValue = Math.max(...values, 1);
+  - const step = width / Math.max(points.length - 1, 1);
+  - let d = "";
+  - points.forEach((point, index) => {
+  -   const x = index * step;
+  -   const y = height - (Number(point.value) || 0) / maxValue * height;
+  -   d += index === 0 ? `M${x},${y}` : ` L${x},${y}`;
+  - });
+  .spark-card
+    if opts.label
+      span.spark-card__label= opts.label
+    if typeof opts.total !== 'undefined'
+      span.spark-card__value= opts.total
+    svg.spark-card__chart(width=width height=height viewBox=`0 0 ${width} ${height}`)
+      path(d=d stroke-linecap="round" stroke-linejoin="round")
+    if opts.meta
+      span.spark-card__meta= opts.meta
+
+mixin segmentProgress(options)
+  - const opts = options || {};
+  - const segments = Array.isArray(opts.segments) ? opts.segments : [];
+  - const total = segments.reduce((sum, seg) => sum + (seg.value || 0), 0) || 1;
+  .segment-progress
+    if opts.label
+      span.segment-progress__label= opts.label
+    .segment-progress__bar
+      - let offset = 0;
+      each segment in segments
+        - const width = (segment.value || 0) / total * 100;
+        span.segment-progress__segment(
+          style=`--segment-width:${width}%; --segment-offset:${offset}%;`
+          data-segment-label=segment.label
+        )
+        - offset += width;
+    if opts.meta
+      span.segment-progress__meta= opts.meta

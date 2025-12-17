@@ -1,0 +1,37 @@
+mixin appHeader(options)
+  - const opts = options || {};
+  - const metrics = Array.isArray(opts.metrics) ? opts.metrics : [];
+  - const env = opts.envStatus || null;
+  - const envLabel = (env && env.label) || "Testing";
+  - const envTone = (env && env.tone) || "testing";
+  - const user = opts.user || {};
+  - const userName = user.name || "Ops Team";
+  - const userRole = (user.role || "viewer").replace(/^\w/, (c) => c.toUpperCase());
+  - const title = opts.title || "Workspace";
+  - const subtitle = opts.secondary || (env && env.label) || null;
+  header.app-header(data-scroll-header data-header-tone=envTone)
+    .app-header__row
+      .app-header__badge
+        span.app-header__env(class=`app-header__env--${envTone}`)= envLabel
+        button.app-header__collapse(type="button" aria-label="Collapse header" data-header-toggle)
+          span
+      div
+        span.app-header__eyebrow Command module
+        h2.app-header__title #{title}
+        if subtitle
+          span.app-header__subtitle= subtitle
+    if metrics.length
+      ul.app-header__metrics
+        each metric, metricIndex in metrics
+          - const delta = metric && metric.delta ? metric.delta : null;
+          li.app-header__metric(data-animate-seq=metricIndex)
+            span.app-header__metric-label= metric.label || "Signal"
+            span.app-header__metric-value= metric.value
+            if metric.meta
+              span.app-header__metric-meta= metric.meta
+            if delta
+              span.app-header__metric-delta(class=`app-header__metric-delta--${delta.tone || 'info'}`)= delta.label
+    .app-header__profile
+      span.app-header__profile-name= userName
+      if userRole
+        span.app-header__profile-role= userRole

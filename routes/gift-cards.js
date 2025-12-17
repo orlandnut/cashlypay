@@ -12,10 +12,11 @@ const {
   unblockGiftCard,
   adjustGiftCardBalance,
 } = require("../util/gift-card-service");
-const { locationsApi, customersApi } = require("../util/square-client");
+const { customersApi } = require("../util/square-client");
 const giftCardCache = require("../util/gift-card-cache");
 const activityStore = require("../util/activity-store");
 const { requireRole } = require("../middleware/user");
+const { getPrimaryLocationId } = require("../util/location-service");
 
 const router = express.Router();
 
@@ -64,13 +65,6 @@ const resolveEnvStatus = () => {
     : { label: "Testing", tone: "testing" };
 };
 
-const fetchPrimaryLocationId = async () => {
-  const {
-    result: { location },
-  } = await locationsApi.retrieveLocation("main");
-  return location.id;
-};
-
 const logGiftCardAction = (req, type, payload) => {
   activityStore.addEvent({
     type: `GIFT_CARD_${type}`,
@@ -115,7 +109,7 @@ router.get("/", async (req, res, next) => {
       giftCardId: activityCardId || customerFilter || undefined,
       cursor: activityCursor || undefined,
     };
-    const locationPromise = fetchPrimaryLocationId();
+    const locationPromise = getPrimaryLocationId();
     const customersPromise = customersApi
       .listCustomers()
       .then(({ result }) => {
@@ -235,7 +229,7 @@ router.post("/issue", requireRole("finance", "admin"), async (req, res) => {
       referenceId,
     } = req.body;
     const amountCents = centsFromAmount(amount);
-    const locationId = await fetchPrimaryLocationId();
+    const locationId = await getPrimaryLocationId();
     const issuedCard = await issueGiftCard({
       type: type || "DIGITAL",
       amountCents,
@@ -262,7 +256,7 @@ router.post("/load", requireRole("finance", "admin"), async (req, res) => {
   try {
     const { giftCardId, amount, currency = "USD", referenceId } = req.body;
     const amountCents = centsFromAmount(amount);
-    const locationId = await fetchPrimaryLocationId();
+    const locationId = await getPrimaryLocationId();
     await loadGiftCardBalance({
       giftCardId,
       amountCents,
@@ -308,7 +302,7 @@ router.post(
     try {
       const { giftCardId } = req.params;
       const { reason } = req.body;
-      const locationId = await fetchPrimaryLocationId();
+      const locationId = await getPrimaryLocationId();
       await blockGiftCard({ giftCardId, locationId, reason });
       logGiftCardAction(req, "BLOCK", { cardId: giftCardId, reason });
       res.json({ success: true });
@@ -327,7 +321,7 @@ router.post(
     try {
       const { giftCardId } = req.params;
       const { reason } = req.body;
-      const locationId = await fetchPrimaryLocationId();
+      const locationId = await getPrimaryLocationId();
       await unblockGiftCard({ giftCardId, locationId, reason });
       logGiftCardAction(req, "UNBLOCK", { cardId: giftCardId, reason });
       res.json({ success: true });
@@ -347,7 +341,7 @@ router.post(
       const { giftCardId } = req.params;
       const { amount, currency = "USD", reason } = req.body;
       const amountCents = centsFromAmount(amount);
-      const locationId = await fetchPrimaryLocationId();
+      const locationId = await getPrimaryLocationId();
       await adjustGiftCardBalance({
         giftCardId,
         amountCents,

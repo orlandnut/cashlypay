@@ -16,8 +16,9 @@ limitations under the License.
 
 const express = require("express");
 const Joi = require("joi");
-const { customersApi, locationsApi } = require("../util/square-client");
+const { customersApi } = require("../util/square-client");
 const giftCardCache = require("../util/gift-card-cache");
+const { getPrimaryLocation } = require("../util/location-service");
 
 const router = express.Router();
 
@@ -38,9 +39,7 @@ const customerSchema = Joi.object({
 
 router.get("/", async (req, res, next) => {
   try {
-    const {
-      result: { location },
-    } = await locationsApi.retrieveLocation("main");
+    const location = await getPrimaryLocation();
     const {
       result: { customers = [] },
     } = await customersApi.listCustomers();

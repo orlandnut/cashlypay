@@ -30,18 +30,21 @@ mixin darkHero(options)
       .dark-hero__context
         if breadcrumbs && breadcrumbs.length
           nav.hero-breadcrumbs(aria-label="Breadcrumb")
-            each crumb, crumbIndex in breadcrumbs
+            each crumb in breadcrumbs
               if crumb && crumb.href && !crumb.active
-                a.hero-breadcrumbs__link(href=crumb.href)= crumb.label
+                a.hero-breadcrumbs__chip(href=crumb.href)
+                  span.hero-breadcrumbs__dot
+                  span.hero-breadcrumbs__text= crumb.label
               else if crumb && crumb.label
-                span.hero-breadcrumbs__current= crumb.label
-              if crumbIndex !== breadcrumbs.length - 1
-                span.hero-breadcrumbs__separator /
+                span.hero-breadcrumbs__chip.hero-breadcrumbs__chip--active
+                  span.hero-breadcrumbs__dot
+                  span.hero-breadcrumbs__text= crumb.label
         if showSearch
-          button.hero-search(type="button" data-command-search aria-label="Open quick search")
-            svg(width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true")
-              path(d="M11 5a6 6 0 014.9 9.6l4.25 4.24-1.4 1.42-4.26-4.26A6 6 0 1111 5zm0 2a4 4 0 100 8 4 4 0 000-8z" fill="currentColor")
-            span.hero-search__label= searchLabel
+          button.hero-search.hero-search--pill(type="button" data-command-search aria-label="Open quick search")
+            span.hero-search__pill
+              svg(width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true")
+                path(d="M11 5a6 6 0 014.9 9.6l4.25 4.24-1.4 1.42-4.26-4.26A6 6 0 1111 5zm0 2a4 4 0 100 8 4 4 0 000-8z" fill="currentColor")
+              span.hero-search__label= searchLabel
             span.hero-search__hint= searchHint
       h1.dark-hero__title #{title}
       .dark-hero__rail-right

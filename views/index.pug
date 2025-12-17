@@ -13,64 +13,78 @@
 //- limitations under the License. 
 
 extends layout
-- const pageKey = 'dashboard';
-- const heroStatusLabel = (envStatus && envStatus.label) || 'Testing';
-- const totalCustomers = customers.length;
-- const cardCustomers = customers.filter((customer) => customer.cards && customer.cards.length);
-- const manualCustomers = totalCustomers - cardCustomers.length;
-- const lastCustomer = customers[0];
-- const primaryCustomerId = lastCustomer && lastCustomer.id;
-- const customerDetailHref = primaryCustomerId ? `/management/${locationId}/${primaryCustomerId}` : '/customers/new';
-- const managementHref = customerDetailHref;
-- const invoiceHref = customerDetailHref;
-- const estimateHref = primaryCustomerId ? `/estimate/new/${locationId}/${primaryCustomerId}` : '/customers/new';
-- const subscriptionHref = primaryCustomerId ? `/subscription/new/${locationId}/${primaryCustomerId}` : '/customers/new';
-- const reminderCountValue = typeof reminderCount === 'number' ? reminderCount : 0;
-- const directoryCustomers = Array.isArray(displayCustomers) ? displayCustomers : (customers || []);
-- const settingsHref = '/admin';
-- const safeTickerStats = tickerStats || { upcomingReminders: 0, overdueReminders: 0 };
-- const invoiceTicker = invoiceStats || { overdueInvoiceCount: 0, scheduledInvoiceCount: 0 };
-- const heroSignals = [];
-- heroSignals.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job waiting to send" : `${reminderCountValue} reminders staged` });
-- heroSignals.push({ label: "Upcoming reminders", value: safeTickerStats.upcomingReminders, meta: "Next 24h window" });
-- heroSignals.push({ label: "Overdue reminders", value: safeTickerStats.overdueReminders, meta: safeTickerStats.overdueReminders ? "Escalate with ops" : "All clear" });
-- heroSignals.push({ label: "Scheduled invoices", value: invoiceTicker.scheduledInvoiceCount, meta: "In-flight billing" });
-- const cardCoverage = totalCustomers ? Math.round((cardCustomers.length / totalCustomers) * 100) : 0;
-- const statusLabel = heroStatusLabel;
-- const balanceMetrics = [];
-- balanceMetrics.push({ label: "Cards on file", value: cardCustomers.length, meta: cardCoverage ? `${cardCoverage}% coverage` : "Sync to unlock" });
-- balanceMetrics.push({ label: "Manual billing", value: manualCustomers, meta: manualCustomers === 1 ? "Needs reminder" : "Need reminders" });
-- balanceMetrics.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" });
-- const statusStripMetrics = [
--   { label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" },
--   {
--     label: "Upcoming reminders",
--     value: safeTickerStats.upcomingReminders,
--     meta: "Next 24h window",
--     delta: safeTickerStats.upcomingReminders > 5 ? { label: "High load", tone: "danger" } : null
--   },
--   {
--     label: "Overdue invoices",
--     value: invoiceTicker.overdueInvoiceCount,
--     meta: invoiceTicker.overdueInvoiceCount ? "Escalate backlog" : "All clear",
--     delta: invoiceTicker.overdueInvoiceCount ? { label: "Attention", tone: "danger" } : { label: "Clear", tone: "info" }
--   }
-- ];
-- const heroBreadcrumbs = [
--   { label: "Navigate", href: "/" },
--   { label: "Dashboard", active: true }
-- ];
-- const actionDockOptions = {
--   primaryHref: invoiceHref,
--   queueHref: "/admin/reminders",
--   context: 'dashboard',
--   shortcuts: [
--     { label: "Add Customer", hint: "Customer Hub", href: "/customers/new", tone: "secondary", animateSeq: 5 },
--     { label: "Sync Directory", hint: "Square sandbox", tone: "ghost", attrs: { "data-sync-directory": "true" }, animateSeq: 6 }
--   ]
-- };
-- const timelineEntries = Array.isArray(reminderTimeline) ? reminderTimeline : [];
-- const customerBadge = lastCustomer ? `${lastCustomer.givenName || 'Customer'} ${lastCustomer.familyName || ''}`.trim() : null;
+block pageVars
+  - const pageKey = 'dashboard';
+  - const heroStatusLabel = (envStatus && envStatus.label) || 'Testing';
+  - const totalCustomers = customers.length;
+  - const cardCustomers = customers.filter((customer) => customer.cards && customer.cards.length);
+  - const manualCustomers = totalCustomers - cardCustomers.length;
+  - const lastCustomer = customers[0];
+  - const primaryCustomerId = lastCustomer && lastCustomer.id;
+  - const customerDetailHref = primaryCustomerId ? `/management/${locationId}/${primaryCustomerId}` : '/customers/new';
+  - const managementHref = customerDetailHref;
+  - const invoiceHref = customerDetailHref;
+  - const estimateHref = primaryCustomerId ? `/estimate/new/${locationId}/${primaryCustomerId}` : '/customers/new';
+  - const subscriptionHref = primaryCustomerId ? `/subscription/new/${locationId}/${primaryCustomerId}` : '/customers/new';
+  - const reminderCountValue = typeof reminderCount === 'number' ? reminderCount : 0;
+  - const directoryCustomers = Array.isArray(displayCustomers) ? displayCustomers : (customers || []);
+  - const settingsHref = '/admin';
+  - const safeTickerStats = tickerStats || { upcomingReminders: 0, overdueReminders: 0 };
+  - const invoiceTicker = invoiceStats || { overdueInvoiceCount: 0, scheduledInvoiceCount: 0 };
+  - const payoutStatsSafe = payoutStats || { total: 0, pending: 0, lastRail: null };
+  - const heroSignals = [];
+  - heroSignals.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job waiting to send" : `${reminderCountValue} reminders staged` });
+  - heroSignals.push({ label: "Upcoming reminders", value: safeTickerStats.upcomingReminders, meta: "Next 24h window" });
+  - heroSignals.push({ label: "Overdue reminders", value: safeTickerStats.overdueReminders, meta: safeTickerStats.overdueReminders ? "Escalate with ops" : "All clear" });
+  - heroSignals.push({ label: "Scheduled invoices", value: invoiceTicker.scheduledInvoiceCount, meta: "In-flight billing" });
+  - const cardCoverage = totalCustomers ? Math.round((cardCustomers.length / totalCustomers) * 100) : 0;
+  - const statusLabel = heroStatusLabel;
+  - const balanceMetrics = [];
+  - balanceMetrics.push({ label: "Cards on file", value: cardCustomers.length, meta: cardCoverage ? `${cardCoverage}% coverage` : "Sync to unlock" });
+  - balanceMetrics.push({ label: "Manual billing", value: manualCustomers, meta: manualCustomers === 1 ? "Needs reminder" : "Need reminders" });
+  - balanceMetrics.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" });
+  - const statusStripMetrics = [];
+  - statusStripMetrics.push({ label: "Reminder queue", value: reminderCountValue, meta: reminderCountValue === 1 ? "Job staged" : "Jobs staged" });
+  -
+    statusStripMetrics.push({
+      label: "Upcoming reminders",
+      value: safeTickerStats.upcomingReminders,
+      meta: "Next 24h window",
+      delta:
+        safeTickerStats.upcomingReminders > 5
+          ? { label: "High load", tone: "danger" }
+          : null,
+    });
+  -
+    statusStripMetrics.push({
+      label: "Overdue invoices",
+      value: invoiceTicker.overdueInvoiceCount,
+      meta: invoiceTicker.overdueInvoiceCount
+        ? "Escalate backlog"
+        : "All clear",
+      delta: invoiceTicker.overdueInvoiceCount
+        ? { label: "Attention", tone: "danger" }
+        : { label: "Clear", tone: "info" },
+    });
+  - const heroBreadcrumbs = [];
+  - heroBreadcrumbs.push({ label: "Navigate", href: "/" });
+  - heroBreadcrumbs.push({ label: "Dashboard", active: true });
+  - const actionDockOptions = {};
+  - actionDockOptions.primaryHref = invoiceHref;
+  - actionDockOptions.queueHref = "/admin/reminders";
+  - actionDockOptions.context = 'dashboard';
+  - const headerMetrics = statusStripMetrics;
+  - const headerTitle = "Command Center";
+  - const headerSecondary = heroStatusLabel;
+  - const enableAuxPanel = true;
+  - const overduePercent = totalCustomers ? Math.min(invoiceTicker.overdueInvoiceCount / totalCustomers, 1) : 0;
+  - const reminderPercent = Math.min(reminderCountValue / Math.max(invoiceTicker.scheduledInvoiceCount || 8, 8), 1);
+  - const payoutSegments = [
+  -   { label: "Pending", value: payoutStatsSafe.pending || 0 },
+  -   { label: "Complete", value: Math.max((payoutStatsSafe.total || 0) - (payoutStatsSafe.pending || 0), 0) },
+  - ];
+  - const timelineEntries = Array.isArray(reminderTimeline) ? reminderTimeline : [];
+  - const customerBadge = lastCustomer ? `${lastCustomer.givenName || 'Customer'} ${lastCustomer.familyName || ''}`.trim() : null;
 
 block hero
   +darkHero({
@@ -97,9 +111,38 @@ block content
   -   return Number.isNaN(date.getTime()) ? 'Queued' : date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   - }
   - const timelineTone = (type) => type && type.includes('OVERDUE') ? 'danger' : 'info';
+  - const nowTs = Date.now();
+  - const sparkEntries = timelineEntries.slice(0, 10);
+  - const sparkPoints = sparkEntries.length
+  -   ? sparkEntries.map((entry, index) => {
+  -       const ts = entry.runAt ? new Date(entry.runAt).getTime() : nowTs;
+  -       const hoursOut = Math.max(0, (ts - nowTs) / (60 * 60 * 1000));
+  -       return { value: Math.max(1, 24 - Math.min(24, hoursOut)), label: entry.type || `event-${index}` };
+  -     })
+  -   : [{ value: 1 }];
   main.dashboard(data-reminders=reminderCountValue data-overdue=invoiceTicker.overdueInvoiceCount)
     .dashboard-shell
       .dashboard-shell__primary
+        section.kpi-deck
+          .kpi-deck__item
+            +kpiGauge({
+              label: "Overdue coverage",
+              percent: overduePercent,
+              meta: `${invoiceTicker.overdueInvoiceCount} overdue / ${totalCustomers || 0} customers`
+            })
+          .kpi-deck__item
+            +sparkCard({
+              label: "Reminder cadence",
+              total: `${reminderCountValue} jobs`,
+              points: sparkPoints,
+              meta: "Next 24h reach"
+            })
+          .kpi-deck__item
+            +segmentProgress({
+              label: "Payout pipeline",
+              segments: payoutSegments,
+              meta: `${payoutStatsSafe.pending || 0} pending of ${payoutStatsSafe.total || 0}`
+            })
         section.balance-card.balance-card--hero(data-collapsible)
           button.balance-card__toggle(type="button" data-collapsible-trigger)
             div
@@ -244,34 +287,34 @@ block content
                 p.text-secondary Surface KPIs, backlog, and reminder runs in one dashboard.
                 a.button.button-secondary.button-sm(href="/analytics") Open analytics
 
-      aside.dashboard-shell__secondary
-        .timeline-panel
-          .timeline-panel__header
-            .timeline-panel__title
-              span.timeline-panel__eyebrow Reminder timeline
-              h3 Timeline queue
-            button.timeline-panel__toggle(type="button" data-rail-toggle)
-              span Toggle panel
-          if timelineEntries && timelineEntries.length
-            ul.timeline-panel__list
-              each event, timelineIndex in timelineEntries
-                - const tone = timelineTone(event.type);
-                li.timeline-panel__item(class=`timeline-panel__item--${tone}`)
-                  span.timeline-panel__time= formatTimelineTime(event.runAt)
-                  h4.timeline-panel__label= event.message || event.type
-                  if event.invoiceId
-                    span.timeline-panel__meta= `Invoice ${event.invoiceId}`
-                  else
-                    span.timeline-panel__meta Broadcast
-          else
-            .timeline-panel__empty
-              span.timeline-panel__emoji 🛰
-              p No reminders staged — queue idle.
-
   .reminder-toast(data-toast role="status" aria-live="polite")
     span.toast-dot
     span.toast-message Reminder queue synced.
     button.toast-close(type="button" aria-label="Dismiss notification") ×
+
+block auxPanel
+  .timeline-panel(data-pin-target)
+    .timeline-panel__header
+      .timeline-panel__title
+        span.timeline-panel__eyebrow Reminder timeline
+        h3 Timeline queue
+      button.timeline-panel__toggle(type="button" data-rail-toggle)
+        span Toggle panel
+    if timelineEntries && timelineEntries.length
+      ul.timeline-panel__list
+        each event, timelineIndex in timelineEntries
+          - const tone = timelineTone(event.type);
+          li.timeline-panel__item(class=`timeline-panel__item--${tone}`)
+            span.timeline-panel__time= formatTimelineTime(event.runAt)
+            h4.timeline-panel__label= event.message || event.type
+            if event.invoiceId
+              span.timeline-panel__meta= `Invoice ${event.invoiceId}`
+            else
+              span.timeline-panel__meta Broadcast
+    else
+      .timeline-panel__empty
+        span.timeline-panel__emoji 🛰
+        p No reminders staged — queue idle.
 
 block commandDrawer
   -

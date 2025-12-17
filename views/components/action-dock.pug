@@ -3,31 +3,38 @@ mixin actionDock(opts)
   - const primaryHref = options.primaryHref || "/management";
   - const queueHref = options.queueHref || "/admin/reminders";
   - const shortcuts = Array.isArray(options.shortcuts) ? options.shortcuts : [];
-  - const baseActions = [
-  -   { label: "Create Invoice", hint: "Launch composer", href: primaryHref, tone: "primary", animateSeq: 8 },
-  -   {
-  -     label: "Run Reminder Queue",
-  -     hint: "Automation",
-  -     tone: "danger",
-  -     attrs: {
-  -       "data-run-reminders": "true",
-  -       "data-confirm": "Run the reminder queue now?",
-  -       "data-queue-endpoint": queueHref
-  -     },
-  -     animateSeq: 9
-  -   },
-  -   {
-  -     label: "Density",
-  -     hint: "Comfortable",
-  -     tone: "ghost",
-  -     attrs: {
-  -       "data-density-toggle": "true",
-  -       "aria-pressed": "false"
-  -     },
-  -     dynamicHint: true,
-  -     animateSeq: 10
-  -   }
-  - ];
+  -
+    const baseActions = [
+      {
+        label: "Create Invoice",
+        hint: "Launch composer",
+        href: primaryHref,
+        tone: "primary",
+        animateSeq: 8,
+      },
+      {
+        label: "Run Reminder Queue",
+        hint: "Automation",
+        tone: "danger",
+        attrs: {
+          "data-run-reminders": "true",
+          "data-confirm": "Run the reminder queue now?",
+          "data-queue-endpoint": queueHref,
+        },
+        animateSeq: 9,
+      },
+      {
+        label: "Density",
+        hint: "Comfortable",
+        tone: "ghost",
+        attrs: {
+          "data-density-toggle": "true",
+          "aria-pressed": "false",
+        },
+        dynamicHint: true,
+        animateSeq: 10,
+      },
+    ];
   - const actions = shortcuts.concat(baseActions);
   nav.action-dock(aria-label="Quick actions" data-action-dock="true" data-context=options.context || 'workspace')
     button.action-dock__handle(type="button" aria-label="Toggle quick actions dock" data-dock-handle)
