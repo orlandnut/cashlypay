@@ -1,8 +1,8 @@
 const fs = require("fs");
-const path = require("path");
 const activityStore = require("./activity-store");
+const { resolveDataPath } = require("./file-paths");
 
-const DATA_FILE = path.join(__dirname, "../data/reminders.json");
+const DATA_FILE = resolveDataPath("reminders.json");
 const PROCESS_INTERVAL_MS = 60 * 1000;
 
 const ensureFile = () => {

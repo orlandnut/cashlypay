@@ -1,9 +1,10 @@
 const path = require("path");
 const Database = require("better-sqlite3");
+const { resolveDataPath } = require("./file-paths");
 
 const DB_FILE = process.env.DB_FILE_PATH
   ? path.resolve(process.env.DB_FILE_PATH)
-  : path.join(__dirname, "../data/app.db");
+  : resolveDataPath("app.db");
 
 const db = new Database(DB_FILE);
 db.pragma("journal_mode = WAL");

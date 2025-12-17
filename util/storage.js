@@ -1,19 +1,12 @@
 const fs = require("fs");
 const path = require("path");
-
-const UPLOAD_DIR = path.join(__dirname, "../public/uploads");
-
-const ensureDir = () => {
-  if (!fs.existsSync(UPLOAD_DIR)) {
-    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-  }
-};
+const { getUploadDir } = require("./file-paths");
 
 const saveFile = ({ buffer, originalname }) => {
-  ensureDir();
-  const safeName = originalname.replace(/\s+/g, "-");
+  const uploadDir = getUploadDir();
+  const safeName = sanitizeFilename(originalname);
   const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}-${safeName}`;
-  const fullPath = path.join(UPLOAD_DIR, fileName);
+  const fullPath = path.join(uploadDir, fileName);
   fs.writeFileSync(fullPath, buffer);
   return {
     fileName,
@@ -24,3 +17,14 @@ const saveFile = ({ buffer, originalname }) => {
 module.exports = {
   saveFile,
 };
+
+function sanitizeFilename(name) {
+  if (!name || typeof name !== "string") {
+    return "upload.bin";
+  }
+  const normalized = path
+    .basename(name)
+    .replace(/[^\w.-]/g, "-")
+    .replace(/-+/g, "-");
+  return normalized || "upload.bin";
+}

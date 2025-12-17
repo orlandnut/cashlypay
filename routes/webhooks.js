@@ -22,6 +22,27 @@ const { handleGiftCardWebhookEvent } = require("../util/gift-card-sync");
 
 const router = express.Router();
 
+const buildNotificationUrl = (req) => {
+  if (process.env.SQUARE_WEBHOOK_NOTIFICATION_URL) {
+    return process.env.SQUARE_WEBHOOK_NOTIFICATION_URL;
+  }
+  const host = req.get("host");
+  if (!host || !req.protocol) {
+    return null;
+  }
+  return `${req.protocol}://${host}${req.originalUrl}`;
+};
+
+const getRawPayload = (req) => {
+  if (typeof req.rawBody === "string") {
+    return req.rawBody;
+  }
+  if (Buffer.isBuffer(req.rawBody)) {
+    return req.rawBody.toString("utf8");
+  }
+  return JSON.stringify(req.body || {});
+};
+
 const verifySignature = (req) => {
   const signatureKey = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY;
   if (!signatureKey) {
@@ -33,15 +54,28 @@ const verifySignature = (req) => {
     return false;
   }
 
-  const body = JSON.stringify(req.body || {});
-  const hmac = crypto.createHmac("sha256", signatureKey);
-  hmac.update(body);
-  const expected = hmac.digest("base64");
+  const notificationUrl = buildNotificationUrl(req);
+  if (!notificationUrl) {
+    return false;
+  }
 
-  return crypto.timingSafeEqual(
-    Buffer.from(expected),
-    Buffer.from(signatureHeader),
-  );
+  const payload = `${notificationUrl}${getRawPayload(req)}`;
+  const hmac = crypto.createHmac("sha256", signatureKey);
+  hmac.update(payload);
+  const expectedSignature = hmac.digest();
+
+  let providedSignature;
+  try {
+    providedSignature = Buffer.from(signatureHeader, "base64");
+  } catch (error) {
+    return false;
+  }
+
+  if (providedSignature.length !== expectedSignature.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(expectedSignature, providedSignature);
 };
 
 router.post("/square", async (req, res) => {

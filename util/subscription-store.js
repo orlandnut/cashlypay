@@ -1,8 +1,8 @@
 const fs = require("fs");
-const path = require("path");
 const crypto = require("crypto");
+const { resolveDataPath } = require("./file-paths");
 
-const DATA_FILE = path.join(__dirname, "../data/subscriptions.json");
+const DATA_FILE = resolveDataPath("subscriptions.json");
 
 const ensureFile = () => {
   if (!fs.existsSync(DATA_FILE)) {

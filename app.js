@@ -61,11 +61,23 @@ app.use(requestLimiter);
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(logger("dev"));
-app.use(bodyParser.json({ limit: "1mb" }));
+const captureRawBody = (req, res, buf) => {
+  if (buf && buf.length) {
+    req.rawBody = buf.toString("utf8");
+  }
+};
+
+app.use(
+  bodyParser.json({
+    limit: "1mb",
+    verify: captureRawBody,
+  }),
+);
 app.use(
   bodyParser.urlencoded({
     extended: false,
     limit: "1mb",
+    verify: captureRawBody,
   }),
 );
 app.use(cookieParser());

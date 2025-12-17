@@ -1,8 +1,8 @@
 const fs = require("fs");
-const path = require("path");
 const { randomUUID } = require("crypto");
+const { resolveDataPath } = require("./file-paths");
 
-const DATA_PATH = path.join(__dirname, "../data/gift-cards.json");
+const DATA_PATH = resolveDataPath("gift-cards.json");
 
 const state = {
   cards: new Map(),

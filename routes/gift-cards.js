@@ -106,7 +106,7 @@ router.get("/", async (req, res, next) => {
     }
     const activityOptions = {
       limit: activityLimit,
-      giftCardId: activityCardId || customerFilter || undefined,
+      giftCardId: activityCardId || undefined,
       cursor: activityCursor || undefined,
     };
     const locationPromise = getPrimaryLocationId();

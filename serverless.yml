@@ -16,6 +16,8 @@ provider:
     SQUARE_LOCATION_ID: ${env:SQUARE_LOCATION_ID, ''}
     DEFAULT_USER_EMAIL: ${env:DEFAULT_USER_EMAIL, 'ops@cashly.local'}
     DB_FILE_PATH: ${env:DB_FILE_PATH, '/tmp/app.db'}
+    CASHLY_DATA_DIR: ${env:CASHLY_DATA_DIR, '/tmp/cashly-data'}
+    CASHLY_UPLOAD_DIR: ${env:CASHLY_UPLOAD_DIR, '/tmp/cashly-uploads'}
   httpApi:
     cors: true
 
