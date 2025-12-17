@@ -3,21 +3,30 @@ app: cashlypay
 service: cashlypay
 frameworkVersion: '3'
 
+custom:
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  deploymentEnv: ${file(./config/serverless.env.js)}
+
 provider:
   name: aws
   runtime: nodejs18.x
-  stage: ${opt:stage, 'dev'}
-  region: ${opt:region, 'us-east-1'}
+  stage: ${self:custom.stage}
+  region: ${self:custom.region}
   environment:
     NODE_ENV: production
-    SQUARE_ENVIRONMENT: ${env:SQUARE_ENVIRONMENT, 'sandbox'}
-    SQUARE_ACCESS_TOKEN: ${env:SQUARE_ACCESS_TOKEN, ''}
-    SQUARE_APP_ID: ${env:SQUARE_APP_ID, ''}
-    SQUARE_LOCATION_ID: ${env:SQUARE_LOCATION_ID, ''}
-    DEFAULT_USER_EMAIL: ${env:DEFAULT_USER_EMAIL, 'ops@cashly.local'}
-    DB_FILE_PATH: ${env:DB_FILE_PATH, '/tmp/app.db'}
-    CASHLY_DATA_DIR: ${env:CASHLY_DATA_DIR, '/tmp/cashly-data'}
-    CASHLY_UPLOAD_DIR: ${env:CASHLY_UPLOAD_DIR, '/tmp/cashly-uploads'}
+    SQUARE_ENVIRONMENT: ${self:custom.deploymentEnv.SQUARE_ENVIRONMENT, 'sandbox'}
+    SQUARE_ACCESS_TOKEN: ${self:custom.deploymentEnv.SQUARE_ACCESS_TOKEN, ''}
+    SQUARE_APP_ID: ${self:custom.deploymentEnv.SQUARE_APP_ID, ''}
+    SQUARE_LOCATION_ID: ${self:custom.deploymentEnv.SQUARE_LOCATION_ID, ''}
+    DEFAULT_USER_EMAIL: ${self:custom.deploymentEnv.DEFAULT_USER_EMAIL, 'ops@cashly.local'}
+    DEFAULT_USER_NAME: ${self:custom.deploymentEnv.DEFAULT_USER_NAME, 'Ops Analyst'}
+    DEFAULT_USER_ROLE: ${self:custom.deploymentEnv.DEFAULT_USER_ROLE, 'viewer'}
+    DB_FILE_PATH: ${self:custom.deploymentEnv.DB_FILE_PATH, '/tmp/app.db'}
+    CASHLY_DATA_DIR: ${self:custom.deploymentEnv.CASHLY_DATA_DIR, '/tmp/cashly-data'}
+    CASHLY_UPLOAD_DIR: ${self:custom.deploymentEnv.CASHLY_UPLOAD_DIR, '/tmp/cashly-uploads'}
+    SQUARE_WEBHOOK_SIGNATURE_KEY: ${self:custom.deploymentEnv.SQUARE_WEBHOOK_SIGNATURE_KEY, ''}
+    SQUARE_WEBHOOK_NOTIFICATION_URL: ${self:custom.deploymentEnv.SQUARE_WEBHOOK_NOTIFICATION_URL, ''}
   httpApi:
     cors: true
 

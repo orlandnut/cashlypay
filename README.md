@@ -96,8 +96,13 @@ Before you begin, note the following:
 The repository now includes a ready-to-use `serverless.yml` and Lambda handler so you can ship the Express app through [Serverless.com](https://www.serverless.com/framework/docs/getting-started):
 
 1. Install the CLI (`npm install -g serverless`) or rely on the local dev dependency with `npx serverless --version`. Authenticate with your cloud provider (`serverless config credentials --provider aws --key … --secret …`) or `aws configure`.
-2. Ensure your environment variables are available to the CLI. For AWS, export them before deploying (for example `export SQUARE_ACCESS_TOKEN=…` and `export DB_FILE_PATH=/tmp/app.db`). The `serverless.yml` file maps these values into Lambda, defaulting the SQLite file path to `/tmp/app.db`, which is the only writable directory in Lambda. For persistent data you should ultimately replace SQLite with a managed database.
-   - Use `CASHLY_DATA_DIR` and `CASHLY_UPLOAD_DIR` to point JSON caches and uploaded files to writable storage (the defaults in `serverless.yml` use `/tmp` inside Lambda).
+2. Duplicate `config/serverless.env.defaults.js` to `config/serverless.env.local.js` and populate every field with your real credentials (Square keys, webhook signature key, writable directories). The Serverless config automatically loads the local file when present, so secrets stay out of version control:
+
+   ```bash
+   cp config/serverless.env.defaults.js config/serverless.env.local.js
+   # edit config/serverless.env.local.js before deploying
+   ```
+   - The defaults point SQLite, JSON caches, and uploads to `/tmp` inside each Lambda. Replace them with S3/RDS/other persistent storage before going to production.
 3. Deploy with `npm run deploy:serverless` (or `npx serverless deploy`). The output will list the HTTPS URL provisioned by API Gateway.
 4. Develop locally with `npm run offline`, which uses `serverless-offline` to emulate API Gateway/Lambda (`localhost:3000` still works through `npm run dev` if preferred).
 

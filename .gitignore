@@ -7,3 +7,4 @@ public/uploads/
 .idea/
 .vscode/
 .codex/
+config/serverless.env.local.js

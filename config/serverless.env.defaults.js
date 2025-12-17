@@ -1,0 +1,14 @@
+module.exports = {
+  SQUARE_ENVIRONMENT: "sandbox",
+  SQUARE_ACCESS_TOKEN: "YOUR_SQUARE_ACCESS_TOKEN",
+  SQUARE_APP_ID: "YOUR_SQUARE_APP_ID",
+  SQUARE_LOCATION_ID: "YOUR_SQUARE_LOCATION_ID",
+  DEFAULT_USER_EMAIL: "ops@example.com",
+  DEFAULT_USER_NAME: "Ops Analyst",
+  DEFAULT_USER_ROLE: "viewer",
+  DB_FILE_PATH: "/tmp/app.db",
+  CASHLY_DATA_DIR: "/tmp/cashly-data",
+  CASHLY_UPLOAD_DIR: "/tmp/cashly-uploads",
+  SQUARE_WEBHOOK_SIGNATURE_KEY: "YOUR_WEBHOOK_SIGNATURE_KEY",
+  SQUARE_WEBHOOK_NOTIFICATION_URL: "https://your-api-domain/webhooks/square",
+};
