@@ -102,6 +102,8 @@ The repository now includes a ready-to-use `serverless.yml` and Lambda handler s
    cp config/serverless.env.defaults.js config/serverless.env.local.js
    # edit config/serverless.env.local.js before deploying
    ```
+
+   Run `npm run verify:env` to confirm nothing is still using a placeholder before deploying. (This command now runs automatically inside `npm run deploy:serverless`.)
    - The defaults point SQLite, JSON caches, and uploads to `/tmp` inside each Lambda. Replace them with S3/RDS/other persistent storage before going to production.
 3. Deploy with `npm run deploy:serverless` (or `npx serverless deploy`). The output will list the HTTPS URL provisioned by API Gateway.
 4. Develop locally with `npm run offline`, which uses `serverless-offline` to emulate API Gateway/Lambda (`localhost:3000` still works through `npm run dev` if preferred).

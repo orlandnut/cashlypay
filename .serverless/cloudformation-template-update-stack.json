@@ -208,7 +208,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/cashlypay/dev/1765944138924-2025-12-17T04:02:18.924Z/cashlypay.zip"
+          "S3Key": "serverless/cashlypay/dev/1765974625653-2025-12-17T12:30:25.653Z/cashlypay.zip"
         },
         "Handler": "s_web.handler",
         "Runtime": "nodejs18.x",
@@ -219,11 +219,17 @@
           "Variables": {
             "NODE_ENV": "production",
             "SQUARE_ENVIRONMENT": "sandbox",
-            "SQUARE_ACCESS_TOKEN": "",
-            "SQUARE_APP_ID": "",
-            "SQUARE_LOCATION_ID": "",
-            "DEFAULT_USER_EMAIL": "ops@cashly.local",
-            "DB_FILE_PATH": "/tmp/app.db"
+            "SQUARE_ACCESS_TOKEN": "YOUR_SQUARE_ACCESS_TOKEN",
+            "SQUARE_APP_ID": "YOUR_SQUARE_APP_ID",
+            "SQUARE_LOCATION_ID": "YOUR_SQUARE_LOCATION_ID",
+            "DEFAULT_USER_EMAIL": "ops@example.com",
+            "DEFAULT_USER_NAME": "Ops Analyst",
+            "DEFAULT_USER_ROLE": "viewer",
+            "DB_FILE_PATH": "/tmp/app.db",
+            "CASHLY_DATA_DIR": "/tmp/cashly-data",
+            "CASHLY_UPLOAD_DIR": "/tmp/cashly-uploads",
+            "SQUARE_WEBHOOK_SIGNATURE_KEY": "YOUR_WEBHOOK_SIGNATURE_KEY",
+            "SQUARE_WEBHOOK_NOTIFICATION_URL": "https://your-api-domain/webhooks/square"
           }
         },
         "Role": {
@@ -237,14 +243,14 @@
         "WebLogGroup"
       ]
     },
-    "WebLambdaVersionEXgOVwX8UXcsHu9u1yeBiRl4627SB5JX10Sxr7F9jM": {
+    "WebLambdaVersionVk4U51XvGkQokwplbnGaHD0PsJmmq2PFXNVUsnTU": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "WebLambdaFunction"
         },
-        "CodeSha256": "6jt2g81mckFHkh5mkcfFRyjNwLHL8GKc0pAHzC6fHOU="
+        "CodeSha256": "mdw3yhK+8AdWXfNnON/tpaCfCKawHzk54V/qGgxEXFA="
       }
     },
     "HttpApi": {
@@ -405,7 +411,7 @@
     "WebLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "WebLambdaVersionEXgOVwX8UXcsHu9u1yeBiRl4627SB5JX10Sxr7F9jM"
+        "Ref": "WebLambdaVersionVk4U51XvGkQokwplbnGaHD0PsJmmq2PFXNVUsnTU"
       },
       "Export": {
         "Name": "sls-cashlypay-dev-WebLambdaFunctionQualifiedArn"
